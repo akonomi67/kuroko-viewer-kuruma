@@ -1,0 +1,133 @@
+<title>ルーミーとソリオどっち</title>
+<style>
+:root{--bg:#f6f4f1;--panel:#fffefc;--ink:#1c1a19;--dim:#6e6862;--line:#e2ded7;--accent:#b8422f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}}
+:root[data-theme="dark"]{--bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);margin:0;-webkit-text-size-adjust:100%;
+  font:16px/1.7 -apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic UI",sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+h1{font-size:17px;margin:4px 0 14px;font-weight:600;letter-spacing:.02em}
+.meta{color:var(--dim);font-size:13px;font-weight:400;margin-left:8px}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:12px;position:relative;
+  min-height:40vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:46px 20px 26px;box-shadow:0 2px 14px rgba(0,0,0,.10)}
+#now{margin:0;text-align:center;white-space:pre-wrap;word-break:break-word;font-weight:700;
+  font-size:clamp(23px,5.4vw,42px);line-height:1.5;letter-spacing:.01em}
+#nextline{margin:16px 0 0;text-align:center;white-space:pre-wrap;word-break:break-word;
+  color:var(--dim);font-size:clamp(13px,2.8vw,17px);line-height:1.6}
+.badge{position:absolute;left:12px;top:12px;background:rgba(127,127,127,.16);color:var(--dim);
+  font-size:12px;padding:3px 9px;border-radius:20px;line-height:1.6;letter-spacing:.04em}
+.bar{display:flex;align-items:center;gap:10px;margin:12px 0 6px;flex-wrap:wrap}
+button{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;
+  padding:9px 14px;font-size:15px;cursor:pointer;font-family:inherit}
+button:active{transform:translateY(1px)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.play{background:var(--accent);color:#fff;border-color:transparent;min-width:80px;font-weight:600}
+.time{font-variant-numeric:tabular-nums;color:var(--dim);font-size:13px;margin-left:auto}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.marks{position:relative;height:7px;margin:2px 0 14px}
+.marks i{position:absolute;top:0;width:1px;height:7px;background:var(--line)}
+.tabs{display:flex;gap:6px;margin:18px 0 10px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;
+  color:var(--ink);padding:7px 12px;font-weight:600}
+.list{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+  -webkit-overflow-scrolling:touch}
+.row{display:flex;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.row:last-child{border-bottom:0}
+.row:hover{background:rgba(127,127,127,.07)}
+.row.on{background:rgba(184,66,47,.12)}
+.row b{color:var(--dim);font-variant-numeric:tabular-nums;font-weight:500;font-size:13px;
+  min-width:48px;flex:none;padding-top:2px}
+.row span{white-space:pre-wrap;flex:1;font-size:16px;line-height:1.65}
+.tip{color:var(--dim);font-size:12.5px;margin:10px 2px 0}
+@media(max-width:620px){.wrap{padding:10px}.time{font-size:12px}
+  .bar button{padding:9px 11px;font-size:14px}.stage{padding:42px 14px 22px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+<div class="wrap">
+<h1 id="ttl"></h1>
+<div class="stage"><div class="badge" id="bdg"></div>
+  <p id="now"></p><p id="nextline"></p></div>
+<div class="bar">
+  <button class="play" id="pp">▶ 再生</button>
+  <button id="pv">◀ 前の字幕</button>
+  <button id="nx">次の字幕 ▶</button>
+  <button id="sp">等速</button>
+  <span class="time" id="tm">0:00 / 0:00</span>
+</div>
+<input type="range" id="sk" min="0" max="1000" value="0">
+<div class="marks" id="mk"></div>
+<div class="tabs"><button class="on">字幕</button></div>
+<div class="list" id="subs"></div>
+<p class="tip">スペース＝再生/停止　←→＝5秒送り　↑↓＝字幕送り。字幕をタップするとそこへ飛びます。</p>
+</div>
+<audio id="a" src="audio.mp3" preload="auto"></audio>
+<script>
+const D={"name": "ルーミーとソリオどっち", "file": "089_ルーミーとソリオどっち", "dur": 749.46665625, "segs": [], "subs": [{"t": 0.0, "x": "こんにちは、「となりの車屋さん」の店長です。"}, {"t": 3.066666666666667, "x": "二台を横に並べると、ほとんど同じに見えます。"}, {"t": 7.033333333333333, "x": "背が高くて、うしろのドアは横に開くスライドドア。"}, {"t": 11.366666666666667, "x": "大きさも値段も、びっくりするほど近いんです。"}, {"t": 15.033333333333333, "x": "ところがボンネットを開けると、一か所だけはっきり違います。"}, {"t": 19.466666666666665, "x": "今日はトヨタのルーミーとスズキのソリオのお話です。"}, {"t": 23.266666666666666, "x": "軽自動車より少しゆとりがほしい。"}, {"t": 26.166666666666668, "x": "かといって大きなミニバンまでは要らない。"}, {"t": 29.066666666666666, "x": "そう考えると、たいていこの二台に行き着きます。"}, {"t": 32.86666666666667, "x": "お店でも「結局どっちがいいの」とよく聞かれます。"}, {"t": 37.06666666666667, "x": "カタログを二冊並べて、ため息をつくかたも少なくありません。"}, {"t": 41.733333333333334, "x": "そこで今日は、その一つの違いを先にお見せします。"}, {"t": 46.03333333333333, "x": "そのあとで乗り降りと坂道、安全装備を順に見ます。"}, {"t": 50.63333333333333, "x": "燃費と値段も数字で比べます。"}, {"t": 53.43333333333333, "x": "最後に七十代のかたにはどちらか、一台に決めてお答えします。"}, {"t": 60.2, "x": "まずは似ているところから確かめましょう。"}, {"t": 63.3, "x": "ルーミーの大きさは長さ3700ミリ、幅1670ミリです。"}, {"t": 69.43333333333334, "x": "高さは1735ミリあります。"}, {"t": 72.33333333333333, "x": "ソリオもほぼ同じ大きさで、背の高さもほとんど変わりません。"}, {"t": 77.0, "x": "細かく言えば、長さはソリオが少し長めです。"}, {"t": 81.1, "x": "反対に幅はルーミーのほうが少しだけ広くなっています。"}, {"t": 85.3, "x": "駐車場の白い線の中には、どちらも楽に収まります。"}, {"t": 89.96666666666667, "x": "どちらも今、新車で買える現役の車です。"}, {"t": 93.96666666666667, "x": "ルーミーは2026年8月の終わりに改良を受けたばかりです。"}, {"t": 98.96666666666667, "x": "乗れるのはどちらも五人です。"}, {"t": 101.5, "x": "うしろのドアは、どちらも左右ともスライドドアです。"}, {"t": 105.7, "x": "狭い駐車場でも隣の車にドアをぶつける心配がありません。"}, {"t": 110.66666666666667, "x": "雪の多い土地向けに四輪駆動を選べるのも同じです。"}, {"t": 114.96666666666667, "x": "値段も近く、どちらも200万円の前後に並んでいます。"}, {"t": 119.8, "x": "ここまでだけ聞くと、どちらでも同じに思えますよね。"}, {"t": 123.83333333333333, "x": "実際、写真だけでは見分けにくいほどです。"}, {"t": 127.46666666666667, "x": "お店の駐車場に二台並べておくと、お客さまがよく見まちがえます。"}, {"t": 132.73333333333332, "x": "ですが、ここからが今日の本題です。"}, {"t": 137.36666666666667, "x": "二台のいちばん大きな違いはエンジンです。"}, {"t": 141.0, "x": "ソリオはすべての車がハイブリッドです。"}, {"t": 144.13333333333333, "x": "1200ccの三気筒エンジンに、モーターの役目もする発電機が付いています。"}, {"t": 150.23333333333332, "x": "速度が落ちるときに、その発電機で電気をためます。"}, {"t": 154.66666666666666, "x": "走り出しや加速のときは、ためた電気でエンジンを手伝います。"}, {"t": 159.46666666666667, "x": "そのぶんガソリンが少なくて済むという仕組みです。"}, {"t": 163.1, "x": "一方のルーミーには、ハイブリッドがありません。"}, {"t": 166.56666666666666, "x": "エンジンは1000ccの三気筒で、ガソリンだけで走ります。"}, {"t": 170.9, "x": "力の弱さを補うために、ターボ付きのグレードも用意されています。"}, {"t": 175.86666666666667, "x": "ターボなしは69馬力です。"}, {"t": 179.06666666666666, "x": "ターボ付きは98馬力まで上がります。"}, {"t": 182.0, "x": "つまり排気量はソリオが200cc大きく、モーターの手伝いもある。"}, {"t": 187.5, "x": "この一つの違いが、燃費にも走りかたにもつながっていきます。"}, {"t": 192.4, "x": "エンジンの大きさは、坂道の多い暮らしでとくに効いてきます。"}, {"t": 197.36666666666667, "x": "ただしソリオはモーターだけで長く走る形ではありません。"}, {"t": 201.4, "x": "あくまでエンジンが主役で、モーターは手伝い役です。"}, {"t": 205.63333333333333, "x": "静かなまま街を走る車を想像すると、少し違います。"}, {"t": 210.53333333333333, "x": "ここはお店で誤解されやすいところなので、覚えておいてください。"}, {"t": 215.03333333333333, "x": "この先の章は、すべてこのエンジンの違いを頭に置いて聞いてください。"}, {"t": 221.86666666666667, "x": "次は乗り降りです。"}, {"t": 223.7, "x": "背の高い車なので、どちらも頭をかがめずに乗りこめます。"}, {"t": 228.56666666666666, "x": "違いが出るのは、スライドドアがどこまで電動かです。"}, {"t": 232.7, "x": "ソリオは上の二つのグレードなら左右とも電動で開きます。"}, {"t": 237.5, "x": "下の二つのグレードは、電動なのが左側だけです。"}, {"t": 241.73333333333332, "x": "ルーミーもいちばん安いXは助手席側だけが電動です。"}, {"t": 246.4, "x": "それより上のグレードになると、左右とも電動になります。"}, {"t": 251.06666666666666, "x": "運転席のうしろに荷物を置くかたは、ここが大事です。"}, {"t": 255.33333333333334, "x": "右側を手で開け閉めするのは思ったより力が要りますからね。"}, {"t": 260.1333333333333, "x": "ソリオには、閉まりきる前に鍵をかける予約ができます。"}, {"t": 264.46666666666664, "x": "ドアが閉まるのを待たずにその場を離れられるわけです。"}, {"t": 268.76666666666665, "x": "動いている途中のドアを、その場で止める機能もあります。"}, {"t": 273.06666666666666, "x": "お孫さんが近くにいるときも、あわてずに済みます。"}, {"t": 276.76666666666665, "x": "ルーミーには、近づくと自動で開く予約ができるグレードがあります。"}, {"t": 281.8666666666667, "x": "両手に買い物袋を持っていても、ドアの前で立ち止まらずに済みます。"}, {"t": 286.96666666666664, "x": "夜に乗ることが多いなら、ルーミーの足もとを照らす明かりも助かります。"}, {"t": 292.26666666666665, "x": "暗い駐車場で、段差につまずく心配が減ります。"}, {"t": 296.5, "x": "どちらにしても、電動のドアが片側だけのグレードは避けてください。"}, {"t": 301.4, "x": "これだけで毎日の乗り降りはずいぶん楽になります。"}, {"t": 306.73333333333335, "x": "続いて運転していて違いを感じる場面です。"}, {"t": 310.8666666666667, "x": "一つは坂道をのぼるときです。"}, {"t": 313.6, "x": "ルーミーのターボなしは、ガソリンだけの1000ccで走ります。"}, {"t": 318.3, "x": "五人乗って坂をのぼると、アクセルを深く踏む場面が増えます。"}, {"t": 323.1666666666667, "x": "エンジンの音も大きくなり、少しあわただしく感じるかもしれません。"}, {"t": 328.0, "x": "ソリオは排気量が大きいうえに、加速のときにモーターが手伝います。"}, {"t": 333.1333333333333, "x": "坂道や高速道路の合流で、踏みこむ量が少なくて済みます。"}, {"t": 338.2, "x": "坂の多い土地にお住まいなら、ここは見逃せません。"}, {"t": 342.2, "x": "ルーミーで坂が多いなら、ターボ付きのG-TかカスタムG-Tを選んでください。"}, {"t": 347.93333333333334, "x": "ルーミーには、坂道の発進で車が下がりにくくする装置が全車に付いています。"}, {"t": 354.1333333333333, "x": "もう一つは信号待ちです。"}, {"t": 356.56666666666666, "x": "足を離しても止まったままでいてくれる、ブレーキホールドがあります。"}, {"t": 361.5, "x": "ルーミーはカスタムと付いた二つのグレードなら最初から付いています。"}, {"t": 366.3, "x": "GとG-Tでも注文するときに付け足せます。"}, {"t": 369.96666666666664, "x": "ソリオで付いているのは上の二つのグレードだけです。"}, {"t": 373.7, "x": "ソリオはホールドが三分ほど続くと、自動でパーキングブレーキがかかります。"}, {"t": 379.0, "x": "長い信号で右足がつらくなるかたには、ありがたい装備です。"}, {"t": 384.03333333333336, "x": "ここはルーミーのほうが選べる幅が広いと言えます。"}, {"t": 387.4, "x": "ただし、付け足せるのは新車を注文するときだけです。"}, {"t": 392.0, "x": "買ったあとから付けることはできないので、見積もりの時に決めてください。"}, {"t": 398.23333333333335, "x": "では安全の装備を見ていきましょう。"}, {"t": 401.26666666666665, "x": "ルーミーはスマートアシストという仕組みを全車に積んでいます。"}, {"t": 405.6333333333333, "x": "前を見張るのは、主にステレオカメラという二つの目のカメラです。"}, {"t": 410.76666666666665, "x": "前の車や歩く人、自転車に反応してブレーキを助けます。"}, {"t": 415.73333333333335, "x": "国のサポカーの区分では、サポカーSワイドに入っています。"}, {"t": 420.23333333333335, "x": "ソリオにはデュアルセンサーブレーキサポートツーが付いています。"}, {"t": 424.3666666666667, "x": "前の車についていく、アダプティブクルーズコントロールもあります。"}, {"t": 429.26666666666665, "x": "前の車との距離はカメラと電波のレーダーの二つで測ります。"}, {"t": 434.26666666666665, "x": "止まるところまでついていけるのは、ソリオでは上の二つのグレードです。"}, {"t": 439.46666666666664, "x": "ルーミーではカスタムの二つが最初から止まるところまで対応しています。"}, {"t": 444.1333333333333, "x": "ソリオはこの装置を使っている間、車線の中を保つ手伝いもします。"}, {"t": 449.6333333333333, "x": "ルーミーは車線からはみ出しそうになると知らせる形です。"}, {"t": 454.03333333333336, "x": "一般道を中心に走るなら、どちらでも安心できる中身です。"}, {"t": 458.8666666666667, "x": "高速道路をよく使うなら、ソリオの上のグレードが一歩リードです。"}, {"t": 464.0, "x": "なお安全装備は、どちらもグレードで中身が少しずつ変わります。"}, {"t": 468.8, "x": "見積もりの前に装備の一覧表で確かめておきましょう。"}, {"t": 473.0, "x": "どちらの装置も、運転を代わってくれるものではありません。"}, {"t": 477.1333333333333, "x": "最後にブレーキを踏むのは、いつでも運転する人です。"}, {"t": 483.3, "x": "ここで第三章のエンジンの違いが数字になって表れます。"}, {"t": 487.73333333333335, "x": "ルーミーの燃費は、ターボなしの二輪駆動で1リットル18.4キロです。"}, {"t": 493.6333333333333, "x": "ターボ付きと四輪駆動では16.8キロになります。"}, {"t": 497.6666666666667, "x": "ソリオは1リットル20.7キロから22.0キロです。"}, {"t": 502.26666666666665, "x": "10リットルのガソリンで走れる距離にすると、違いがよく分かります。"}, {"t": 507.53333333333336, "x": "ルーミーなら184キロです。"}, {"t": 510.2, "x": "ソリオなら207キロから220キロまで走れます。"}, {"t": 514.4, "x": "給油の回数が減るのは、スタンドが遠い土地ではうれしいところです。"}, {"t": 519.5333333333333, "x": "ソリオは四輪駆動を選んでもハイブリッドのままです。"}, {"t": 523.5, "x": "雪国で燃費も気になるかたには、ここも見どころです。"}, {"t": 527.7333333333333, "x": "値段はルーミーのいちばん安いXが183万円です。"}, {"t": 532.4, "x": "ソリオのいちばん安いHYBRID MGは192万6100円です。"}, {"t": 538.7, "x": "入り口の値段はルーミーのほうが10万円ほど安くなります。"}, {"t": 543.0666666666667, "x": "ブレーキホールドが付くグレードどうしでは話が変わります。"}, {"t": 547.5333333333333, "x": "ルーミーはGに3万3000円の装備を足すか、カスタムGの217万円です。"}, {"t": 554.4, "x": "ソリオはHYBRID MZで224万8400円です。"}, {"t": 559.9, "x": "ホールドまで含めると、ルーミーのほうが安く手に入ります。"}, {"t": 564.3666666666667, "x": "燃費はソリオ、値段はルーミー。"}, {"t": 567.3, "x": "ここがはっきり分かれるところです。"}, {"t": 571.1333333333333, "x": "ここまでを五つの物差しで整理します。"}, {"t": 574.3333333333334, "x": "一つめは燃費です。ハイブリッドのソリオの勝ちです。"}, {"t": 578.3666666666667, "x": "二つめは坂道や合流での余裕です。これもソリオです。"}, {"t": 583.1333333333333, "x": "三つめは入り口の値段です。こちらはルーミーです。"}, {"t": 587.1333333333333, "x": "四つめはブレーキホールドの付けやすさです。これもルーミーです。"}, {"t": 592.0333333333333, "x": "五つめは高速道路での運転の手伝いです。ソリオの上のグレードです。"}, {"t": 597.5, "x": "スライドドアは上のグレードならどちらも左右とも電動で引き分けです。"}, {"t": 602.8, "x": "数えるとソリオが三つでルーミーが二つです。"}, {"t": 606.6333333333333, "x": "とはいえ三つと二つは、ほんの少しの差です。"}, {"t": 610.3666666666667, "x": "ただ、この勝ち負けは使いかた次第で入れ替わります。"}, {"t": 614.2, "x": "次の章でルーミーを選んだほうがいいかたをお話しします。"}, {"t": 619.7333333333333, "x": "一つめは、近所の買い物と病院がほとんどというかたです。"}, {"t": 624.5, "x": "走る距離が短ければ、燃費の差はあまり財布に響きません。"}, {"t": 629.2666666666667, "x": "それなら入り口の安いルーミーで十分です。"}, {"t": 632.7666666666667, "x": "二つめは、ブレーキホールドをなるべく安く付けたいかたです。"}, {"t": 637.0333333333333, "x": "ルーミーのGに付け足せば、ソリオのMZより20万円ほど安く済みます。"}, {"t": 642.9333333333333, "x": "浮いたお金で、ドライブレコーダーを付けるのもよい使い道です。"}, {"t": 647.6333333333333, "x": "三つめは、いつも行くお店がトヨタのお店だというかたです。"}, {"t": 652.1333333333333, "x": "点検やちょっとした相談を、通い慣れたお店でできるのは大きな安心です。"}, {"t": 658.2666666666667, "x": "この三つに当てはまるなら、迷わずルーミーを選んでください。"}, {"t": 662.8666666666667, "x": "反対に坂道や遠出が多いなら、次の章の答えが当てはまります。"}, {"t": 669.6666666666666, "x": "では七十代のかたにはどちらか。"}, {"t": 672.5666666666667, "x": "店長の答えは、ソリオのHYBRID MZです。"}, {"t": 676.8333333333334, "x": "決め手は今日いちばん初めにお話ししたエンジンの違いです。"}, {"t": 681.1, "x": "坂道や合流で踏みこまずに済むことは、年齢を重ねるほど効いてきます。"}, {"t": 686.9, "x": "そのうえでMZなら、左右の電動ドアとブレーキホールドがそろいます。"}, {"t": 692.0666666666667, "x": "止まるところまで前の車についていく装置も付いています。"}, {"t": 696.3333333333334, "x": "もし値段が気になるなら、ルーミーのGにブレーキホールドを足す道もあります。"}, {"t": 702.0333333333333, "x": "それだけでも、長い信号待ちはずっと楽になります。"}, {"t": 706.3666666666667, "x": "見た目はそっくりでも、中身で選べば答えははっきり出ます。"}, {"t": 710.9333333333333, "x": "試乗するときは、ぜひ近くの坂道を一本のぼってみてください。"}, {"t": 715.9666666666667, "x": "アクセルの踏みこみかたで、今日のお話がきっと体で分かります。"}, {"t": 721.6666666666666, "x": "できれば二台を同じ日に、同じ坂で乗りくらべるのがおすすめです。"}, {"t": 726.7666666666667, "x": "値段や装備は、2026年10月にメーカーの公式ページなどで確かめた内容です。"}, {"t": 733.7333333333333, "x": "改良で変わることがありますので、お店の見積もりで最後にご確認ください。"}, {"t": 739.0666666666667, "x": "ご感想や、ほかに比べてほしい二台があれば、コメントで教えてください。"}, {"t": 744.4666666666667, "x": "それでは、また次回の店先でお待ちしています。"}], "w": 720, "h": 405, "n_cuts": 0, "noimage": true};
+const a=document.getElementById('a');
+const now=document.getElementById('now'), nl=document.getElementById('nextline');
+const pp=document.getElementById('pp'), sk=document.getElementById('sk');
+const tm=document.getElementById('tm'), bdg=document.getElementById('bdg');
+const SMOOTH=matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth';
+document.getElementById('ttl').innerHTML=D.name+
+  '<span class="meta">'+fmt(D.dur)+'　字幕'+D.subs.length+'　（音声＋字幕だけ）</span>';
+
+function fmt(s){s=Math.max(0,s|0);return (s/60|0)+':'+String(s%60).padStart(2,'0')}
+function subIdx(t){let lo=0,hi=D.subs.length-1,r=-1;
+  while(lo<=hi){const m=(lo+hi)>>1; if(D.subs[m].t<=t){r=m;lo=m+1}else hi=m-1} return r}
+
+let cur=-2;
+function paint(t){
+  const i=subIdx(t);
+  if(i!==cur){cur=i;
+    now.textContent = i<0 ? (D.subs.length?'（ここはまだ字幕がありません）'
+                                          :'（この回に字幕はありません）')
+                         : D.subs[i].x;
+    const n=D.subs[i+1]; nl.textContent = n ? '次　'+n.x : '';
+    bdg.textContent = D.subs.length ? '字幕 '+(i+1)+' / '+D.subs.length : '字幕なし';
+    mark('subs',i);
+  }
+  tm.textContent=fmt(t)+' / '+fmt(D.dur);
+  if(!sk.dragging) sk.value=Math.round(t/D.dur*1000);
+}
+function mark(pane,i){
+  const el=document.getElementById(pane);
+  if(el.dataset.on==i) return; el.dataset.on=i;
+  el.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));
+  const t=el.children[i]; if(!t) return; t.classList.add('on');
+  if(!el.hidden){const r=t.offsetTop-el.clientHeight/2; el.scrollTo({top:r,behavior:SMOOTH})}
+}
+
+D.subs.forEach(s=>{const d=document.createElement('div');d.className='row';
+  d.innerHTML='<b></b><span></span>';
+  d.querySelector('b').textContent=fmt(s.t);
+  d.querySelector('span').textContent=s.x;
+  d.onclick=()=>go(s.t); document.getElementById('subs').appendChild(d)});
+const mk=document.getElementById('mk');
+D.subs.forEach(s=>{const i=document.createElement('i');
+  i.style.left=(s.t/D.dur*100)+'%'; mk.appendChild(i)});
+
+function go(t){a.currentTime=Math.min(Math.max(0,t)+0.01,Math.max(0.05,D.dur-0.05)); paint(a.currentTime)}
+pp.onclick=()=>a.paused?a.play():a.pause();
+const SPEEDS=[1,1.25,1.5,1.75,2,3,0.75],SPN=['等速','1.25倍','1.5倍','1.75倍','2倍','3倍','0.75倍'];
+let si=0; const sp=document.getElementById('sp');
+sp.onclick=()=>{si=(si+1)%SPEEDS.length; a.playbackRate=SPEEDS[si];
+  a.preservesPitch=a.mozPreservesPitch=a.webkitPreservesPitch=true; sp.textContent=SPN[si]};
+a.onplay=()=>pp.textContent='❚❚ 停止'; a.onpause=()=>pp.textContent='▶ 再生';
+a.ontimeupdate=()=>paint(a.currentTime);
+sk.oninput=()=>{sk.dragging=1; go(sk.value/1000*D.dur)};
+sk.onchange=()=>sk.dragging=0;
+document.getElementById('pv').onclick=()=>{const i=subIdx(a.currentTime);
+  go(i>0?D.subs[i-1].t:0)};
+document.getElementById('nx').onclick=()=>{const i=subIdx(a.currentTime);
+  if(i+1<D.subs.length) go(D.subs[i+1].t)};
+addEventListener('keydown',e=>{const k=e.key;
+  if(k===' '){e.preventDefault();pp.onclick()}
+  else if(k==='ArrowRight')go(a.currentTime+5); else if(k==='ArrowLeft')go(a.currentTime-5);
+  else if(k==='ArrowDown'){e.preventDefault();document.getElementById('nx').onclick()}
+  else if(k==='ArrowUp'){e.preventDefault();document.getElementById('pv').onclick()}
+  else if(k==='s'||k==='S')sp.onclick()});
+paint(0);
+</script>
