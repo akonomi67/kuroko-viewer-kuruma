@@ -1,0 +1,133 @@
+<title>電気の軽は七十代に向くか</title>
+<style>
+:root{--bg:#f6f4f1;--panel:#fffefc;--ink:#1c1a19;--dim:#6e6862;--line:#e2ded7;--accent:#b8422f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}}
+:root[data-theme="dark"]{--bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);margin:0;-webkit-text-size-adjust:100%;
+  font:16px/1.7 -apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic UI",sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+h1{font-size:17px;margin:4px 0 14px;font-weight:600;letter-spacing:.02em}
+.meta{color:var(--dim);font-size:13px;font-weight:400;margin-left:8px}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:12px;position:relative;
+  min-height:40vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:46px 20px 26px;box-shadow:0 2px 14px rgba(0,0,0,.10)}
+#now{margin:0;text-align:center;white-space:pre-wrap;word-break:break-word;font-weight:700;
+  font-size:clamp(23px,5.4vw,42px);line-height:1.5;letter-spacing:.01em}
+#nextline{margin:16px 0 0;text-align:center;white-space:pre-wrap;word-break:break-word;
+  color:var(--dim);font-size:clamp(13px,2.8vw,17px);line-height:1.6}
+.badge{position:absolute;left:12px;top:12px;background:rgba(127,127,127,.16);color:var(--dim);
+  font-size:12px;padding:3px 9px;border-radius:20px;line-height:1.6;letter-spacing:.04em}
+.bar{display:flex;align-items:center;gap:10px;margin:12px 0 6px;flex-wrap:wrap}
+button{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;
+  padding:9px 14px;font-size:15px;cursor:pointer;font-family:inherit}
+button:active{transform:translateY(1px)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.play{background:var(--accent);color:#fff;border-color:transparent;min-width:80px;font-weight:600}
+.time{font-variant-numeric:tabular-nums;color:var(--dim);font-size:13px;margin-left:auto}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.marks{position:relative;height:7px;margin:2px 0 14px}
+.marks i{position:absolute;top:0;width:1px;height:7px;background:var(--line)}
+.tabs{display:flex;gap:6px;margin:18px 0 10px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;
+  color:var(--ink);padding:7px 12px;font-weight:600}
+.list{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+  -webkit-overflow-scrolling:touch}
+.row{display:flex;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.row:last-child{border-bottom:0}
+.row:hover{background:rgba(127,127,127,.07)}
+.row.on{background:rgba(184,66,47,.12)}
+.row b{color:var(--dim);font-variant-numeric:tabular-nums;font-weight:500;font-size:13px;
+  min-width:48px;flex:none;padding-top:2px}
+.row span{white-space:pre-wrap;flex:1;font-size:16px;line-height:1.65}
+.tip{color:var(--dim);font-size:12.5px;margin:10px 2px 0}
+@media(max-width:620px){.wrap{padding:10px}.time{font-size:12px}
+  .bar button{padding:9px 11px;font-size:14px}.stage{padding:42px 14px 22px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+<div class="wrap">
+<h1 id="ttl"></h1>
+<div class="stage"><div class="badge" id="bdg"></div>
+  <p id="now"></p><p id="nextline"></p></div>
+<div class="bar">
+  <button class="play" id="pp">▶ 再生</button>
+  <button id="pv">◀ 前の字幕</button>
+  <button id="nx">次の字幕 ▶</button>
+  <button id="sp">等速</button>
+  <span class="time" id="tm">0:00 / 0:00</span>
+</div>
+<input type="range" id="sk" min="0" max="1000" value="0">
+<div class="marks" id="mk"></div>
+<div class="tabs"><button class="on">字幕</button></div>
+<div class="list" id="subs"></div>
+<p class="tip">スペース＝再生/停止　←→＝5秒送り　↑↓＝字幕送り。字幕をタップするとそこへ飛びます。</p>
+</div>
+<audio id="a" src="audio.mp3" preload="auto"></audio>
+<script>
+const D={"name": "電気の軽は七十代に向くか", "file": "086_電気の軽は七十代に向くか", "dur": 775.5333125, "segs": [], "subs": [{"t": 0.0, "x": "こんにちは、「となりの車屋さん」の店長です。"}, {"t": 3.066666666666667, "x": "今日はちょっとした調べものの報告から始めます。"}, {"t": 6.5, "x": "お店にあるサクラの諸元表と、JAFが雪の中で行った実験の記録。"}, {"t": 12.533333333333333, "x": "この二つを机に並べて、七十代の毎日に当てはめてみました。"}, {"t": 17.933333333333334, "x": "きっかけは先月いらしたお客さんの一言です。"}, {"t": 21.233333333333334, "x": "「近所のガソリンスタンドが閉まって、隣の町まで入れに行っている」。"}, {"t": 26.333333333333332, "x": "「電気の車なら家で済むと聞いたけれど、自分に使えるものだろうか」。"}, {"t": 31.733333333333334, "x": "同じようなお話は、このところ何度もうかがっています。"}, {"t": 35.8, "x": "そこで今日は日産の電気で走る軽自動車、サクラを一台だけ取り上げます。"}, {"t": 41.8, "x": "先に申し上げておきます。"}, {"t": 44.233333333333334, "x": "今日は「おすすめです」から話を始めません。"}, {"t": 47.733333333333334, "x": "向く人と向かない人を、はっきり分けるのが今日の目的です。"}, {"t": 52.43333333333333, "x": "そのうえで店長としての答えも最後にきちんとお伝えします。"}, {"t": 56.86666666666667, "x": "ガソリンの車と比べて得か損か、という話もしません。"}, {"t": 61.8, "x": "あなたの暮らしで使えるかどうか、そこだけを見ていきます。"}, {"t": 67.76666666666667, "x": "ガソリンの車から乗り換えると、まず変わることが三つあります。"}, {"t": 72.8, "x": "一つ目は給油に行かなくなることです。"}, {"t": 75.66666666666667, "x": "サクラはガソリンを使いません。"}, {"t": 77.9, "x": "走る力はすべて、床下の電池にためた電気です。"}, {"t": 82.63333333333334, "x": "電池の量は日産の諸元表で20キロワット時と書かれています。"}, {"t": 88.9, "x": "給油の代わりに、家で差し込んで充電するのが基本の使い方です。"}, {"t": 93.93333333333334, "x": "二つ目は音です。"}, {"t": 95.76666666666667, "x": "エンジンが無いので、走り出しでも上り坂でもエンジンの音がしません。"}, {"t": 101.3, "x": "日産も防音の工夫とあわせて、静かな車内を大きな売りにしています。"}, {"t": 106.8, "x": "助手席のかたとの会話も、聞き返さずに済むかもしれません。"}, {"t": 111.1, "x": "静かなぶん駐車場では歩く人の動きにいつもより気を配ってください。"}, {"t": 116.7, "x": "三つ目がペダルの感じです。"}, {"t": 119.06666666666666, "x": "サクラにはイーペダル・ステップという仕組みが全車に付いています。"}, {"t": 123.46666666666667, "x": "アクセルを戻すと、ふつうの車よりしっかり速度が落ちます。"}, {"t": 128.16666666666666, "x": "この三つが毎日の暮らしにどう効くのか。"}, {"t": 131.63333333333333, "x": "ここから順番に見ていきます。"}, {"t": 133.93333333333334, "x": "その前に小回りの数字だけお伝えしておきます。"}, {"t": 137.36666666666667, "x": "最小回転半径は4.8メートルで、狭い駐車場でも向きを変えやすい車です。"}, {"t": 145.1, "x": "まずいちばん多いご心配です。電気がもつかどうか。"}, {"t": 149.63333333333333, "x": "サクラが一回の充電で走れる距離は、国の審査の値で180キロです。"}, {"t": 155.83333333333334, "x": "ただしこれは決められた試験の条件で測った数字です。"}, {"t": 160.16666666666666, "x": "日産自身も天気や渋滞、エアコンの使い方で変わると書いています。"}, {"t": 165.46666666666667, "x": "では七十代の毎日に当てはめるとどうでしょう。"}, {"t": 169.13333333333333, "x": "たとえばスーパーと病院と郵便局を回る日を考えます。"}, {"t": 173.5, "x": "距離は人それぞれですから、ここはご自分の数字で考えてください。"}, {"t": 178.56666666666666, "x": "いちばん簡単なのは、今の車の距離計を一週間見ておくことです。"}, {"t": 183.93333333333334, "x": "朝に数字を書きとめて、夜にもう一度見ます。"}, {"t": 187.9, "x": "その差があなたの一日の道のりです。"}, {"t": 191.0, "x": "多い日でも数十キロで収まるなら、180キロの中にゆとりがあります。"}, {"t": 196.66666666666666, "x": "毎晩充電する暮らしなら、翌朝はまた満タンから始められます。"}, {"t": 201.7, "x": "反対に気をつけたいのは遠出です。"}, {"t": 204.4, "x": "諸元表をよく見ると、走る場所で電気の減り方が変わります。"}, {"t": 209.36666666666667, "x": "町なかの走り方なら、1キロあたり100ワット時。"}, {"t": 213.73333333333332, "x": "高速道路の走り方だと142ワット時で、四割ほど多く使います。"}, {"t": 219.66666666666666, "x": "年に何度か高速で遠くの親戚の家へ行くかたもいらっしゃるでしょう。"}, {"t": 224.4, "x": "そういうときは、途中で充電する計画が欠かせません。"}, {"t": 228.56666666666666, "x": "外の急速充電器なら、八割まで約40分というのが日産の目安です。"}, {"t": 234.56666666666666, "x": "これは電池の温度が25度くらいで、力の強い充電器を使った場合です。"}, {"t": 240.66666666666666, "x": "夏と冬は時間が長くかかる場合がある、とも書かれています。"}, {"t": 245.93333333333334, "x": "休憩のたびに充電を待つ旅になる、と考えておいてください。"}, {"t": 252.46666666666667, "x": "次は家での充電です。ここは買う前に必ず確かめてください。"}, {"t": 257.53333333333336, "x": "差し込むだけと聞くと、台所のコンセントを思い浮かべるかもしれません。"}, {"t": 262.8, "x": "でも家の中のコンセントにそのままつなぐわけではありません。"}, {"t": 266.73333333333335, "x": "日産の説明では、家で充電するには専用の配線が要ります。"}, {"t": 271.73333333333335, "x": "家の外に付ける、電気自動車用のコンセントです。"}, {"t": 275.76666666666665, "x": "決められた手引きどおりに工事をしないと、配線が熱を持つおそれがある。"}, {"t": 281.1333333333333, "x": "ブレーカーが落ちたり、ほかの家電に影響が出たりすることもある。"}, {"t": 285.7, "x": "そういう注意書きが、はっきり添えられています。"}, {"t": 289.3333333333333, "x": "もう一つ充電用のケーブルも別に用意します。"}, {"t": 292.9, "x": "新車の注文のときに付けるか、あとからお店で買う形です。"}, {"t": 297.56666666666666, "x": "電圧は100ボルト用と200ボルト用があります。"}, {"t": 301.43333333333334, "x": "日産がすすめているのは200ボルトです。"}, {"t": 304.7, "x": "100ボルトでは、充電に時間が長くかかるからです。"}, {"t": 308.93333333333334, "x": "夜のあいだに充電すれば、朝には満タン。これが日産の説明です。"}, {"t": 314.8666666666667, "x": "ここで皆さんに思い浮かべてほしいのは、車を置く場所です。"}, {"t": 319.3333333333333, "x": "一戸建てで車庫のすぐそばに外壁がある。"}, {"t": 322.5, "x": "それなら工事の相談はしやすいほうです。"}, {"t": 325.7, "x": "マンションや借りている駐車場だと、話が変わってきます。"}, {"t": 329.96666666666664, "x": "勝手に工事はできませんから、まず持ち主への相談からです。"}, {"t": 334.76666666666665, "x": "家で充電できないと、毎回外の充電器へ通うことになります。"}, {"t": 340.0, "x": "それではスタンドが遠い悩みが、充電器が遠い悩みに変わるだけです。"}, {"t": 345.6333333333333, "x": "家で充電できるかどうか。ここが一つ目の分かれ目です。"}, {"t": 351.6666666666667, "x": "次は冬の話です。電気自動車は寒さが苦手、とよく言われます。"}, {"t": 357.56666666666666, "x": "ここはJAFが雪のスキー場の駐車場で行った実験を見てみます。"}, {"t": 362.46666666666664, "x": "同じ車種の電気自動車を四台並べて、電池をどれも七割にそろえました。"}, {"t": 368.3, "x": "外の気温はマイナス6度からマイナス8.6度です。"}, {"t": 372.8, "x": "その中で暖房のしかただけを変えて、5時間待つという実験でした。"}, {"t": 378.2, "x": "エアコンを25度でつけっぱなしにした車は、四割を切るまで減りました。"}, {"t": 383.56666666666666, "x": "画面に出る走れる距離も、143キロから78キロに下がっています。"}, {"t": 390.1, "x": "一方でエアコンを切って電気毛布だけにした車は66パーセント残りました。"}, {"t": 396.73333333333335, "x": "体をじかに温めるほうが、電気を使わずに済むということです。"}, {"t": 401.8333333333333, "x": "この実験は大雪で動けなくなったときを想定したものです。"}, {"t": 406.4, "x": "走りながらの減り方を測ったものではありません。"}, {"t": 409.9, "x": "それでも冬は暖房で電気を使うことがよく分かります。"}, {"t": 414.1, "x": "サクラには少ない電気で車内を温める仕組みが全車に付いています。"}, {"t": 419.03333333333336, "x": "日産の装備表に、省電力暖房システムと書かれているものです。"}, {"t": 424.26666666666665, "x": "またXとGにはハンドルを温める装置が最初から付いています。"}, {"t": 429.43333333333334, "x": "Sは注文のときに選んで付ける形です。"}, {"t": 432.8333333333333, "x": "雪の多い地域のかたは、冬の朝の使い方を一度思い浮かべてください。"}, {"t": 438.8, "x": "JAFは冬の電気自動車には毛布や防寒具を積んでおくようすすめています。"}, {"t": 446.3, "x": "さて七十代のかたからいちばんよく聞かれるのがペダルのことです。"}, {"t": 451.6333333333333, "x": "先ほどのイーペダル・ステップを、もう少しくわしくお話しします。"}, {"t": 456.6666666666667, "x": "アクセルを戻すと、モーターが速度を落とす側に回ります。"}, {"t": 461.03333333333336, "x": "日産によると、ふつうのエンジンブレーキの三倍以上の強さです。"}, {"t": 466.3, "x": "信号の手前でアクセルを少しずつ戻すだけで、かなり減速できます。"}, {"t": 471.6666666666667, "x": "ここで大事な点が一つあります。"}, {"t": 474.2, "x": "この仕組みでは、車は止まりきりません。"}, {"t": 477.5, "x": "ゆっくりになると、ふつうのオートマの車と同じように、じわじわ進みます。"}, {"t": 483.3666666666667, "x": "ですから止まるときは必ずブレーキを踏みます。"}, {"t": 486.8333333333333, "x": "日産も停車のときは必ずブレーキを踏むよう書いています。"}, {"t": 491.2, "x": "つまり足の動かし方そのものは今までの車と変わりません。"}, {"t": 496.06666666666666, "x": "変わるのはアクセルを戻したときの効きの強さだけです。"}, {"t": 500.3333333333333, "x": "最初の数日は思ったより手前で遅くなって戸惑うかもしれません。"}, {"t": 505.2, "x": "慣れるまでは空いた道で何度か試してみてください。"}, {"t": 508.6333333333333, "x": "そしてもしもの踏み間違いには別の備えがあります。"}, {"t": 512.7, "x": "サクラには踏み間違い衝突防止アシストが全車に付いています。"}, {"t": 517.3333333333334, "x": "ブレーキと間違えてアクセルを踏み込んだときに働く装置です。"}, {"t": 521.7, "x": "モーターの力やブレーキを制御して、ぶつからないよう手助けします。"}, {"t": 526.6333333333333, "x": "前に進むときは、壁や車、歩いている人が相手です。"}, {"t": 531.7333333333333, "x": "後ろに下がるときは、壁などの障害物が相手になります。"}, {"t": 536.3, "x": "国の安全運転サポート車の区分では、サポカーSワイドに当たります。"}, {"t": 542.2666666666667, "x": "ただあくまで手助けで、どんな場面でも止めてくれるわけではありません。"}, {"t": 548.7, "x": "お金の話は確かめられた分だけにします。"}, {"t": 552.0, "x": "サクラを新車で買うと、国の補助金が出ます。"}, {"t": 555.8, "x": "日産のホームページでは、令和7年度補正予算の補助金として58万円。"}, {"t": 562.0333333333333, "x": "グレードに関係なく、同じ額だと書かれています。"}, {"t": 566.0, "x": "お住まいの都道府県や市町村から、さらに上乗せがある場合もあります。"}, {"t": 571.3, "x": "日産が例に出しているのは東京都で、条件により60万円か75万円です。"}, {"t": 578.0, "x": "税金も軽くなります。日産が示しているGの例でお話しします。"}, {"t": 583.3666666666667, "x": "重量税は本来7,500円かかるところが0円です。"}, {"t": 588.0, "x": "最初の車検のときも、重量税はかかりません。"}, {"t": 591.8, "x": "軽自動車税は届け出た次の年度に限って、10,800円が2,700円になります。"}, {"t": 598.6, "x": "ただし補助金には予算と受付の期間があります。"}, {"t": 602.2333333333333, "x": "金額も年度ごとに見直されることがあります。"}, {"t": 605.5666666666667, "x": "契約の前に次世代自動車振興センターのホームページで額をご確認ください。"}, {"t": 611.0, "x": "車の値段そのものは、今日はふれません。"}, {"t": 614.3666666666667, "x": "家の工事やケーブルの費用が別にかかることも、お忘れなく。"}, {"t": 620.6666666666666, "x": "ここまでの話を、向く人と向かない人に分けてみます。"}, {"t": 624.9666666666667, "x": "まず向く人です。"}, {"t": 626.8, "x": "一つ目は家に車庫があり、専用のコンセントを付けられるかた。"}, {"t": 631.4666666666667, "x": "二つ目は近所の用事が中心で、高速はめったに使わないかた。"}, {"t": 636.4333333333333, "x": "三つ目はスタンドが遠くなって、給油が負担になっているかた。"}, {"t": 641.3, "x": "四つ目は静かな車内でゆったり運転したいかたです。"}, {"t": 645.8333333333334, "x": "次に向かない人です。"}, {"t": 647.8666666666667, "x": "一つ目は家での充電が難しい、マンションや借りた駐車場のかた。"}, {"t": 653.6666666666666, "x": "二つ目は高速で遠くまで出かけることが多いかた。"}, {"t": 657.4666666666667, "x": "三つ目はよく五人で乗るかた。サクラの定員は4人です。"}, {"t": 662.2, "x": "四つ目は寒い地域で冬の遠出が多く、充電の当てが少ないかたです。"}, {"t": 667.9333333333333, "x": "表を見てどちらにも丸が付くかたもいらっしゃるでしょう。"}, {"t": 671.8333333333334, "x": "そういうときは、向く人の一つ目だけを先に確かめてください。"}, {"t": 676.7, "x": "家で充電できるかどうかで、答えの大半が決まります。"}, {"t": 682.6, "x": "では店長の答えです。"}, {"t": 684.5666666666667, "x": "電気で走る軽は、七十代に向くのか。"}, {"t": 688.7, "x": "家で充電できるかたには、向きます。"}, {"t": 692.1333333333333, "x": "家で充電できないかたには、今はまだ早いと店長は考えます。"}, {"t": 697.2333333333333, "x": "年齢で決まる話ではない、というのが今日いちばんの発見でした。"}, {"t": 702.4, "x": "決めるのは車を置く場所と、一日に走る距離です。"}, {"t": 706.8666666666667, "x": "近所の用事が中心という暮らしなら、180キロという距離で足ります。"}, {"t": 712.4666666666667, "x": "ペダルも止まるときにブレーキを踏む動きは今までと同じです。"}, {"t": 717.3666666666667, "x": "ですから年を取ったから電気は無理、と決めつけなくて大丈夫です。"}, {"t": 722.4, "x": "ただし先に工事の見積もりを取ってください。"}, {"t": 725.6666666666666, "x": "車を決めるのは、そのあとで遅くありません。"}, {"t": 729.1666666666666, "x": "順番を逆にすると、買ったのに家で充電できない、ということが起こります。"}, {"t": 736.2333333333333, "x": "最後に今日の話を三つにまとめます。"}, {"t": 739.2333333333333, "x": "一つ目。家で充電できるかどうかが、いちばんの分かれ目です。"}, {"t": 744.6, "x": "二つ目。走れる距離は180キロですが、冬の暖房や高速では減ります。"}, {"t": 751.0333333333333, "x": "三つ目。アクセルを戻すと強く減速しますが、止まるときはブレーキです。"}, {"t": 756.8, "x": "試乗に来られるときは、ご自宅の車庫の写真を一枚お持ちください。"}, {"t": 761.9333333333333, "x": "コンセントを付けられそうな壁の場所も、写っていると助かります。"}, {"t": 766.7333333333333, "x": "それを見ながら、工事ができるかどうかを一緒に考えます。"}, {"t": 771.3, "x": "それではまた、次の動画でお会いしましょう。"}], "w": 720, "h": 405, "n_cuts": 0, "noimage": true};
+const a=document.getElementById('a');
+const now=document.getElementById('now'), nl=document.getElementById('nextline');
+const pp=document.getElementById('pp'), sk=document.getElementById('sk');
+const tm=document.getElementById('tm'), bdg=document.getElementById('bdg');
+const SMOOTH=matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth';
+document.getElementById('ttl').innerHTML=D.name+
+  '<span class="meta">'+fmt(D.dur)+'　字幕'+D.subs.length+'　（音声＋字幕だけ）</span>';
+
+function fmt(s){s=Math.max(0,s|0);return (s/60|0)+':'+String(s%60).padStart(2,'0')}
+function subIdx(t){let lo=0,hi=D.subs.length-1,r=-1;
+  while(lo<=hi){const m=(lo+hi)>>1; if(D.subs[m].t<=t){r=m;lo=m+1}else hi=m-1} return r}
+
+let cur=-2;
+function paint(t){
+  const i=subIdx(t);
+  if(i!==cur){cur=i;
+    now.textContent = i<0 ? (D.subs.length?'（ここはまだ字幕がありません）'
+                                          :'（この回に字幕はありません）')
+                         : D.subs[i].x;
+    const n=D.subs[i+1]; nl.textContent = n ? '次　'+n.x : '';
+    bdg.textContent = D.subs.length ? '字幕 '+(i+1)+' / '+D.subs.length : '字幕なし';
+    mark('subs',i);
+  }
+  tm.textContent=fmt(t)+' / '+fmt(D.dur);
+  if(!sk.dragging) sk.value=Math.round(t/D.dur*1000);
+}
+function mark(pane,i){
+  const el=document.getElementById(pane);
+  if(el.dataset.on==i) return; el.dataset.on=i;
+  el.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));
+  const t=el.children[i]; if(!t) return; t.classList.add('on');
+  if(!el.hidden){const r=t.offsetTop-el.clientHeight/2; el.scrollTo({top:r,behavior:SMOOTH})}
+}
+
+D.subs.forEach(s=>{const d=document.createElement('div');d.className='row';
+  d.innerHTML='<b></b><span></span>';
+  d.querySelector('b').textContent=fmt(s.t);
+  d.querySelector('span').textContent=s.x;
+  d.onclick=()=>go(s.t); document.getElementById('subs').appendChild(d)});
+const mk=document.getElementById('mk');
+D.subs.forEach(s=>{const i=document.createElement('i');
+  i.style.left=(s.t/D.dur*100)+'%'; mk.appendChild(i)});
+
+function go(t){a.currentTime=Math.min(Math.max(0,t)+0.01,Math.max(0.05,D.dur-0.05)); paint(a.currentTime)}
+pp.onclick=()=>a.paused?a.play():a.pause();
+const SPEEDS=[1,1.25,1.5,1.75,2,3,0.75],SPN=['等速','1.25倍','1.5倍','1.75倍','2倍','3倍','0.75倍'];
+let si=0; const sp=document.getElementById('sp');
+sp.onclick=()=>{si=(si+1)%SPEEDS.length; a.playbackRate=SPEEDS[si];
+  a.preservesPitch=a.mozPreservesPitch=a.webkitPreservesPitch=true; sp.textContent=SPN[si]};
+a.onplay=()=>pp.textContent='❚❚ 停止'; a.onpause=()=>pp.textContent='▶ 再生';
+a.ontimeupdate=()=>paint(a.currentTime);
+sk.oninput=()=>{sk.dragging=1; go(sk.value/1000*D.dur)};
+sk.onchange=()=>sk.dragging=0;
+document.getElementById('pv').onclick=()=>{const i=subIdx(a.currentTime);
+  go(i>0?D.subs[i-1].t:0)};
+document.getElementById('nx').onclick=()=>{const i=subIdx(a.currentTime);
+  if(i+1<D.subs.length) go(D.subs[i+1].t)};
+addEventListener('keydown',e=>{const k=e.key;
+  if(k===' '){e.preventDefault();pp.onclick()}
+  else if(k==='ArrowRight')go(a.currentTime+5); else if(k==='ArrowLeft')go(a.currentTime-5);
+  else if(k==='ArrowDown'){e.preventDefault();document.getElementById('nx').onclick()}
+  else if(k==='ArrowUp'){e.preventDefault();document.getElementById('pv').onclick()}
+  else if(k==='s'||k==='S')sp.onclick()});
+paint(0);
+</script>
