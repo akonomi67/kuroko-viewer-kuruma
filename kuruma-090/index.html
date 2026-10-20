@@ -1,0 +1,133 @@
+<title>夜道はライトで選ぶ一台</title>
+<style>
+:root{--bg:#f6f4f1;--panel:#fffefc;--ink:#1c1a19;--dim:#6e6862;--line:#e2ded7;--accent:#b8422f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}}
+:root[data-theme="dark"]{--bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);margin:0;-webkit-text-size-adjust:100%;
+  font:16px/1.7 -apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic UI",sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+h1{font-size:17px;margin:4px 0 14px;font-weight:600;letter-spacing:.02em}
+.meta{color:var(--dim);font-size:13px;font-weight:400;margin-left:8px}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:12px;position:relative;
+  min-height:40vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:46px 20px 26px;box-shadow:0 2px 14px rgba(0,0,0,.10)}
+#now{margin:0;text-align:center;white-space:pre-wrap;word-break:break-word;font-weight:700;
+  font-size:clamp(23px,5.4vw,42px);line-height:1.5;letter-spacing:.01em}
+#nextline{margin:16px 0 0;text-align:center;white-space:pre-wrap;word-break:break-word;
+  color:var(--dim);font-size:clamp(13px,2.8vw,17px);line-height:1.6}
+.badge{position:absolute;left:12px;top:12px;background:rgba(127,127,127,.16);color:var(--dim);
+  font-size:12px;padding:3px 9px;border-radius:20px;line-height:1.6;letter-spacing:.04em}
+.bar{display:flex;align-items:center;gap:10px;margin:12px 0 6px;flex-wrap:wrap}
+button{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;
+  padding:9px 14px;font-size:15px;cursor:pointer;font-family:inherit}
+button:active{transform:translateY(1px)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.play{background:var(--accent);color:#fff;border-color:transparent;min-width:80px;font-weight:600}
+.time{font-variant-numeric:tabular-nums;color:var(--dim);font-size:13px;margin-left:auto}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.marks{position:relative;height:7px;margin:2px 0 14px}
+.marks i{position:absolute;top:0;width:1px;height:7px;background:var(--line)}
+.tabs{display:flex;gap:6px;margin:18px 0 10px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;
+  color:var(--ink);padding:7px 12px;font-weight:600}
+.list{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+  -webkit-overflow-scrolling:touch}
+.row{display:flex;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.row:last-child{border-bottom:0}
+.row:hover{background:rgba(127,127,127,.07)}
+.row.on{background:rgba(184,66,47,.12)}
+.row b{color:var(--dim);font-variant-numeric:tabular-nums;font-weight:500;font-size:13px;
+  min-width:48px;flex:none;padding-top:2px}
+.row span{white-space:pre-wrap;flex:1;font-size:16px;line-height:1.65}
+.tip{color:var(--dim);font-size:12.5px;margin:10px 2px 0}
+@media(max-width:620px){.wrap{padding:10px}.time{font-size:12px}
+  .bar button{padding:9px 11px;font-size:14px}.stage{padding:42px 14px 22px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+<div class="wrap">
+<h1 id="ttl"></h1>
+<div class="stage"><div class="badge" id="bdg"></div>
+  <p id="now"></p><p id="nextline"></p></div>
+<div class="bar">
+  <button class="play" id="pp">▶ 再生</button>
+  <button id="pv">◀ 前の字幕</button>
+  <button id="nx">次の字幕 ▶</button>
+  <button id="sp">等速</button>
+  <span class="time" id="tm">0:00 / 0:00</span>
+</div>
+<input type="range" id="sk" min="0" max="1000" value="0">
+<div class="marks" id="mk"></div>
+<div class="tabs"><button class="on">字幕</button></div>
+<div class="list" id="subs"></div>
+<p class="tip">スペース＝再生/停止　←→＝5秒送り　↑↓＝字幕送り。字幕をタップするとそこへ飛びます。</p>
+</div>
+<audio id="a" src="audio.mp3" preload="auto"></audio>
+<script>
+const D={"name": "夜道はライトで選ぶ一台", "file": "090_夜道はライトで選ぶ一台", "dur": 798.06665625, "segs": [], "subs": [{"t": 0.0, "x": "こんにちは、「となりの車屋さん」の店長です。"}, {"t": 3.066666666666667, "x": "今夜車に乗ったら、ひとつ数えてみてください。"}, {"t": 6.7, "x": "ハイビームのレバーに何回さわったかです。"}, {"t": 9.766666666666667, "x": "もしかすると、一回もさわらずに家まで着いているかもしれません。"}, {"t": 14.533333333333333, "x": "じつは店長も若いころはそうでした。"}, {"t": 17.4, "x": "前の車のテールランプを追いかけて、ずっと下向きのまま走っていました。"}, {"t": 22.8, "x": "この季節は日が短くなります。"}, {"t": 25.566666666666666, "x": "夕方の帰り道が、あっという間に暗くなります。"}, {"t": 29.366666666666667, "x": "「対向車のライトがまぶしくて、そのあと道が見えない」。"}, {"t": 33.7, "x": "「黒っぽい服の人が急に目の前に出てくる」。"}, {"t": 37.266666666666666, "x": "お店では、そんな声を秋になると何度も聞きます。"}, {"t": 41.13333333333333, "x": "そして多くのかたが、原因は自分の目だと思っています。"}, {"t": 45.8, "x": "たしかに目も関わっています。"}, {"t": 48.166666666666664, "x": "けれども半分はライトの使い方と、ライトそのものの性能です。"}, {"t": 53.2, "x": "今日はそのライトのほうから車を一台選びます。"}, {"t": 57.03333333333333, "x": "最初にお伝えすると、今日の答えはマツダのCX-30です。"}, {"t": 62.8, "x": "ただし、どのグレードでもよいわけではありません。"}, {"t": 66.13333333333334, "x": "分かれ目がひとつあるので、そこを最後まで聞いてください。"}, {"t": 71.93333333333334, "x": "まずは夜に見えにくくなる理由からです。"}, {"t": 75.1, "x": "ひとつめは目の変化です。"}, {"t": 77.33333333333333, "x": "眼科のお医者さんが書いたJAFの記事に、こんな説明があります。"}, {"t": 82.0, "x": "暗い場所での視力は年齢とともに下がっていくそうです。"}, {"t": 86.4, "x": "明るい所から暗い所へ入ると、見えるまでに少し時間がかかります。"}, {"t": 92.03333333333333, "x": "この慣れるまでの時間も、年を重ねると長くなりがちです。"}, {"t": 96.7, "x": "対向車のライトを浴びたあとに道が見えないのは、このためです。"}, {"t": 101.8, "x": "まぶしさが過ぎても、目はしばらく暗さに追いつけません。"}, {"t": 105.96666666666667, "x": "七十歳を過ぎて受ける高齢者講習でも、夜の見え方を調べる検査があります。"}, {"t": 112.06666666666666, "x": "強い光を三十秒見たあと、暗い所で形が分かるまでの時間を測るものです。"}, {"t": 118.53333333333333, "x": "あの検査で、思ったより時間がかかって驚いたかたもいるでしょう。"}, {"t": 123.3, "x": "国もそれだけ夜の目を大事に見ているということです。"}, {"t": 127.16666666666667, "x": "ふたつめは、ライトが照らしている距離です。"}, {"t": 130.63333333333333, "x": "下向きのライト、つまりロービームが照らすのは前の約40メートルです。"}, {"t": 136.43333333333334, "x": "上向きのハイビームなら約100メートル先まで届きます。"}, {"t": 140.6, "x": "警察庁は、ハイビームなら歩く人を二倍以上遠くから見つけられると説明しています。"}, {"t": 146.73333333333332, "x": "目が衰えたうえに、照らす距離まで短い。"}, {"t": 150.36666666666667, "x": "この二つが重なると、夜の道は急にこわくなります。"}, {"t": 154.76666666666668, "x": "目は若いころに戻せません。"}, {"t": 157.1, "x": "けれどもライトのほうは、車を選ぶときに選び直せます。"}, {"t": 163.03333333333333, "x": "ここでライトの決まりを確かめておきます。"}, {"t": 166.03333333333333, "x": "道路交通法の第五十二条は、夜はライトをつけて走るよう定めています。"}, {"t": 172.16666666666666, "x": "そのうえで、すれ違うときと前の車のすぐ後ろを走るときの決まりがあります。"}, {"t": 178.46666666666667, "x": "相手のじゃまになるなら、光を弱めるなどの操作をしなさいという中身です。"}, {"t": 184.2, "x": "つまり相手がいないときまで下向きにしなさいとは書いていません。"}, {"t": 188.56666666666666, "x": "警察庁も、街灯の少ない暗い道ではハイビームを使うよう呼びかけています。"}, {"t": 194.66666666666666, "x": "そして対向車や前の車がいるときは下向きに切り替えます。"}, {"t": 199.2, "x": "交通量の多い町なかでも下向きにします。"}, {"t": 202.96666666666667, "x": "対向が自転車のときも、きちんと下向きにするよう書かれています。"}, {"t": 207.86666666666667, "x": "ここがいちばん面倒なところです。"}, {"t": 210.53333333333333, "x": "上げては下げ、下げては上げる。"}, {"t": 213.33333333333334, "x": "この切り替えを手でやり続けるのは、正直なところ骨が折れます。"}, {"t": 218.36666666666667, "x": "切り替えが遅れれば相手をまぶしくさせてしまいます。"}, {"t": 222.23333333333332, "x": "それが気になって、多くの人がずっと下向きで走ってしまうのです。"}, {"t": 227.13333333333333, "x": "下向きのまま走ること自体は、決まりの上で悪いわけではありません。"}, {"t": 232.73333333333332, "x": "ただ遠くが見えないまま、暗い道を進んでいることになります。"}, {"t": 237.4, "x": "もうひとつ、知っておいてほしい数字があります。"}, {"t": 240.83333333333334, "x": "警察庁によると、夕方から夜の死亡事故は17時台から19時台に多く起きています。"}, {"t": 247.83333333333334, "x": "ちょうど日の入りと重なる時間です。"}, {"t": 250.6, "x": "そして車と歩く人がぶつかる事故がいちばん多く、四割以上を占めています。"}, {"t": 256.7, "x": "夕暮れどきの死亡事故は10月から12月にかけていちばん多くなります。"}, {"t": 262.6, "x": "ちょうど今の季節が、一年でいちばん気をつけたい時期なのです。"}, {"t": 268.6333333333333, "x": "では車のライトにはどんな種類があるのでしょうか。"}, {"t": 272.93333333333334, "x": "店長は大きく三つに分けてお話ししています。"}, {"t": 276.56666666666666, "x": "一つめは手で切り替えるだけのライトです。"}, {"t": 279.8666666666667, "x": "上向きと下向きを、すべて運転する人がレバーで選びます。"}, {"t": 284.43333333333334, "x": "二つめは自動で上向きと下向きを切り替えるライトです。"}, {"t": 288.6333333333333, "x": "車が相手の光を見つけて、上と下を入れ替えてくれます。"}, {"t": 293.2, "x": "マツダではこれをハイ・ビーム・コントロールシステムと呼んでいます。"}, {"t": 297.6, "x": "手で切り替える手間はなくなります。"}, {"t": 300.4, "x": "町なかで対向車が続けば、ほとんど下向きのまま走ることになります。"}, {"t": 305.3333333333333, "x": "ただし下向きになれば、手で切り替えたときと同じで遠くは暗くなります。"}, {"t": 311.03333333333336, "x": "三つめが今日の主役の照らし分けるライトです。"}, {"t": 314.53333333333336, "x": "相手のいる所だけ光を消して、ほかの所は上向きのまま照らします。"}, {"t": 319.8333333333333, "x": "マツダの名前ではアダプティブ・LED・ヘッドライトです。"}, {"t": 324.2, "x": "二つめと三つめは名前が似ていてまちがえやすいところです。"}, {"t": 328.8666666666667, "x": "同じ車でも、グレードによって二つめか三つめかが変わります。"}, {"t": 333.6666666666667, "x": "カタログの装備表で名前を確かめるのがいちばん確実です。"}, {"t": 339.6666666666667, "x": "それでは今日の一台です。"}, {"t": 341.8666666666667, "x": "マツダのCX-30を、店長は夜の帰り道の一台に挙げます。"}, {"t": 347.3, "x": "車の長さは4メートル40センチほどです。"}, {"t": 350.76666666666665, "x": "背の高さは1メートル54センチあります。"}, {"t": 354.3666666666667, "x": "SUVと呼ばれる、少し背の高い車の仲間です。"}, {"t": 358.8333333333333, "x": "エンジンはガソリンで、モーターが手助けをするハイブリッドです。"}, {"t": 363.43333333333334, "x": "燃費はカタログの数字でリッター14.5キロから16.2キロです。"}, {"t": 369.3666666666667, "x": "国の衝突試験では2021年度に最高の五つ星をもらっています。"}, {"t": 375.2, "x": "そして大事な分かれ目がグレードです。"}, {"t": 378.1333333333333, "x": "CX-30のグレードは今の公式サイトで六つあります。"}, {"t": 382.93333333333334, "x": "そのうち20Cと20Sの二つは、自動で上と下を切り替えるライトです。"}, {"t": 389.1333333333333, "x": "20Gから上の四つに、照らし分けるライトが最初から付いています。"}, {"t": 394.23333333333335, "x": "追加の注文ではなく、標準で付いてくるのが助かるところです。"}, {"t": 399.03333333333336, "x": "値段は20Gで297万円からです。"}, {"t": 403.23333333333335, "x": "20Sが273万4600円からなので、差はおよそ23万円です。"}, {"t": 410.5, "x": "この差をどう見るかは、夜にどれだけ走るかで決まります。"}, {"t": 415.3666666666667, "x": "ライトのちがいで夜の何が変わるのかを、次の章で見ていきます。"}, {"t": 420.53333333333336, "x": "ちなみに、もともと今日はマツダ2を挙げるつもりでした。"}, {"t": 424.73333333333335, "x": "小さくて扱いやすく、同じ照らし分けのライトもありました。"}, {"t": 429.46666666666664, "x": "ところがマツダ2は今年の八月で国内の生産を終えたと伝えられています。"}, {"t": 435.73333333333335, "x": "これから新しく選ぶなら、CX-30が現実的な一台になります。"}, {"t": 442.96666666666664, "x": "照らし分けるライトには三つの働きがあります。"}, {"t": 446.73333333333335, "x": "マツダの説明では、まぶしくさせないハイビームが一つめです。"}, {"t": 451.5, "x": "二つめは横に広く照らすロービームです。"}, {"t": 454.8, "x": "三つめは速さに合わせて光の向きを変える高速道路用の動きです。"}, {"t": 460.6333333333333, "x": "いちばん効くのは一つめのハイビームです。"}, {"t": 463.7, "x": "前のガラスのカメラが、対向車のライトや前の車のテールランプを見つけます。"}, {"t": 469.7, "x": "するとその車に当たる部分のLEDだけを消します。"}, {"t": 473.73333333333335, "x": "相手はまぶしくないのに、道ばたや歩道は上向きの明るさのままです。"}, {"t": 479.03333333333336, "x": "たとえば病院の帰りに、暗い田んぼ道で対向車が来たとします。"}, {"t": 483.93333333333334, "x": "手で切り替えるライトなら、すれ違うまで足もとしか見えません。"}, {"t": 488.6333333333333, "x": "照らし分けるライトなら、対向車の横の歩道もそのまま照らされています。"}, {"t": 493.9, "x": "その歩道を、黒っぽい上着の人が歩いていたらどうでしょう。"}, {"t": 498.6, "x": "上向きの光が当たっていれば、ずっと手前で気づけます。"}, {"t": 502.96666666666664, "x": "すれ違ったあとに道が急に暗くなる、あの感じも起きにくくなります。"}, {"t": 508.6666666666667, "x": "道ばたを歩く人に早く気づけるのは、照らしている時間が長いからです。"}, {"t": 514.5, "x": "二つめの横に広いロービームは、町なかをゆっくり走るときに働きます。"}, {"t": 520.2, "x": "照らす幅を横に広げて、道の端を歩く人を見つけやすくします。"}, {"t": 525.6333333333333, "x": "マツダはこの仕組みで、夜も昼間と同じ見え方を目指したと説明しています。"}, {"t": 531.3666666666667, "x": "この技術は2019年に経済産業大臣賞という大きな賞も受けました。"}, {"t": 537.4666666666667, "x": "高い車だけの装備を、手の届く値段の車まで広げた点が評価されています。"}, {"t": 543.7666666666667, "x": "ただしどんな夜でも完ぺきというわけではありません。"}, {"t": 547.2, "x": "雨や雪や霧の夜は、カメラが相手をうまく見つけられないことがあります。"}, {"t": 553.0333333333333, "x": "急なカーブや坂の上り下り、看板の多い道でも同じです。"}, {"t": 557.9666666666667, "x": "明け方や夕方の薄暗い時間も、思いどおりに動かない場合があります。"}, {"t": 563.6666666666666, "x": "マツダ自身も、頼りすぎずに必要なら手で切り替えるよう書いています。"}, {"t": 568.9333333333333, "x": "ライトは目の代わりではなく、目を助ける道具だと考えてください。"}, {"t": 575.2666666666667, "x": "夜の運転では車の中の明るさも見え方に響きます。"}, {"t": 580.0333333333333, "x": "メーターや画面がまぶしいと、外の暗さに目が慣れにくくなるからです。"}, {"t": 585.5333333333333, "x": "このお話は、メーターの見やすさを取り上げた前の回にゆずります。"}, {"t": 590.6, "x": "今日は前の道を照らすライトの話にしぼっておきます。"}, {"t": 596.1, "x": "CX-30のほかにも、同じ照らし分けのライトが付く車はあります。"}, {"t": 601.5333333333333, "x": "マツダのCX-5では、Lというグレードに標準で付いています。"}, {"t": 606.8, "x": "マツダ3のセダンでは、25Lに標準で付いています。"}, {"t": 611.5, "x": "どちらもCX-30と同じく、グレードで付くか付かないかが分かれます。"}, {"t": 617.5, "x": "ほかの会社の車にも、似た仕組みが別の名前であります。"}, {"t": 621.6666666666666, "x": "お店では「照らし分けるハイビームですか」と聞いてみてください。"}, {"t": 625.8, "x": "試乗の車がどのグレードなのかも、先に確かめておくと安心です。"}, {"t": 631.0333333333333, "x": "下のグレードの車で試乗しても、このライトは確かめられないからです。"}, {"t": 637.8666666666667, "x": "ここからはCX-30が合わないかたのお話です。"}, {"t": 642.6333333333333, "x": "ひとつめは車庫の幅がせまいかたです。"}, {"t": 645.9, "x": "CX-30の幅は1メートル79センチ半あります。"}, {"t": 651.1333333333333, "x": "小さな車から乗り換えると、思ったより横に大きく感じるはずです。"}, {"t": 656.5333333333333, "x": "車庫の幅とドアを開ける余裕を、先に測っておいてください。"}, {"t": 661.3666666666667, "x": "幅が広いぶん、せまい道ですれ違うときも少し気を使います。"}, {"t": 666.3333333333334, "x": "ふたつめは夜はほとんど運転しないかたです。"}, {"t": 670.4666666666667, "x": "昼の買い物と病院だけなら、20Sでも困ることは少ないでしょう。"}, {"t": 675.6333333333333, "x": "みっつめは雨や霧の夜によく走るかたです。"}, {"t": 679.5, "x": "先ほどのとおり、そういう夜はカメラの力が落ちることがあります。"}, {"t": 684.5333333333333, "x": "そのときは手でライトを切り替える気持ちを残しておいてください。"}, {"t": 689.0666666666667, "x": "よっつめは目の病気をそのままにしているかたです。"}, {"t": 692.6666666666666, "x": "JAFの記事でも、白内障は八十歳を過ぎるとほとんどの人に起こるとあります。"}, {"t": 698.6333333333333, "x": "ライトがどれだけよくても、目そのものの曇りは晴らせません。"}, {"t": 703.1333333333333, "x": "夜がこわくなったら、車を選ぶ前に眼科で一度見てもらってください。"}, {"t": 709.1, "x": "夜の運転に使うめがねも、色の濃いレンズは避けるよう決められています。"}, {"t": 716.2, "x": "最後に今日のお話をまとめます。"}, {"t": 718.8333333333334, "x": "夜に見えにくいのは、目の変化とライトの届く距離の二つが重なるからです。"}, {"t": 724.7333333333333, "x": "法律は相手がいないときまで下向きで走れとは言っていません。"}, {"t": 729.0333333333333, "x": "暗い道ではハイビームを使い、相手が来たら下げるのが基本です。"}, {"t": 734.1, "x": "その切り替えを手でやり続けるのは、思った以上に大変です。"}, {"t": 739.0, "x": "照らし分けるライトなら、相手をまぶしくさせずに上向きで走り続けられます。"}, {"t": 744.6, "x": "今日の一台はマツダのCX-30です。"}, {"t": 748.4, "x": "選ぶなら20Gから上のグレードにしてください。"}, {"t": 751.9666666666667, "x": "20Cと20Sは自動切り替えのライトになります。"}, {"t": 756.2, "x": "試乗はできれば、日が暮れてからお願いしてみてください。"}, {"t": 760.3666666666667, "x": "昼の試乗では、このライトのよさは何ひとつ分かりません。"}, {"t": 764.8, "x": "なお装備や値段は改良のたびに変わることがあります。"}, {"t": 768.6666666666666, "x": "買う前には販売店で今の装備表を確かめてください。"}, {"t": 773.0, "x": "今夜の帰り道、レバーに何回さわったか数えてみてください。"}, {"t": 777.8333333333334, "x": "その数が次の車選びのいちばんの手がかりになります。"}, {"t": 782.6, "x": "夜がこわくなったら、まず眼科で目を見てもらう。"}, {"t": 786.8, "x": "そのうえでライトから車を選ぶ。"}, {"t": 789.5, "x": "この順番なら、無理のない車選びになります。"}, {"t": 793.4333333333333, "x": "それではまた、次の動画でお会いしましょう。"}], "w": 720, "h": 405, "n_cuts": 0, "noimage": true};
+const a=document.getElementById('a');
+const now=document.getElementById('now'), nl=document.getElementById('nextline');
+const pp=document.getElementById('pp'), sk=document.getElementById('sk');
+const tm=document.getElementById('tm'), bdg=document.getElementById('bdg');
+const SMOOTH=matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth';
+document.getElementById('ttl').innerHTML=D.name+
+  '<span class="meta">'+fmt(D.dur)+'　字幕'+D.subs.length+'　（音声＋字幕だけ）</span>';
+
+function fmt(s){s=Math.max(0,s|0);return (s/60|0)+':'+String(s%60).padStart(2,'0')}
+function subIdx(t){let lo=0,hi=D.subs.length-1,r=-1;
+  while(lo<=hi){const m=(lo+hi)>>1; if(D.subs[m].t<=t){r=m;lo=m+1}else hi=m-1} return r}
+
+let cur=-2;
+function paint(t){
+  const i=subIdx(t);
+  if(i!==cur){cur=i;
+    now.textContent = i<0 ? (D.subs.length?'（ここはまだ字幕がありません）'
+                                          :'（この回に字幕はありません）')
+                         : D.subs[i].x;
+    const n=D.subs[i+1]; nl.textContent = n ? '次　'+n.x : '';
+    bdg.textContent = D.subs.length ? '字幕 '+(i+1)+' / '+D.subs.length : '字幕なし';
+    mark('subs',i);
+  }
+  tm.textContent=fmt(t)+' / '+fmt(D.dur);
+  if(!sk.dragging) sk.value=Math.round(t/D.dur*1000);
+}
+function mark(pane,i){
+  const el=document.getElementById(pane);
+  if(el.dataset.on==i) return; el.dataset.on=i;
+  el.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));
+  const t=el.children[i]; if(!t) return; t.classList.add('on');
+  if(!el.hidden){const r=t.offsetTop-el.clientHeight/2; el.scrollTo({top:r,behavior:SMOOTH})}
+}
+
+D.subs.forEach(s=>{const d=document.createElement('div');d.className='row';
+  d.innerHTML='<b></b><span></span>';
+  d.querySelector('b').textContent=fmt(s.t);
+  d.querySelector('span').textContent=s.x;
+  d.onclick=()=>go(s.t); document.getElementById('subs').appendChild(d)});
+const mk=document.getElementById('mk');
+D.subs.forEach(s=>{const i=document.createElement('i');
+  i.style.left=(s.t/D.dur*100)+'%'; mk.appendChild(i)});
+
+function go(t){a.currentTime=Math.min(Math.max(0,t)+0.01,Math.max(0.05,D.dur-0.05)); paint(a.currentTime)}
+pp.onclick=()=>a.paused?a.play():a.pause();
+const SPEEDS=[1,1.25,1.5,1.75,2,3,0.75],SPN=['等速','1.25倍','1.5倍','1.75倍','2倍','3倍','0.75倍'];
+let si=0; const sp=document.getElementById('sp');
+sp.onclick=()=>{si=(si+1)%SPEEDS.length; a.playbackRate=SPEEDS[si];
+  a.preservesPitch=a.mozPreservesPitch=a.webkitPreservesPitch=true; sp.textContent=SPN[si]};
+a.onplay=()=>pp.textContent='❚❚ 停止'; a.onpause=()=>pp.textContent='▶ 再生';
+a.ontimeupdate=()=>paint(a.currentTime);
+sk.oninput=()=>{sk.dragging=1; go(sk.value/1000*D.dur)};
+sk.onchange=()=>sk.dragging=0;
+document.getElementById('pv').onclick=()=>{const i=subIdx(a.currentTime);
+  go(i>0?D.subs[i-1].t:0)};
+document.getElementById('nx').onclick=()=>{const i=subIdx(a.currentTime);
+  if(i+1<D.subs.length) go(D.subs[i+1].t)};
+addEventListener('keydown',e=>{const k=e.key;
+  if(k===' '){e.preventDefault();pp.onclick()}
+  else if(k==='ArrowRight')go(a.currentTime+5); else if(k==='ArrowLeft')go(a.currentTime-5);
+  else if(k==='ArrowDown'){e.preventDefault();document.getElementById('nx').onclick()}
+  else if(k==='ArrowUp'){e.preventDefault();document.getElementById('pv').onclick()}
+  else if(k==='s'||k==='S')sp.onclick()});
+paint(0);
+</script>
