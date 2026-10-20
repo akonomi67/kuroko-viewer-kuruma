@@ -1,0 +1,133 @@
+<title>雪道に強い四駆の一台</title>
+<style>
+:root{--bg:#f6f4f1;--panel:#fffefc;--ink:#1c1a19;--dim:#6e6862;--line:#e2ded7;--accent:#b8422f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}}
+:root[data-theme="dark"]{--bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);margin:0;-webkit-text-size-adjust:100%;
+  font:16px/1.7 -apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic UI",sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+h1{font-size:17px;margin:4px 0 14px;font-weight:600;letter-spacing:.02em}
+.meta{color:var(--dim);font-size:13px;font-weight:400;margin-left:8px}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:12px;position:relative;
+  min-height:40vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:46px 20px 26px;box-shadow:0 2px 14px rgba(0,0,0,.10)}
+#now{margin:0;text-align:center;white-space:pre-wrap;word-break:break-word;font-weight:700;
+  font-size:clamp(23px,5.4vw,42px);line-height:1.5;letter-spacing:.01em}
+#nextline{margin:16px 0 0;text-align:center;white-space:pre-wrap;word-break:break-word;
+  color:var(--dim);font-size:clamp(13px,2.8vw,17px);line-height:1.6}
+.badge{position:absolute;left:12px;top:12px;background:rgba(127,127,127,.16);color:var(--dim);
+  font-size:12px;padding:3px 9px;border-radius:20px;line-height:1.6;letter-spacing:.04em}
+.bar{display:flex;align-items:center;gap:10px;margin:12px 0 6px;flex-wrap:wrap}
+button{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;
+  padding:9px 14px;font-size:15px;cursor:pointer;font-family:inherit}
+button:active{transform:translateY(1px)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.play{background:var(--accent);color:#fff;border-color:transparent;min-width:80px;font-weight:600}
+.time{font-variant-numeric:tabular-nums;color:var(--dim);font-size:13px;margin-left:auto}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.marks{position:relative;height:7px;margin:2px 0 14px}
+.marks i{position:absolute;top:0;width:1px;height:7px;background:var(--line)}
+.tabs{display:flex;gap:6px;margin:18px 0 10px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;
+  color:var(--ink);padding:7px 12px;font-weight:600}
+.list{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+  -webkit-overflow-scrolling:touch}
+.row{display:flex;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.row:last-child{border-bottom:0}
+.row:hover{background:rgba(127,127,127,.07)}
+.row.on{background:rgba(184,66,47,.12)}
+.row b{color:var(--dim);font-variant-numeric:tabular-nums;font-weight:500;font-size:13px;
+  min-width:48px;flex:none;padding-top:2px}
+.row span{white-space:pre-wrap;flex:1;font-size:16px;line-height:1.65}
+.tip{color:var(--dim);font-size:12.5px;margin:10px 2px 0}
+@media(max-width:620px){.wrap{padding:10px}.time{font-size:12px}
+  .bar button{padding:9px 11px;font-size:14px}.stage{padding:42px 14px 22px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+<div class="wrap">
+<h1 id="ttl"></h1>
+<div class="stage"><div class="badge" id="bdg"></div>
+  <p id="now"></p><p id="nextline"></p></div>
+<div class="bar">
+  <button class="play" id="pp">▶ 再生</button>
+  <button id="pv">◀ 前の字幕</button>
+  <button id="nx">次の字幕 ▶</button>
+  <button id="sp">等速</button>
+  <span class="time" id="tm">0:00 / 0:00</span>
+</div>
+<input type="range" id="sk" min="0" max="1000" value="0">
+<div class="marks" id="mk"></div>
+<div class="tabs"><button class="on">字幕</button></div>
+<div class="list" id="subs"></div>
+<p class="tip">スペース＝再生/停止　←→＝5秒送り　↑↓＝字幕送り。字幕をタップするとそこへ飛びます。</p>
+</div>
+<audio id="a" src="audio.mp3" preload="auto"></audio>
+<script>
+const D={"name": "雪道に強い四駆の一台", "file": "085_雪道に強い四駆の一台", "dur": 814.6333125, "segs": [], "subs": [{"t": 0.0, "x": "こんにちは、「となりの車屋さん」の店長です。"}, {"t": 3.066666666666667, "x": "北のほうでは、もう初雪の便りが届きはじめました。"}, {"t": 7.3, "x": "この時期になると店には決まったご相談が増えます。"}, {"t": 11.3, "x": "「次は四駆に替えたほうがいいだろうか」というご相談です。"}, {"t": 15.833333333333334, "x": "雪が積もっても病院の予約は待ってくれません。"}, {"t": 19.333333333333332, "x": "灯油を買いに行く日もあれば、孫の顔を見に行く日もあります。"}, {"t": 23.733333333333334, "x": "バスが一日に数本という土地なら車は足そのものです。"}, {"t": 28.9, "x": "ところが今の車は前のタイヤだけで走る車で、雪の坂が怖い。"}, {"t": 34.63333333333333, "x": "去年の冬は家の前の坂で止まってしまい、近所の人に押してもらった。"}, {"t": 40.03333333333333, "x": "そんなお話を、毎年のようにうかがいます。"}, {"t": 43.53333333333333, "x": "今日はそういうかたに向けて、一台だけ名前を挙げます。"}, {"t": 47.666666666666664, "x": "ただその前に雪道で何が起きるのかを先に見ておきます。"}, {"t": 52.4, "x": "四駆にすれば全部が片づく、という話ではないからです。"}, {"t": 58.46666666666667, "x": "雪道で困る場面は、大きく三つに分けられます。"}, {"t": 62.9, "x": "一つめは、止まったところから動き出すときです。"}, {"t": 66.66666666666667, "x": "信号待ちのあと、タイヤが空回りして前に進まない。"}, {"t": 71.06666666666666, "x": "後ろの車が近づいてくると気持ちばかり焦ります。"}, {"t": 75.23333333333333, "x": "焦ってアクセルを踏み込むとタイヤはもっと空回りします。"}, {"t": 79.53333333333333, "x": "二つめは、上り坂です。"}, {"t": 81.93333333333334, "x": "家の前の坂や、病院の駐車場へ入る坂道ですね。"}, {"t": 86.5, "x": "途中でいったん止まるとそこから先へ上がれなくなります。"}, {"t": 90.8, "x": "ずるずると後ろへ下がりはじめるのが、いちばん怖い場面です。"}, {"t": 95.13333333333334, "x": "三つめは、わだちです。"}, {"t": 97.6, "x": "前の車がつけた溝にタイヤが取られて、ハンドルが重くなります。"}, {"t": 102.5, "x": "溝のあいだに盛り上がった雪が、車の底に当たることもあります。"}, {"t": 107.53333333333333, "x": "当たったまま進むと車はそりのように雪に乗り上げてしまいます。"}, {"t": 112.46666666666667, "x": "この三つのうち、四駆がはっきり効くのは一つめと二つめです。"}, {"t": 117.4, "x": "三つめには、四駆とは別の数字が効いてきます。"}, {"t": 121.26666666666667, "x": "それは後の章で数字と一緒にお話しします。"}, {"t": 124.93333333333334, "x": "ちなみに去年の冬にも、わだちで動けなくなったお客さんがいました。"}, {"t": 129.73333333333332, "x": "四駆の車だったのに、です。"}, {"t": 132.8, "x": "その理由も、この先の章で分かります。"}, {"t": 137.46666666666667, "x": "JAFが北海道の士別市で雪道の試験をしています。"}, {"t": 142.23333333333332, "x": "前のタイヤで走る車を二台、四駆を二台用意しました。"}, {"t": 147.0, "x": "四台とも新品のスタッドレスタイヤをはいています。"}, {"t": 151.26666666666668, "x": "まずは押し固められた雪の上り坂です。"}, {"t": 154.53333333333333, "x": "勾配九パーセントの坂は、四台とも上りきりました。"}, {"t": 159.03333333333333, "x": "勾配二十パーセントの坂になると差が出ました。"}, {"t": 162.83333333333334, "x": "四駆の二台は落ち着いて上りきりました。"}, {"t": 166.53333333333333, "x": "前のタイヤで走る二台は、途中で滑って上れませんでした。"}, {"t": 171.46666666666667, "x": "上りでは四駆がはっきり強いということです。"}, {"t": 175.06666666666666, "x": "では止まるほうはどうでしょうか。"}, {"t": 177.53333333333333, "x": "時速四十キロから急ブレーキをかけて止まるまでの距離を測りました。"}, {"t": 182.5, "x": "平らな雪道では、どの車も約20メートルから22メートルでした。"}, {"t": 188.23333333333332, "x": "駆動のちがいで大きな差は出ていません。"}, {"t": 191.4, "x": "ところが勾配九パーセントの下り坂では話が変わります。"}, {"t": 195.96666666666667, "x": "前のタイヤで走る車は約29メートルから33メートルで止まりました。"}, {"t": 202.76666666666668, "x": "四駆は約35メートルから40メートルで、かえって長くなりました。"}, {"t": 208.9, "x": "JAFは、重い車ほど下りで止まりにくくなると書いています。"}, {"t": 213.7, "x": "四駆は進む力を助けますが、止まる力は増やしません。"}, {"t": 218.23333333333332, "x": "ここだけは、どうか覚えておいてください。"}, {"t": 221.63333333333333, "x": "雪の日の速さは四駆でも二駆でも同じように落とす。"}, {"t": 225.56666666666666, "x": "それがこの試験から読める一番の教えです。"}, {"t": 230.5, "x": "では雪の土地で暮らす七十代のかたに、どの一台を勧めるか。"}, {"t": 235.86666666666667, "x": "店長の答えは、スズキのハスラーです。"}, {"t": 239.2, "x": "それもターボの付いた四駆を選んでください。"}, {"t": 242.6, "x": "グレードの名前で言うと、HYBRID Xターボの四駆です。"}, {"t": 247.06666666666666, "x": "もう一つはタフワイルド ターボの四駆です。"}, {"t": 250.9, "x": "ハスラーは軽自動車で全部のグレードで四駆を選べます。"}, {"t": 255.13333333333333, "x": "ハスラーの四駆はいつも四つのタイヤに力を回せる仕組みです。"}, {"t": 260.0, "x": "ふだんは前のタイヤを中心にして走ります。"}, {"t": 263.5, "x": "滑りやすい雪道では、前と後ろのタイヤへ力を分けて送ります。"}, {"t": 268.8333333333333, "x": "運転する人が切り替えのレバーを探す必要はありません。"}, {"t": 272.96666666666664, "x": "雪が降りはじめた交差点でもそのまま走り出せます。"}, {"t": 277.3, "x": "軽自動車にしたのは、雪の道ほど車の大きさが効いてくるからです。"}, {"t": 282.56666666666666, "x": "道の両側に雪が積まれると、ふだんの道幅より狭くなります。"}, {"t": 287.6333333333333, "x": "四駆にすると、同じグレードの前輪駆動より13万4200円高くなります。"}, {"t": 294.1, "x": "これはスズキが出している値段の差です。"}, {"t": 297.06666666666666, "x": "この差額で何が手に入るのかを次の章から一つずつ見ていきます。"}, {"t": 303.76666666666665, "x": "さきほどの三つめの困りごと、わだちの話に戻ります。"}, {"t": 308.06666666666666, "x": "ここで効くのが、地面から車の底までの高さです。"}, {"t": 312.4, "x": "カタログでは「最低地上高」と書かれています。"}, {"t": 316.26666666666665, "x": "ハスラーは、ターボ付きとターボ無しでこの高さがちがいます。"}, {"t": 320.9, "x": "ターボ付きは18センチで、ターボ無しは16センチです。"}, {"t": 325.73333333333335, "x": "どちらもスズキが自分で測った数字として出しています。"}, {"t": 329.96666666666664, "x": "たった2センチ、と思われるかもしれません。"}, {"t": 333.3333333333333, "x": "けれど、わだちのあいだに残る雪は高いほど底に当たりやすくなります。"}, {"t": 339.03333333333336, "x": "除雪車が通ったあとの道の端にも雪が段になって残ります。"}, {"t": 344.3666666666667, "x": "底を雪にこすりながら進むと車は思うように前へ出ません。"}, {"t": 349.73333333333335, "x": "だから店長はここでターボ付きをお勧めしています。"}, {"t": 353.46666666666664, "x": "坂で力に余裕が出るのは、ターボの二番目の良さです。"}, {"t": 358.1, "x": "いちばんの理由は、この2センチのほうにあります。"}, {"t": 362.06666666666666, "x": "大きさは全長3メートル39センチで、幅は1メートル47センチ。"}, {"t": 368.1, "x": "軽自動車の枠いっぱいで、これより大きくはなりません。"}, {"t": 372.3, "x": "小回りの目安になる最小回転半径は4.6メートルです。"}, {"t": 377.53333333333336, "x": "狭くなった雪の道で向きを変えるときの助けになります。"}, {"t": 383.23333333333335, "x": "ハスラーの四駆には四駆の車にだけ付く装備が三つあります。"}, {"t": 388.06666666666666, "x": "どれも専用のスイッチで入れる仕組みです。"}, {"t": 391.2, "x": "一つめは「スノーモード」です。"}, {"t": 393.96666666666664, "x": "雪道や凍った道で、タイヤの空回りをおさえる働きをします。"}, {"t": 399.1333333333333, "x": "エンジンの力が出すぎないように、車のほうで加減してくれます。"}, {"t": 404.03333333333336, "x": "時速30キロくらいまでは、ブレーキの制御も一緒に使います。"}, {"t": 409.3, "x": "アクセルを少し踏みすぎても、タイヤが空回りしにくくなります。"}, {"t": 413.9, "x": "二つめは「グリップコントロール」です。"}, {"t": 417.26666666666665, "x": "ぬかるみなどで、片方のタイヤだけが空回りしたときに働きます。"}, {"t": 422.26666666666665, "x": "空回りしたタイヤに、素早く強めのブレーキをかけます。"}, {"t": 426.73333333333335, "x": "そのぶん地面をつかんでいる側のタイヤに力を集めます。"}, {"t": 431.03333333333336, "x": "雪の駐車場で動けなくなったとき、助けになる装備です。"}, {"t": 435.26666666666665, "x": "三つめは「ヒルディセントコントロール」です。"}, {"t": 438.6666666666667, "x": "急な下り坂では、ブレーキを踏まなくても速さをおさえてくれます。"}, {"t": 443.46666666666664, "x": "速さは約7キロに自動でそろえてくれます。"}, {"t": 447.03333333333336, "x": "足はブレーキから離してハンドルに気持ちを向けられます。"}, {"t": 451.3, "x": "さきほどの試験では下り坂は四駆のほうが止まりにくいと出ていました。"}, {"t": 456.46666666666664, "x": "その下りの怖さを減らす道具が、四駆の側にも用意されているわけです。"}, {"t": 462.4, "x": "このほかに、坂道の発進を助けるヒルホールドコントロールもあります。"}, {"t": 467.6, "x": "こちらは四駆に限らず、装備表に載っている機能です。"}, {"t": 471.9, "x": "スズキは、こうした機能の制御には限界があると書いています。"}, {"t": 476.76666666666665, "x": "スイッチがあるから速く走っていい、という意味ではありません。"}, {"t": 481.03333333333336, "x": "スノーモードやグリップコントロールは、空回りをおさえて進む力を助ける装備です。"}, {"t": 487.43333333333334, "x": "使い方は雪が降る前に一度お店で教わっておくと安心です。"}, {"t": 493.76666666666665, "x": "雪の日は乗り降りの場面にも気をつけたいところです。"}, {"t": 497.73333333333335, "x": "転びやすいのは、車を降りて最初の一歩です。"}, {"t": 501.5, "x": "座席から立つとき、足の裏が凍った地面に乗ります。"}, {"t": 505.8, "x": "ここで体を一気に持ち上げると、足が滑って体ごと流れます。"}, {"t": 511.1333333333333, "x": "まず両足を地面に下ろして靴の底が落ち着くのを待ちます。"}, {"t": 516.1666666666666, "x": "それからドアの縁や持ち手に手を添えて立ちます。"}, {"t": 519.9, "x": "ハスラーの装備表には助手席と後ろの席の持ち手が載っています。"}, {"t": 524.7333333333333, "x": "一緒に乗るご家族も手の置き場所に困りません。"}, {"t": 528.1333333333333, "x": "降りる前に、足を置く場所の雪を目で確かめておくのも一つの手です。"}, {"t": 533.8666666666667, "x": "光って見える地面は、凍っていると思って足を置いてください。"}, {"t": 538.7333333333333, "x": "もう一つ、冬の朝ならではの困りごとがあります。"}, {"t": 542.8333333333334, "x": "ドアの鏡や後ろの窓が、凍ったり曇ったりすることです。"}, {"t": 547.6333333333333, "x": "装備表には熱で温める鏡と後ろの窓が並んでいます。"}, {"t": 552.9666666666667, "x": "前の席のシートヒーターや、後ろの席へ温風を送る口もあります。"}, {"t": 558.3333333333334, "x": "付くかどうかと付く席は、グレードによって変わります。"}, {"t": 562.3, "x": "見積もりのときにどの席が温まるのかを指でたどって確かめてください。"}, {"t": 567.2, "x": "冷えた座席に長く座ると、腰や膝がこわばって動き出しが遅れます。"}, {"t": 572.7333333333333, "x": "降りるときの一歩目を落ち着いて踏むためにも、体を温めておくことは大事です。"}, {"t": 578.6, "x": "スズキはハスラーを全部寒い土地で使うことを考えた作りだとしています。"}, {"t": 584.1666666666666, "x": "雪国向けに後から付け足すような車ではない、ということです。"}, {"t": 590.5666666666667, "x": "ここでお金の話を一つだけします。"}, {"t": 593.6333333333333, "x": "四駆の差額13万4200円と、冬用のタイヤ。"}, {"t": 598.7666666666667, "x": "どちらにお金をかけるべきか、と聞かれたら答えは決まっています。"}, {"t": 603.5, "x": "冬用のタイヤが先です。"}, {"t": 605.6666666666666, "x": "JAFは別の試験でふつうの夏用タイヤと冬用のタイヤを比べました。"}, {"t": 611.3, "x": "押し固められた雪の道で時速四十キロから急ブレーキです。"}, {"t": 615.9333333333333, "x": "夏用のタイヤは、冬用の約1.7倍の距離を滑ってから止まりました。"}, {"t": 621.7, "x": "上り坂でも試しています。"}, {"t": 624.1333333333333, "x": "勾配十二パーセントの雪の坂を夏用のタイヤは空回りして上れませんでした。"}, {"t": 630.1, "x": "さらに、つるつるに凍った道では冬用のタイヤでも過信は禁物です。"}, {"t": 635.4, "x": "勾配九パーセントの凍った坂は、冬用のタイヤだけでは上れませんでした。"}, {"t": 641.3666666666667, "x": "チェーンを足してようやく上りきっています。"}, {"t": 644.4333333333333, "x": "凍った平らな道で止まる試験でも、いちばん短く止まったのはチェーンでした。"}, {"t": 650.3333333333334, "x": "夏用のタイヤは、チェーンの約1.8倍の距離を滑っています。"}, {"t": 656.1, "x": "坂の多い土地なら、冬用のタイヤに加えてチェーンも車に積んでおきたいところです。"}, {"t": 662.8, "x": "ここまでの数字を並べると順番がはっきりします。"}, {"t": 666.6333333333333, "x": "まず冬用のタイヤで、止まる力と上る力の土台を作る。"}, {"t": 671.9, "x": "その上に、動き出しと坂を助ける四駆を足す。"}, {"t": 676.1, "x": "四駆の差額は冬用のタイヤの代わりにはなりません。"}, {"t": 679.7333333333333, "x": "燃費も見ておきます。"}, {"t": 681.6, "x": "HYBRID Xターボは前輪駆動で、1リットルあたり22.0キロです。"}, {"t": 687.7666666666667, "x": "四駆にすると、1リットルあたり20.4キロになります。"}, {"t": 692.1333333333333, "x": "車の重さが50キロ増えるぶん、燃費は少し下がります。"}, {"t": 696.9, "x": "雪の季節にも自分で病院へ行けるなら、その差は高くないと店長は考えます。"}, {"t": 705.5666666666667, "x": "ここまでお勧めしてきましたが合わないかたもいます。"}, {"t": 709.4666666666667, "x": "まずは雪がほとんど積もらない土地にお住まいのかたです。"}, {"t": 713.5666666666667, "x": "年に一度か二度うっすら積もる程度なら、四駆の出番は少なくなります。"}, {"t": 719.3666666666667, "x": "前輪駆動を選んで、差額を冬用のタイヤに回すほうが理にかなっています。"}, {"t": 725.0333333333333, "x": "次に、遠くまで高速道路を走ることが多いかたです。"}, {"t": 729.7, "x": "長い距離をいつも走るなら、一回り大きな普通車の四駆も比べてください。"}, {"t": 735.5666666666667, "x": "それから、家族五人で出かけることがあるかたにも合いません。"}, {"t": 739.9, "x": "ハスラーは軽自動車なので、乗れるのは四人までです。"}, {"t": 744.1, "x": "最後に、雪の日はもう車に乗らないと決めているかたです。"}, {"t": 749.1, "x": "その決め方も、立派な雪の備えの一つです。"}, {"t": 753.1, "x": "その場合は四駆の差額を払う理由はあまりありません。"}, {"t": 756.9666666666667, "x": "浮いたお金で冬の間のタクシー代を見込んでおくのも手です。"}, {"t": 763.4333333333333, "x": "今日のお話を短く振り返ります。"}, {"t": 766.3666666666667, "x": "雪道で四駆が強いのは、動き出しと上り坂です。"}, {"t": 770.7, "x": "下り坂では、四駆のほうが止まるまで長くかかることもあります。"}, {"t": 775.7, "x": "雪の土地の一台は、スズキ・ハスラーのターボ付き四駆です。"}, {"t": 780.5, "x": "車の下の高さが18センチあり、わだちの雪に底を取られにくい。"}, {"t": 785.9, "x": "スノーモードをはじめ、四駆の車にだけ付く三つのスイッチもあります。"}, {"t": 791.3333333333334, "x": "それでもいちばん先に用意するのは冬用のタイヤです。"}, {"t": 795.8333333333334, "x": "この順番だけは、どうか入れ替えないでください。"}, {"t": 799.5666666666667, "x": "装備の付き方や燃費の数字は、改良があると変わることがあります。"}, {"t": 804.7666666666667, "x": "雪が本格的になる前にお店で今のカタログを開いて確かめてください。"}, {"t": 810.3666666666667, "x": "それではまた、次の動画でお会いしましょう。"}], "w": 720, "h": 405, "n_cuts": 0, "noimage": true};
+const a=document.getElementById('a');
+const now=document.getElementById('now'), nl=document.getElementById('nextline');
+const pp=document.getElementById('pp'), sk=document.getElementById('sk');
+const tm=document.getElementById('tm'), bdg=document.getElementById('bdg');
+const SMOOTH=matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth';
+document.getElementById('ttl').innerHTML=D.name+
+  '<span class="meta">'+fmt(D.dur)+'　字幕'+D.subs.length+'　（音声＋字幕だけ）</span>';
+
+function fmt(s){s=Math.max(0,s|0);return (s/60|0)+':'+String(s%60).padStart(2,'0')}
+function subIdx(t){let lo=0,hi=D.subs.length-1,r=-1;
+  while(lo<=hi){const m=(lo+hi)>>1; if(D.subs[m].t<=t){r=m;lo=m+1}else hi=m-1} return r}
+
+let cur=-2;
+function paint(t){
+  const i=subIdx(t);
+  if(i!==cur){cur=i;
+    now.textContent = i<0 ? (D.subs.length?'（ここはまだ字幕がありません）'
+                                          :'（この回に字幕はありません）')
+                         : D.subs[i].x;
+    const n=D.subs[i+1]; nl.textContent = n ? '次　'+n.x : '';
+    bdg.textContent = D.subs.length ? '字幕 '+(i+1)+' / '+D.subs.length : '字幕なし';
+    mark('subs',i);
+  }
+  tm.textContent=fmt(t)+' / '+fmt(D.dur);
+  if(!sk.dragging) sk.value=Math.round(t/D.dur*1000);
+}
+function mark(pane,i){
+  const el=document.getElementById(pane);
+  if(el.dataset.on==i) return; el.dataset.on=i;
+  el.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));
+  const t=el.children[i]; if(!t) return; t.classList.add('on');
+  if(!el.hidden){const r=t.offsetTop-el.clientHeight/2; el.scrollTo({top:r,behavior:SMOOTH})}
+}
+
+D.subs.forEach(s=>{const d=document.createElement('div');d.className='row';
+  d.innerHTML='<b></b><span></span>';
+  d.querySelector('b').textContent=fmt(s.t);
+  d.querySelector('span').textContent=s.x;
+  d.onclick=()=>go(s.t); document.getElementById('subs').appendChild(d)});
+const mk=document.getElementById('mk');
+D.subs.forEach(s=>{const i=document.createElement('i');
+  i.style.left=(s.t/D.dur*100)+'%'; mk.appendChild(i)});
+
+function go(t){a.currentTime=Math.min(Math.max(0,t)+0.01,Math.max(0.05,D.dur-0.05)); paint(a.currentTime)}
+pp.onclick=()=>a.paused?a.play():a.pause();
+const SPEEDS=[1,1.25,1.5,1.75,2,3,0.75],SPN=['等速','1.25倍','1.5倍','1.75倍','2倍','3倍','0.75倍'];
+let si=0; const sp=document.getElementById('sp');
+sp.onclick=()=>{si=(si+1)%SPEEDS.length; a.playbackRate=SPEEDS[si];
+  a.preservesPitch=a.mozPreservesPitch=a.webkitPreservesPitch=true; sp.textContent=SPN[si]};
+a.onplay=()=>pp.textContent='❚❚ 停止'; a.onpause=()=>pp.textContent='▶ 再生';
+a.ontimeupdate=()=>paint(a.currentTime);
+sk.oninput=()=>{sk.dragging=1; go(sk.value/1000*D.dur)};
+sk.onchange=()=>sk.dragging=0;
+document.getElementById('pv').onclick=()=>{const i=subIdx(a.currentTime);
+  go(i>0?D.subs[i-1].t:0)};
+document.getElementById('nx').onclick=()=>{const i=subIdx(a.currentTime);
+  if(i+1<D.subs.length) go(D.subs[i+1].t)};
+addEventListener('keydown',e=>{const k=e.key;
+  if(k===' '){e.preventDefault();pp.onclick()}
+  else if(k==='ArrowRight')go(a.currentTime+5); else if(k==='ArrowLeft')go(a.currentTime-5);
+  else if(k==='ArrowDown'){e.preventDefault();document.getElementById('nx').onclick()}
+  else if(k==='ArrowUp'){e.preventDefault();document.getElementById('pv').onclick()}
+  else if(k==='s'||k==='S')sp.onclick()});
+paint(0);
+</script>
