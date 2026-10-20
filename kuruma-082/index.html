@@ -1,0 +1,133 @@
+<title>N-BOXとスペーシアどっち</title>
+<style>
+:root{--bg:#f6f4f1;--panel:#fffefc;--ink:#1c1a19;--dim:#6e6862;--line:#e2ded7;--accent:#b8422f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}}
+:root[data-theme="dark"]{--bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);margin:0;-webkit-text-size-adjust:100%;
+  font:16px/1.7 -apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic UI",sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+h1{font-size:17px;margin:4px 0 14px;font-weight:600;letter-spacing:.02em}
+.meta{color:var(--dim);font-size:13px;font-weight:400;margin-left:8px}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:12px;position:relative;
+  min-height:40vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:46px 20px 26px;box-shadow:0 2px 14px rgba(0,0,0,.10)}
+#now{margin:0;text-align:center;white-space:pre-wrap;word-break:break-word;font-weight:700;
+  font-size:clamp(23px,5.4vw,42px);line-height:1.5;letter-spacing:.01em}
+#nextline{margin:16px 0 0;text-align:center;white-space:pre-wrap;word-break:break-word;
+  color:var(--dim);font-size:clamp(13px,2.8vw,17px);line-height:1.6}
+.badge{position:absolute;left:12px;top:12px;background:rgba(127,127,127,.16);color:var(--dim);
+  font-size:12px;padding:3px 9px;border-radius:20px;line-height:1.6;letter-spacing:.04em}
+.bar{display:flex;align-items:center;gap:10px;margin:12px 0 6px;flex-wrap:wrap}
+button{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;
+  padding:9px 14px;font-size:15px;cursor:pointer;font-family:inherit}
+button:active{transform:translateY(1px)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.play{background:var(--accent);color:#fff;border-color:transparent;min-width:80px;font-weight:600}
+.time{font-variant-numeric:tabular-nums;color:var(--dim);font-size:13px;margin-left:auto}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.marks{position:relative;height:7px;margin:2px 0 14px}
+.marks i{position:absolute;top:0;width:1px;height:7px;background:var(--line)}
+.tabs{display:flex;gap:6px;margin:18px 0 10px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;
+  color:var(--ink);padding:7px 12px;font-weight:600}
+.list{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+  -webkit-overflow-scrolling:touch}
+.row{display:flex;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.row:last-child{border-bottom:0}
+.row:hover{background:rgba(127,127,127,.07)}
+.row.on{background:rgba(184,66,47,.12)}
+.row b{color:var(--dim);font-variant-numeric:tabular-nums;font-weight:500;font-size:13px;
+  min-width:48px;flex:none;padding-top:2px}
+.row span{white-space:pre-wrap;flex:1;font-size:16px;line-height:1.65}
+.tip{color:var(--dim);font-size:12.5px;margin:10px 2px 0}
+@media(max-width:620px){.wrap{padding:10px}.time{font-size:12px}
+  .bar button{padding:9px 11px;font-size:14px}.stage{padding:42px 14px 22px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+<div class="wrap">
+<h1 id="ttl"></h1>
+<div class="stage"><div class="badge" id="bdg"></div>
+  <p id="now"></p><p id="nextline"></p></div>
+<div class="bar">
+  <button class="play" id="pp">▶ 再生</button>
+  <button id="pv">◀ 前の字幕</button>
+  <button id="nx">次の字幕 ▶</button>
+  <button id="sp">等速</button>
+  <span class="time" id="tm">0:00 / 0:00</span>
+</div>
+<input type="range" id="sk" min="0" max="1000" value="0">
+<div class="marks" id="mk"></div>
+<div class="tabs"><button class="on">字幕</button></div>
+<div class="list" id="subs"></div>
+<p class="tip">スペース＝再生/停止　←→＝5秒送り　↑↓＝字幕送り。字幕をタップするとそこへ飛びます。</p>
+</div>
+<audio id="a" src="audio.mp3" preload="auto"></audio>
+<script>
+const D={"name": "N-BOXとスペーシアどっち", "file": "082_N-BOXとスペーシアどっち", "dur": 804.56665625, "segs": [], "subs": [{"t": 0.0, "x": "こんにちは、「となりの車屋さん」の店長です。"}, {"t": 3.066666666666667, "x": "今日は答えを最初に言ってしまいます。"}, {"t": 5.866666666666666, "x": "七十代のかたに店長がすすめるのは、スペーシアです。"}, {"t": 10.1, "x": "ただしひとつ条件が付きます。"}, {"t": 12.633333333333333, "x": "その条件を外すかたには、答えが逆になります。"}, {"t": 16.866666666666667, "x": "N-BOXのほうが良いということです。"}, {"t": 19.5, "x": "この条件が何なのかは、五つめの章でくわしくお話しします。"}, {"t": 24.4, "x": "きっかけはお店に来られたご夫婦の一言でした。"}, {"t": 27.9, "x": "「前の動画ではスペーシアと言っていましたね」。"}, {"t": 31.166666666666668, "x": "「でも近所の駐車場は、どこを見てもN-BOXなんです」。"}, {"t": 35.86666666666667, "x": "「みんなが乗っている車のほうが、安心じゃありませんか」。"}, {"t": 39.96666666666667, "x": "もっともなご質問です。"}, {"t": 42.06666666666667, "x": "数字で見ても、この二台は軽自動車の一番と二番です。"}, {"t": 46.8, "x": "全国軽自動車協会連合会の発表を見てみます。"}, {"t": 50.8, "x": "今年の四月から九月までの半年で、N-BOXは10万1564台でした。"}, {"t": 57.266666666666666, "x": "スペーシアは8万296台です。"}, {"t": 60.86666666666667, "x": "九月の一か月だけでも順位は同じでした。"}, {"t": 64.16666666666667, "x": "差はおよそ二万台ですから、たしかに街で見かけるのはN-BOXです。"}, {"t": 69.6, "x": "ですが売れている数と、七十代のかたに合うかどうかは別のお話です。"}, {"t": 75.26666666666667, "x": "今日はこの二台だけを、ひとつずつ並べて比べていきます。"}, {"t": 79.66666666666667, "x": "章ごとに勝ち負けを付けて、最後に表にまとめます。"}, {"t": 85.4, "x": "比べる前に同じところを先に片付けておきます。"}, {"t": 89.03333333333333, "x": "同じところで迷うのは時間がもったいないからです。"}, {"t": 93.0, "x": "まず外の大きさです。"}, {"t": 95.1, "x": "二台とも長さは3メートル39センチ5ミリです。"}, {"t": 99.73333333333333, "x": "幅は1メートル47センチ5ミリで、こちらもぴったり同じです。"}, {"t": 104.93333333333334, "x": "軽自動車には大きさの上限があります。"}, {"t": 107.93333333333334, "x": "二台ともその枠いっぱいに作ってあります。"}, {"t": 110.93333333333334, "x": "屋根の高さは、N-BOXが1790ミリ。"}, {"t": 114.9, "x": "スペーシアが1785ミリです。"}, {"t": 118.06666666666666, "x": "その差はわずか5ミリです。"}, {"t": 120.53333333333333, "x": "車庫に入るかどうかで悩むことはありません。"}, {"t": 123.76666666666667, "x": "つぎに後ろのドアです。"}, {"t": 125.96666666666667, "x": "二台とも左右どちらも横に滑るスライドドアです。"}, {"t": 130.13333333333333, "x": "隣の車にドアをぶつける心配がないのも同じです。"}, {"t": 134.23333333333332, "x": "それから税金です。"}, {"t": 136.2, "x": "軽自動車ですから、毎年の税金も車検の重量税も同じ金額になります。"}, {"t": 142.23333333333332, "x": "つまりこの二台は、外から見るとほとんど双子です。"}, {"t": 146.33333333333334, "x": "ちがいは中身と、付いてくる装備にあります。"}, {"t": 150.13333333333333, "x": "ここからはそのちがいだけを順番に見ていきます。"}, {"t": 155.06666666666666, "x": "最初は乗り降りです。"}, {"t": 157.1, "x": "七十代のかたがお店でいちばん気にされるところですね。"}, {"t": 161.66666666666666, "x": "スペーシアは、後ろの乗り口の段の高さを数字で出しています。"}, {"t": 166.66666666666666, "x": "地面から345ミリです。"}, {"t": 169.5, "x": "ドアが開いたときの入り口は、幅が600ミリです。"}, {"t": 173.7, "x": "高さは1250ミリと発表されています。"}, {"t": 177.3, "x": "持ち手を大きくした乗り降り用のグリップも付いています。"}, {"t": 181.3, "x": "一方のN-BOXは、乗り口の段の高さをホンダが数字で出していません。"}, {"t": 186.76666666666668, "x": "ですからどちらが何ミリ低いとは、今日は申し上げられません。"}, {"t": 191.26666666666668, "x": "数字の無いものを、店長の感覚で勝ち負けにするのはやめておきます。"}, {"t": 196.46666666666667, "x": "N-BOXはスライドドアの縁に、指をかけやすいくぼみを付けています。"}, {"t": 201.76666666666668, "x": "つかまる取っ手は、運転席と助手席と後ろの左右に全部付いています。"}, {"t": 207.53333333333333, "x": "どちらにもつかまる場所はある、ということです。"}, {"t": 211.23333333333332, "x": "もうひとつ室内の高さも見ておきます。"}, {"t": 214.3, "x": "N-BOXは1400ミリ、スペーシアは1415ミリです。"}, {"t": 219.3, "x": "こちらはスペーシアが15ミリ高くなっています。"}, {"t": 222.53333333333333, "x": "ただ頭を下げずに入れるのは、二台とも同じです。"}, {"t": 226.86666666666667, "x": "数字で勝ちと言えるのは、スペーシアのほうです。"}, {"t": 230.63333333333333, "x": "ただしこれは、相手が数字を出していないための勝ちです。"}, {"t": 234.96666666666667, "x": "お店では二台を続けて、乗って降りてを三回ずつしてみてください。"}, {"t": 240.13333333333333, "x": "膝の痛いほうの足から乗ってみると、ちがいが分かりやすくなります。"}, {"t": 246.53333333333333, "x": "つぎは運転席に座ったときの見え方です。"}, {"t": 249.9, "x": "七十代のかたが怖いと感じるのは、交差点で曲がるときの左右です。"}, {"t": 255.36666666666667, "x": "N-BOXはいまの型になったときに、小さな鏡を動かしました。"}, {"t": 260.1666666666667, "x": "左前の柱の内側にあった鏡を、ドアの鏡のほうへまとめたのです。"}, {"t": 265.96666666666664, "x": "これで左前の見通しがよくなったと、ホンダは説明しています。"}, {"t": 270.6333333333333, "x": "ハンドルの前の台も平らにして、前を見下ろしやすくしています。"}, {"t": 275.6333333333333, "x": "スペーシアは、前の柱そのものを細くしました。"}, {"t": 279.4, "x": "交差点で横断歩道を渡る人を見つけやすくなったと、スズキは説明しています。"}, {"t": 285.1, "x": "どちらも同じところを、ちがう方法で直しているのが面白いところです。"}, {"t": 290.4, "x": "柱の太さを角度で比べた数字は、どちらのメーカーも出していません。"}, {"t": 295.6666666666667, "x": "ですからこの章は引き分けにしておきます。"}, {"t": 298.6666666666667, "x": "運転席の座る高さも見え方に効いてきます。"}, {"t": 302.4, "x": "N-BOXは、全部のタイプで座る面の高さを上げ下げできます。"}, {"t": 307.3333333333333, "x": "スペーシアはいちばん安いHYBRID Gだけ、この調整が付いていません。"}, {"t": 312.6, "x": "ハンドルの角度を変える仕組みも、Gには付いていません。"}, {"t": 316.6666666666667, "x": "小柄なかたは、座る高さを上げられるかどうかで前の見え方が変わります。"}, {"t": 322.56666666666666, "x": "Gを選ばないなら引き分け、Gを選ぶならN-BOXの勝ちです。"}, {"t": 329.23333333333335, "x": "ここが今日の答えを決める章です。"}, {"t": 332.0, "x": "はじめに申し上げた条件も、この章にあります。"}, {"t": 335.6333333333333, "x": "ぶつかりそうなときに自動で止まるブレーキは、二台とも全車に付いています。"}, {"t": 341.1666666666667, "x": "ちがいが出るのはそのほかの三つです。"}, {"t": 344.3666666666667, "x": "一つめは、指で引くだけの電動のパーキングブレーキ。"}, {"t": 348.6, "x": "二つめは、信号で止まったときに足を離しても止まっていてくれる仕組み。"}, {"t": 354.06666666666666, "x": "三つめは、前の車について走ってくれる仕組みです。"}, {"t": 358.43333333333334, "x": "N-BOXは、この三つが全部のタイプに最初から付いています。"}, {"t": 363.23333333333335, "x": "いちばん安いN-BOXでも同じです。"}, {"t": 366.1666666666667, "x": "ホンダの装備表で、全部のタイプに丸が付いているのを確かめました。"}, {"t": 371.1666666666667, "x": "スペーシアはちがいます。"}, {"t": 373.1, "x": "HYBRID GとHYBRID Xには、この三つが付いていません。"}, {"t": 377.9, "x": "HYBRID Xにセーフティプラスパッケージという組み合わせを足すと、三つが付きます。"}, {"t": 384.0, "x": "この組み合わせの値段は6万6000円です。"}, {"t": 388.0, "x": "見た目を変えたスペーシアカスタムは、また別です。"}, {"t": 391.8666666666667, "x": "電動のパーキングブレーキと前の車について走る仕組みが、最初から付いています。"}, {"t": 398.2, "x": "ここではじめの条件が分かります。"}, {"t": 400.8666666666667, "x": "スペーシアを選ぶなら、セーフティプラスパッケージ付きのXにすること。"}, {"t": 405.9, "x": "これが店長の条件です。"}, {"t": 408.1, "x": "パーキングブレーキの重さについては、前に一本まるごとお話ししました。"}, {"t": 413.43333333333334, "x": "引く力も踏む力も要らないのは、七十代の手と足には大きな助けです。"}, {"t": 419.43333333333334, "x": "条件どおりに選べばこの章は引き分けです。"}, {"t": 423.1, "x": "条件を外して安いほうを選べば、N-BOXの勝ちになります。"}, {"t": 429.8, "x": "六つめは、走っているときの乗り心地と静かさです。"}, {"t": 433.93333333333334, "x": "ここは正直に申し上げますと、数字で比べられるものがありません。"}, {"t": 438.46666666666664, "x": "ホンダは車の骨組みを強くして、乗り心地を良くしたと説明しています。"}, {"t": 443.96666666666664, "x": "音を止める膜や音を吸う板を足して、静かにしたとも書いています。"}, {"t": 450.06666666666666, "x": "スズキも、揺れを抑える接着剤を使ったと説明しています。"}, {"t": 454.5, "x": "音をさえぎる仕切りを左右で八か所入れた、とも書いています。"}, {"t": 459.46666666666664, "x": "両方とも静かになったと言っているわけです。"}, {"t": 462.8333333333333, "x": "車の重さは、N-BOXが910キロ。"}, {"t": 466.56666666666666, "x": "スペーシアのXが880キロです。"}, {"t": 469.9, "x": "重い車のほうが落ち着いて感じることもあります。"}, {"t": 473.7, "x": "ですが30キロの差で決めつけるのは無理があります。"}, {"t": 477.53333333333336, "x": "そこでこの章は、お客さまご自身の耳とお尻で決めていただきます。"}, {"t": 482.8, "x": "試しに乗るときは、お店の前の平らな道だけで終わらせないでください。"}, {"t": 488.1, "x": "いつも通る、少し荒れた道や段差のある道を走らせてもらってください。"}, {"t": 493.6, "x": "ラジオを切って窓を閉め、二台を同じ道で走るのがこつです。"}, {"t": 498.7, "x": "この章の勝ち負けは表では引き分けにしておきます。"}, {"t": 504.2, "x": "お金の話はこの一章だけにします。"}, {"t": 507.3333333333333, "x": "まず値段です。"}, {"t": 509.03333333333336, "x": "N-BOXは、いちばん安いタイプで176万8800円からです。"}, {"t": 514.9333333333333, "x": "スペーシアのいちばん安いHYBRID Gは、153万100円からです。"}, {"t": 520.5333333333333, "x": "ここだけ見ると、スペーシアが23万円以上安く見えます。"}, {"t": 525.4666666666667, "x": "ですが五つめの章の条件を思い出してください。"}, {"t": 529.1666666666666, "x": "セーフティプラスパッケージを付けたHYBRID Xは、177万1000円です。"}, {"t": 535.6666666666666, "x": "N-BOXのいちばん安いタイプとの差は、たった2200円です。"}, {"t": 540.6666666666666, "x": "三つの装備をそろえると、二台の値段はほぼ並ぶということですね。"}, {"t": 545.8666666666667, "x": "どれも税込みです。"}, {"t": 547.7666666666667, "x": "前輪で走る型の、メーカーが出している値段です。"}, {"t": 551.9666666666667, "x": "つぎに燃費です。"}, {"t": 553.7333333333333, "x": "N-BOXは、1リットルで21.6キロ走ります。"}, {"t": 558.0666666666667, "x": "パッケージを付けたスペーシアのXは、23.9キロです。"}, {"t": 562.8333333333334, "x": "1000キロ走るのに使うガソリンで比べてみます。"}, {"t": 566.3, "x": "N-BOXはおよそ46リットルです。"}, {"t": 569.2666666666667, "x": "スペーシアはおよそ42リットルです。"}, {"t": 572.5, "x": "1000キロごとに、およそ4リットル半のちがいが出る計算です。"}, {"t": 577.4, "x": "値段がほぼ同じなら、燃費の良いほうが毎月少しずつ得をします。"}, {"t": 583.1666666666666, "x": "この章はスペーシアの勝ちです。"}, {"t": 587.1333333333333, "x": "ここまでの勝ち負けを表にまとめます。"}, {"t": 590.1666666666666, "x": "乗り降りは、数字を出しているスペーシアの勝ち。"}, {"t": 593.9666666666667, "x": "室内の高さは、15ミリですがスペーシアが上です。"}, {"t": 598.5333333333333, "x": "見え方は引き分けです。"}, {"t": 600.5, "x": "座る高さの調整は、条件どおりのXなら引き分けです。"}, {"t": 605.2666666666667, "x": "安全装備も、条件どおりのXなら引き分けです。"}, {"t": 609.5333333333333, "x": "乗り心地と静かさは、乗って決める引き分けです。"}, {"t": 613.5666666666667, "x": "値段は2200円差でほぼ引き分け。"}, {"t": 616.6333333333333, "x": "燃費はスペーシアの勝ちです。"}, {"t": 618.9666666666667, "x": "小回りも見ておきます。"}, {"t": 621.0, "x": "スペーシアのXは4.4メートルで、N-BOXは4.5メートルです。"}, {"t": 626.5666666666667, "x": "わずか10センチですがこれもスペーシアが上です。"}, {"t": 630.7, "x": "勝ちの数で数えますと、スペーシアが四つです。"}, {"t": 634.6666666666666, "x": "N-BOXの勝ちはひとつもありません。"}, {"t": 637.3333333333334, "x": "ずいぶん差が付いたように見えます。"}, {"t": 639.8, "x": "ですが条件を外すと表は大きく変わります。"}, {"t": 644.3666666666667, "x": "安いGを選ぶと、座る高さの調整と三つの装備がN-BOXの勝ちになります。"}, {"t": 650.8333333333334, "x": "同じスペーシアでも、どのグレードを買うかで答えが入れ替わる。"}, {"t": 655.1666666666666, "x": "今日の表でいちばん覚えていただきたいのはここです。"}, {"t": 660.2666666666667, "x": "ではN-BOXを選んだほうがいいのは、どんなかたでしょうか。"}, {"t": 664.8, "x": "いちばんはっきりしているのは、スペーシアのGで考えていたかたです。"}, {"t": 669.8666666666667, "x": "たとえば予算を150万円台と決めて、Gしか見ていなかったかた。"}, {"t": 675.3333333333334, "x": "その場合は座る高さの調整も、指で引くパーキングブレーキも付いてきません。"}, {"t": 680.7666666666667, "x": "予算の枠を少し広げられるなら、N-BOXのほうが七十代には安心です。"}, {"t": 686.5333333333333, "x": "二つめは、点検に通うお店が近いほうを選びたいかたです。"}, {"t": 691.4333333333333, "x": "軽自動車は、買ってからのお付き合いのほうが長い買い物です。"}, {"t": 696.0, "x": "ご自宅からホンダのお店が近いなら、それもN-BOXを選ぶ理由になります。"}, {"t": 701.7, "x": "これは表には載らない話ですが、毎年の点検を考えると大事です。"}, {"t": 707.4666666666667, "x": "三つめは、試しに乗ってN-BOXのほうが落ち着くと感じたかたです。"}, {"t": 712.6, "x": "六つめの章でお話ししたとおり、乗り心地は数字で決められません。"}, {"t": 717.2, "x": "お尻が「こっちだ」と言ったら、その感覚を信じてください。"}, {"t": 721.5666666666667, "x": "逆に、スペーシアのXにセーフティプラスパッケージを付けられるかた。"}, {"t": 726.4333333333333, "x": "そして近くにスズキのお店もあるかた。"}, {"t": 729.4333333333333, "x": "このかたは迷わずスペーシアで大丈夫です。"}, {"t": 734.3333333333334, "x": "今日はN-BOXとスペーシアの、二台だけを比べました。"}, {"t": 738.8333333333334, "x": "七十代のかたに店長がすすめるのは、スペーシアです。"}, {"t": 743.2, "x": "ただしセーフティプラスパッケージを付けた、HYBRID Xに限ります。"}, {"t": 748.1, "x": "値段は177万1000円です。"}, {"t": 751.3666666666667, "x": "N-BOXのいちばん安いタイプと、2200円しか変わりません。"}, {"t": 756.1666666666666, "x": "その値段で乗り口の高さ345ミリと、燃費の23.9キロが付いてきます。"}, {"t": 762.8333333333334, "x": "反対にスペーシアのGを選ぶつもりなら、N-BOXにしてください。"}, {"t": 767.6333333333333, "x": "N-BOXは、どのタイプを選んでも装備の差が出ません。"}, {"t": 771.7333333333333, "x": "売れている数の一番と二番は、どちらを選んでも外れではありません。"}, {"t": 777.2333333333333, "x": "外れになるのは、グレードの中身を見ずに値段だけで決めたときです。"}, {"t": 782.4333333333333, "x": "お店で見積もりをもらったら、一行だけ探してください。"}, {"t": 786.7, "x": "セーフティプラスパッケージの文字があるかどうかです。"}, {"t": 790.2333333333333, "x": "値段や装備は改良のたびに変わることがあります。"}, {"t": 793.9666666666667, "x": "今日の数字は、2026年10月にメーカーの公式ページで確かめました。"}, {"t": 800.1666666666666, "x": "それではまた、次の動画でお会いしましょう。"}], "w": 720, "h": 405, "n_cuts": 0, "noimage": true};
+const a=document.getElementById('a');
+const now=document.getElementById('now'), nl=document.getElementById('nextline');
+const pp=document.getElementById('pp'), sk=document.getElementById('sk');
+const tm=document.getElementById('tm'), bdg=document.getElementById('bdg');
+const SMOOTH=matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth';
+document.getElementById('ttl').innerHTML=D.name+
+  '<span class="meta">'+fmt(D.dur)+'　字幕'+D.subs.length+'　（音声＋字幕だけ）</span>';
+
+function fmt(s){s=Math.max(0,s|0);return (s/60|0)+':'+String(s%60).padStart(2,'0')}
+function subIdx(t){let lo=0,hi=D.subs.length-1,r=-1;
+  while(lo<=hi){const m=(lo+hi)>>1; if(D.subs[m].t<=t){r=m;lo=m+1}else hi=m-1} return r}
+
+let cur=-2;
+function paint(t){
+  const i=subIdx(t);
+  if(i!==cur){cur=i;
+    now.textContent = i<0 ? (D.subs.length?'（ここはまだ字幕がありません）'
+                                          :'（この回に字幕はありません）')
+                         : D.subs[i].x;
+    const n=D.subs[i+1]; nl.textContent = n ? '次　'+n.x : '';
+    bdg.textContent = D.subs.length ? '字幕 '+(i+1)+' / '+D.subs.length : '字幕なし';
+    mark('subs',i);
+  }
+  tm.textContent=fmt(t)+' / '+fmt(D.dur);
+  if(!sk.dragging) sk.value=Math.round(t/D.dur*1000);
+}
+function mark(pane,i){
+  const el=document.getElementById(pane);
+  if(el.dataset.on==i) return; el.dataset.on=i;
+  el.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));
+  const t=el.children[i]; if(!t) return; t.classList.add('on');
+  if(!el.hidden){const r=t.offsetTop-el.clientHeight/2; el.scrollTo({top:r,behavior:SMOOTH})}
+}
+
+D.subs.forEach(s=>{const d=document.createElement('div');d.className='row';
+  d.innerHTML='<b></b><span></span>';
+  d.querySelector('b').textContent=fmt(s.t);
+  d.querySelector('span').textContent=s.x;
+  d.onclick=()=>go(s.t); document.getElementById('subs').appendChild(d)});
+const mk=document.getElementById('mk');
+D.subs.forEach(s=>{const i=document.createElement('i');
+  i.style.left=(s.t/D.dur*100)+'%'; mk.appendChild(i)});
+
+function go(t){a.currentTime=Math.min(Math.max(0,t)+0.01,Math.max(0.05,D.dur-0.05)); paint(a.currentTime)}
+pp.onclick=()=>a.paused?a.play():a.pause();
+const SPEEDS=[1,1.25,1.5,1.75,2,3,0.75],SPN=['等速','1.25倍','1.5倍','1.75倍','2倍','3倍','0.75倍'];
+let si=0; const sp=document.getElementById('sp');
+sp.onclick=()=>{si=(si+1)%SPEEDS.length; a.playbackRate=SPEEDS[si];
+  a.preservesPitch=a.mozPreservesPitch=a.webkitPreservesPitch=true; sp.textContent=SPN[si]};
+a.onplay=()=>pp.textContent='❚❚ 停止'; a.onpause=()=>pp.textContent='▶ 再生';
+a.ontimeupdate=()=>paint(a.currentTime);
+sk.oninput=()=>{sk.dragging=1; go(sk.value/1000*D.dur)};
+sk.onchange=()=>sk.dragging=0;
+document.getElementById('pv').onclick=()=>{const i=subIdx(a.currentTime);
+  go(i>0?D.subs[i-1].t:0)};
+document.getElementById('nx').onclick=()=>{const i=subIdx(a.currentTime);
+  if(i+1<D.subs.length) go(D.subs[i+1].t)};
+addEventListener('keydown',e=>{const k=e.key;
+  if(k===' '){e.preventDefault();pp.onclick()}
+  else if(k==='ArrowRight')go(a.currentTime+5); else if(k==='ArrowLeft')go(a.currentTime-5);
+  else if(k==='ArrowDown'){e.preventDefault();document.getElementById('nx').onclick()}
+  else if(k==='ArrowUp'){e.preventDefault();document.getElementById('pv').onclick()}
+  else if(k==='s'||k==='S')sp.onclick()});
+paint(0);
+</script>
