@@ -1,0 +1,133 @@
+<title>坂の町の一台</title>
+<style>
+:root{--bg:#f6f4f1;--panel:#fffefc;--ink:#1c1a19;--dim:#6e6862;--line:#e2ded7;--accent:#b8422f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}}
+:root[data-theme="dark"]{--bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);margin:0;-webkit-text-size-adjust:100%;
+  font:16px/1.7 -apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic UI",sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+h1{font-size:17px;margin:4px 0 14px;font-weight:600;letter-spacing:.02em}
+.meta{color:var(--dim);font-size:13px;font-weight:400;margin-left:8px}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:12px;position:relative;
+  min-height:40vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:46px 20px 26px;box-shadow:0 2px 14px rgba(0,0,0,.10)}
+#now{margin:0;text-align:center;white-space:pre-wrap;word-break:break-word;font-weight:700;
+  font-size:clamp(23px,5.4vw,42px);line-height:1.5;letter-spacing:.01em}
+#nextline{margin:16px 0 0;text-align:center;white-space:pre-wrap;word-break:break-word;
+  color:var(--dim);font-size:clamp(13px,2.8vw,17px);line-height:1.6}
+.badge{position:absolute;left:12px;top:12px;background:rgba(127,127,127,.16);color:var(--dim);
+  font-size:12px;padding:3px 9px;border-radius:20px;line-height:1.6;letter-spacing:.04em}
+.bar{display:flex;align-items:center;gap:10px;margin:12px 0 6px;flex-wrap:wrap}
+button{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;
+  padding:9px 14px;font-size:15px;cursor:pointer;font-family:inherit}
+button:active{transform:translateY(1px)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.play{background:var(--accent);color:#fff;border-color:transparent;min-width:80px;font-weight:600}
+.time{font-variant-numeric:tabular-nums;color:var(--dim);font-size:13px;margin-left:auto}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.marks{position:relative;height:7px;margin:2px 0 14px}
+.marks i{position:absolute;top:0;width:1px;height:7px;background:var(--line)}
+.tabs{display:flex;gap:6px;margin:18px 0 10px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;
+  color:var(--ink);padding:7px 12px;font-weight:600}
+.list{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+  -webkit-overflow-scrolling:touch}
+.row{display:flex;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.row:last-child{border-bottom:0}
+.row:hover{background:rgba(127,127,127,.07)}
+.row.on{background:rgba(184,66,47,.12)}
+.row b{color:var(--dim);font-variant-numeric:tabular-nums;font-weight:500;font-size:13px;
+  min-width:48px;flex:none;padding-top:2px}
+.row span{white-space:pre-wrap;flex:1;font-size:16px;line-height:1.65}
+.tip{color:var(--dim);font-size:12.5px;margin:10px 2px 0}
+@media(max-width:620px){.wrap{padding:10px}.time{font-size:12px}
+  .bar button{padding:9px 11px;font-size:14px}.stage{padding:42px 14px 22px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+<div class="wrap">
+<h1 id="ttl"></h1>
+<div class="stage"><div class="badge" id="bdg"></div>
+  <p id="now"></p><p id="nextline"></p></div>
+<div class="bar">
+  <button class="play" id="pp">▶ 再生</button>
+  <button id="pv">◀ 前の字幕</button>
+  <button id="nx">次の字幕 ▶</button>
+  <button id="sp">等速</button>
+  <span class="time" id="tm">0:00 / 0:00</span>
+</div>
+<input type="range" id="sk" min="0" max="1000" value="0">
+<div class="marks" id="mk"></div>
+<div class="tabs"><button class="on">字幕</button></div>
+<div class="list" id="subs"></div>
+<p class="tip">スペース＝再生/停止　←→＝5秒送り　↑↓＝字幕送り。字幕をタップするとそこへ飛びます。</p>
+</div>
+<audio id="a" src="audio.mp3" preload="auto"></audio>
+<script>
+const D={"name": "坂の町の一台", "file": "096_坂の町の一台", "dur": 810.8, "segs": [], "subs": [{"t": 0.0, "x": "こんにちは、「となりの車屋さん」の店長です。"}, {"t": 3.066666666666667, "x": "12月のある朝を思い浮かべてみてください。"}, {"t": 6.9, "x": "買い物の帰り道に家へ続く坂の下で車が止まります。"}, {"t": 11.366666666666667, "x": "前の車が坂の途中で止まってなかなか動きません。"}, {"t": 15.566666666666666, "x": "日陰の路面は白っぽく光っていて、少し凍っているようにも見えます。"}, {"t": 20.833333333333332, "x": "ここで止まったら、うまく上り直せるだろうか。"}, {"t": 24.433333333333334, "x": "坂の上に住んでいるかたなら、一度はこんな思いをされたはずです。"}, {"t": 29.366666666666667, "x": "ハンドルを握る手に、つい力が入ってしまう朝です。"}, {"t": 33.7, "x": "お店でも、高台にお住まいのお客さまからよく相談を受けます。"}, {"t": 38.233333333333334, "x": "「坂の途中で止まるのが年々こわくなってきてね」。"}, {"t": 41.766666666666666, "x": "「上り坂でアクセルを強く踏むのも、なんだか気が重いんだ」。"}, {"t": 46.53333333333333, "x": "運転のしかたを変えるお話は、今日はいたしません。"}, {"t": 50.4, "x": "長年の運転のくせは、そう簡単には変わらないものです。"}, {"t": 54.86666666666667, "x": "それなら車のほうを、坂に向いたものに替えてしまうのが近道です。"}, {"t": 60.233333333333334, "x": "今日は車の側で坂の毎日を楽にする一台をお答えします。"}, {"t": 65.26666666666667, "x": "その一台は日産のノートです。"}, {"t": 67.93333333333334, "x": "なぜノートなのかを、坂の上の暮らしに合わせて順にお話しします。"}, {"t": 73.26666666666667, "x": "途中で雪の坂のときの選びかたもお伝えします。"}, {"t": 78.33333333333333, "x": "はじめに、坂の上に住むと車に何がほしくなるかを整理します。"}, {"t": 83.13333333333334, "x": "店長は3つあると考えています。"}, {"t": 85.83333333333333, "x": "ひとつめは、上り坂で力が足りないと感じないことです。"}, {"t": 90.26666666666667, "x": "アクセルを深く踏み込まなくても、すっと上ってくれる車です。"}, {"t": 95.2, "x": "踏み込む量が少なければ、足の負担も気持ちの負担も軽くなります。"}, {"t": 100.3, "x": "坂の多い町では、これが一日に何度もくり返されます。"}, {"t": 105.13333333333334, "x": "ふたつめは、坂の途中で止まったときに後ろへ下がらないことです。"}, {"t": 110.03333333333333, "x": "信号や前の車で止まるたびに、ひやっとするのはつらいものです。"}, {"t": 115.1, "x": "みっつめは、冬の朝の滑りやすい坂でも出かけられることです。"}, {"t": 119.96666666666667, "x": "雪が降る土地ならここがいちばんの心配になります。"}, {"t": 124.06666666666666, "x": "雪の日は出かけない、と決めているかたもいらっしゃるでしょう。"}, {"t": 128.13333333333333, "x": "それでも病院の予約や、急な用事は待ってくれません。"}, {"t": 132.36666666666667, "x": "この3つに、ひとつの車でまとめて答えられるのがノートです。"}, {"t": 137.3, "x": "順番に見ていきましょう。"}, {"t": 140.83333333333334, "x": "ノートは日産の小型の普通車です。"}, {"t": 143.86666666666667, "x": "今の形は2020年の12月に売り出されました。"}, {"t": 148.3, "x": "大きさは長さが4045ミリ、幅が1695ミリ、高さが1520ミリです。"}, {"t": 156.16666666666666, "x": "幅は5ナンバーの枠に収まっていて、細い坂道でも扱いやすい大きさです。"}, {"t": 162.16666666666666, "x": "そして今のノートには、ガソリンだけで走る形がありません。"}, {"t": 166.93333333333334, "x": "全部がイーパワーという仕組みの車になっています。"}, {"t": 170.73333333333332, "x": "前の回では、ハイブリッドの損得を計算したときにも名前が出ました。"}, {"t": 175.93333333333334, "x": "今日はお金ではなく、坂道との相性のほうからお話しします。"}, {"t": 180.73333333333332, "x": "このイーパワーこそが坂の上のかたに勧める理由です。"}, {"t": 185.13333333333333, "x": "日産の発表では、モーターだけでタイヤを回す仕組みとされています。"}, {"t": 190.36666666666667, "x": "エンジンも積んでいますが、その仕事は電気を作ることです。"}, {"t": 195.03333333333333, "x": "日産の諸元表でもエンジンは「発電用」と書かれています。"}, {"t": 199.73333333333332, "x": "つまりノートはタイヤを回すのはいつもモーターという車です。"}, {"t": 204.5, "x": "ここが坂道でどう効いてくるのかを次の章でお話しします。"}, {"t": 209.2, "x": "先に言ってしまうと、坂の上のかたにはこの作りがいちばん効きます。"}, {"t": 215.93333333333334, "x": "エンジンで走る車とモーターで走る車。"}, {"t": 220.06666666666666, "x": "違いはいろいろありますが、坂道で大事なのはひとつだけです。"}, {"t": 224.76666666666668, "x": "それは力が出てくるまでの間です。"}, {"t": 227.76666666666668, "x": "エンジンは回転が上がってくるにつれて力が強くなります。"}, {"t": 232.36666666666667, "x": "ですから上り坂の発進では、アクセルを踏み込んで回転を上げる必要があります。"}, {"t": 238.1, "x": "ブーンとうなる音が大きくなるのは、このためです。"}, {"t": 242.13333333333333, "x": "坂がきついほど、踏み込みは深くなります。"}, {"t": 245.43333333333334, "x": "モーターは回り始めたその瞬間から強い力を出せます。"}, {"t": 250.0, "x": "日産の諸元表でも、いちばん強い力が回転ゼロから出ると書かれています。"}, {"t": 256.3, "x": "モーターの力の数字は高速道路の合流の回でお話ししました。"}, {"t": 261.56666666666666, "x": "今日は数字ではなく坂でどう感じるかをお伝えします。"}, {"t": 266.1, "x": "上り坂の途中から走り出すとき、アクセルを少し踏むだけで車が前へ出ます。"}, {"t": 272.6, "x": "回転を上げて待つ時間がないのでもたもたしません。"}, {"t": 276.43333333333334, "x": "「坂でこんなに踏まなくていいのか」と驚くかたが多いところです。"}, {"t": 281.23333333333335, "x": "踏み込む量が少ないと足を大きく動かさずにすみます。"}, {"t": 285.8333333333333, "x": "足首や膝に不安があるかたほど、この違いはありがたく感じるはずです。"}, {"t": 291.3, "x": "試乗のときは、坂の途中でいったん止まって走り出してみてください。"}, {"t": 296.23333333333335, "x": "そこで足をどれだけ動かしたかを、ご自分で感じてみるのがいちばんです。"}, {"t": 301.5, "x": "もうひとつ、日産はエンジンがかかる回数を減らして静かにしたと発表しています。"}, {"t": 307.5, "x": "坂を上るたびにエンジンがうなる、ということが少ない車です。"}, {"t": 312.5, "x": "ただし、電気が足りなくなればエンジンがかかって発電します。"}, {"t": 317.1, "x": "いつも無音というわけではないことは、知っておいてください。"}, {"t": 321.5, "x": "それでも上り坂のたびに大きな音がしないのは、毎日のことだけにありがたいものです。"}, {"t": 329.46666666666664, "x": "次は坂の途中で止まったときのお話です。"}, {"t": 332.8666666666667, "x": "ノートには、坂道での発進を助けるヒルスタートアシストが付いています。"}, {"t": 338.7, "x": "坂で止まった状態から走り出すとき、足をブレーキからアクセルへ移します。"}, {"t": 344.4, "x": "そのあいだに車が後ろへ下がりにくくする装備です。"}, {"t": 348.3333333333333, "x": "日産の装備表ではノートのどの形にも標準で付いています。"}, {"t": 353.3, "x": "それから、スイッチで掛けるパーキングブレーキも全部の形に付いています。"}, {"t": 358.6, "x": "信号待ちで足を離しても止まっていてくれる、オートブレーキホールドもあります。"}, {"t": 364.1, "x": "平らな道の信号待ちでは足を休められる便利な機能です。"}, {"t": 368.76666666666665, "x": "ただしここはぜひ覚えておいてください。"}, {"t": 371.7, "x": "日産の説明にはこんな注意書きがあります。"}, {"t": 374.93333333333334, "x": "急な坂道や滑りやすい路面では、この機能を使わないでください、というものです。"}, {"t": 381.73333333333335, "x": "機能が働いていても、車が動き出すおそれがあるからだそうです。"}, {"t": 386.7, "x": "坂の上に住むかたこそこの注意書きは大事です。"}, {"t": 390.73333333333335, "x": "急な坂では機能にまかせず、ブレーキをしっかり踏んで止まってください。"}, {"t": 395.9, "x": "便利な装備ほど、使ってはいけない場面を先に知っておくと安心です。"}, {"t": 401.1666666666667, "x": "販売店で受け取るときにも、この使いかたを一度教えてもらってください。"}, {"t": 406.1333333333333, "x": "ついでにもうひとつペダルの踏み間違いへの備えです。"}, {"t": 410.03333333333336, "x": "ノートには、踏み間違い衝突防止アシストがどの形にも付いています。"}, {"t": 415.7, "x": "ぶつかりそうなときに止まろうとする自動のブレーキも、全部の形です。"}, {"t": 421.2, "x": "坂の途中の狭い駐車場で、前の壁がこわいかたにも心強い装備です。"}, {"t": 428.93333333333334, "x": "3つめの雪の坂のお話に移ります。"}, {"t": 431.96666666666664, "x": "雪が降る土地で坂の上に住むなら、店長はノートの四輪駆動を勧めます。"}, {"t": 438.0, "x": "形の名前はX FOURです。"}, {"t": 440.43333333333334, "x": "この形には前だけでなく後ろにもモーターが付いています。"}, {"t": 445.23333333333335, "x": "日産は、前後に備えた2つのモーターで4つのタイヤを回すと説明しています。"}, {"t": 451.46666666666664, "x": "前のタイヤが滑りそうなときでも、後ろのタイヤでも車を押し出せます。"}, {"t": 456.6333333333333, "x": "雪の坂の発進では、この差がとても大きくなります。"}, {"t": 461.1666666666667, "x": "前輪駆動の車で雪の坂を上れずに、途中で止まってしまう。"}, {"t": 466.8, "x": "雪の多い土地では、冬になると見かける光景です。"}, {"t": 471.6333333333333, "x": "四輪駆動は、その心配を小さくしてくれます。"}, {"t": 475.73333333333335, "x": "もうひとつ、四輪駆動のノートには冬の装備が最初から付いています。"}, {"t": 481.23333333333335, "x": "ハンドルが温まるヒーター、前の席のシートヒーター。"}, {"t": 485.8, "x": "それから、ヒーター付きのドアミラーと、後ろの席への温風の出口です。"}, {"t": 491.43333333333334, "x": "日産の装備表では四輪駆動の形には標準で付いています。"}, {"t": 496.6333333333333, "x": "前輪駆動の形では注文のときに選ぶ追加の装備になります。"}, {"t": 502.2, "x": "冬の朝、冷えたハンドルを握るのがつらいかたには、うれしい装備です。"}, {"t": 507.8666666666667, "x": "ただし四輪駆動にすると車は少し重くなります。"}, {"t": 512.2666666666667, "x": "車両重量は前輪駆動が1230キロ、四輪駆動が1350キロです。"}, {"t": 519.7666666666667, "x": "国の審査の燃費も前輪駆動の28.4キロに対して、四輪駆動は23.8キロです。"}, {"t": 527.4666666666667, "x": "値段も前輪駆動より高くなりますので、見積もりで差を確かめてください。"}, {"t": 532.8, "x": "雪がほとんど降らない土地なら、前輪駆動のノートで十分です。"}, {"t": 538.0333333333333, "x": "雪の坂がある土地なら、四輪駆動の値打ちは十分にあります。"}, {"t": 543.2, "x": "迷ったら、去年の冬に雪で困った日が何日あったかを思い出してみてください。"}, {"t": 549.2666666666667, "x": "そしてどちらを選んでも冬用のタイヤは別に必要です。"}, {"t": 553.5, "x": "四輪駆動は走り出す力を助けてくれますが、止まる力までは増やしてくれません。"}, {"t": 559.6666666666666, "x": "下り坂では、四輪駆動でもふだんより早めにゆっくり下りてください。"}, {"t": 566.4666666666667, "x": "ここで車の大きさのお話をしておきます。"}, {"t": 569.6333333333333, "x": "坂の上の家は、車庫が狭かったり、道が細かったりすることが多いものです。"}, {"t": 575.9666666666667, "x": "ノートの小回りの数字は4.9メートルです。"}, {"t": 580.1333333333333, "x": "前輪駆動でも四輪駆動でも同じ4.9メートルです。"}, {"t": 584.5666666666667, "x": "小型の普通車として、ふつうに扱える小回りです。"}, {"t": 589.5, "x": "坂の上の行き止まりで向きを変えるときも、何度も切り返さずにすみます。"}, {"t": 595.1, "x": "幅は1695ミリなので、昔からの車庫にも収まりやすい大きさです。"}, {"t": 601.3333333333334, "x": "車の中は長さが2030ミリ、高さが1240ミリと日産は発表しています。"}, {"t": 608.4, "x": "後ろの席にも大人が座れるゆとりがあります。"}, {"t": 611.7666666666667, "x": "坂の途中で車を停めるときは平らな所以上に気をつかいます。"}, {"t": 617.1666666666666, "x": "電動のパーキングブレーキはスイッチひとつで掛けられます。"}, {"t": 621.4666666666667, "x": "レバーを強く引き上げる力が要らないので、手の力に不安があっても扱えます。"}, {"t": 627.4333333333333, "x": "坂で停めたあとは、メーターでブレーキが掛かった表示を確かめる。"}, {"t": 632.2333333333333, "x": "この習慣をつけておくと、坂の上の駐車も落ち着いてできます。"}, {"t": 636.8666666666667, "x": "それから、坂で停めるときはハンドルを切っておくと安心です。"}, {"t": 641.8666666666667, "x": "万一車が動いても、タイヤが道の端に当たって止まりやすくなります。"}, {"t": 648.6, "x": "ここまでノートを勧めてきましたが合わないかたもいます。"}, {"t": 652.6333333333333, "x": "ひとつめは、軽自動車の大きさから一歩も大きくしたくないかたです。"}, {"t": 657.6666666666666, "x": "ノートは軽自動車より長さで65センチほど大きくなります。"}, {"t": 662.3333333333334, "x": "坂の上の道がとても細く、軽でないと通れないなら、無理はしないでください。"}, {"t": 668.8666666666667, "x": "ふたつめは、後ろの扉が横に開くスライドドアがほしいかたです。"}, {"t": 673.9, "x": "ノートの後ろの扉はふつうの開き戸です。"}, {"t": 677.5333333333333, "x": "坂の途中で扉を開けると、重さで勢いよく開いたり閉まったりします。"}, {"t": 682.9333333333333, "x": "そこが気になるかたは、スライドドアの車のほうが向いています。"}, {"t": 687.6, "x": "坂の途中で乗り降りすることが多いなら、扉の開きかたは大事な決め手です。"}, {"t": 693.8, "x": "みっつめは、車の走る音がほとんどしないことに慣れないかたです。"}, {"t": 698.7, "x": "モーターで走り出すときは静かなので、最初は戸惑うかたもいます。"}, {"t": 704.4333333333333, "x": "逆に歩いている人が車に気づきにくいこともあります。"}, {"t": 708.3, "x": "ノートには車が近づいたことを音で知らせる装置が付いていますが、過信は禁物です。"}, {"t": 715.0, "x": "これらに当てはまらないなら、坂の上の暮らしにノートはよく合います。"}, {"t": 720.0, "x": "当てはまるかたは、無理にノートに合わせる必要はありません。"}, {"t": 724.4, "x": "坂の上の暮らしに合う車は、ほかにもちゃんとあります。"}, {"t": 730.3, "x": "最後に今日のお話をまとめます。"}, {"t": 733.1, "x": "坂の上に住むかたが車に求めるのは3つでした。"}, {"t": 736.9666666666667, "x": "上り坂で力が足りないこと、坂の途中で下がること、冬の坂。"}, {"t": 742.8, "x": "この3つの心配をひとつの車で減らせるのがノートです。"}, {"t": 747.4, "x": "今のノートは全部がモーターでタイヤを回す車です。"}, {"t": 751.6, "x": "回り始めた瞬間から強い力が出るので、坂でアクセルを深く踏まずにすみます。"}, {"t": 758.0, "x": "坂道発進を助ける装備と、電動のパーキングブレーキは全部の形に付いています。"}, {"t": 765.0666666666667, "x": "ただし止まっていてくれる機能は、急な坂や滑りやすい道では使わないでください。"}, {"t": 771.1666666666666, "x": "雪の坂がある土地なら、後ろにもモーターが付いたX FOURを選んでください。"}, {"t": 777.0, "x": "冬の装備も最初から付いてきます。"}, {"t": 779.7333333333333, "x": "そして試乗のときは、平らな道ではなく坂道を走らせてもらってください。"}, {"t": 785.6333333333333, "x": "できればご自宅の坂にいちばん近い坂がいちばんです。"}, {"t": 789.7333333333333, "x": "販売店に頼めば、近くの坂のある道を走らせてくれることもあります。"}, {"t": 795.1333333333333, "x": "なお装備や値段は改良のたびに変わることがあります。"}, {"t": 799.3333333333334, "x": "買う前には販売店で今の装備表を確かめてください。"}, {"t": 803.6, "x": "坂の上までどうぞ気をつけてお帰りください。"}, {"t": 807.2666666666667, "x": "では今日はここまでにいたします。"}], "w": 720, "h": 405, "n_cuts": 0, "noimage": true};
+const a=document.getElementById('a');
+const now=document.getElementById('now'), nl=document.getElementById('nextline');
+const pp=document.getElementById('pp'), sk=document.getElementById('sk');
+const tm=document.getElementById('tm'), bdg=document.getElementById('bdg');
+const SMOOTH=matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth';
+document.getElementById('ttl').innerHTML=D.name+
+  '<span class="meta">'+fmt(D.dur)+'　字幕'+D.subs.length+'　（音声＋字幕だけ）</span>';
+
+function fmt(s){s=Math.max(0,s|0);return (s/60|0)+':'+String(s%60).padStart(2,'0')}
+function subIdx(t){let lo=0,hi=D.subs.length-1,r=-1;
+  while(lo<=hi){const m=(lo+hi)>>1; if(D.subs[m].t<=t){r=m;lo=m+1}else hi=m-1} return r}
+
+let cur=-2;
+function paint(t){
+  const i=subIdx(t);
+  if(i!==cur){cur=i;
+    now.textContent = i<0 ? (D.subs.length?'（ここはまだ字幕がありません）'
+                                          :'（この回に字幕はありません）')
+                         : D.subs[i].x;
+    const n=D.subs[i+1]; nl.textContent = n ? '次　'+n.x : '';
+    bdg.textContent = D.subs.length ? '字幕 '+(i+1)+' / '+D.subs.length : '字幕なし';
+    mark('subs',i);
+  }
+  tm.textContent=fmt(t)+' / '+fmt(D.dur);
+  if(!sk.dragging) sk.value=Math.round(t/D.dur*1000);
+}
+function mark(pane,i){
+  const el=document.getElementById(pane);
+  if(el.dataset.on==i) return; el.dataset.on=i;
+  el.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));
+  const t=el.children[i]; if(!t) return; t.classList.add('on');
+  if(!el.hidden){const r=t.offsetTop-el.clientHeight/2; el.scrollTo({top:r,behavior:SMOOTH})}
+}
+
+D.subs.forEach(s=>{const d=document.createElement('div');d.className='row';
+  d.innerHTML='<b></b><span></span>';
+  d.querySelector('b').textContent=fmt(s.t);
+  d.querySelector('span').textContent=s.x;
+  d.onclick=()=>go(s.t); document.getElementById('subs').appendChild(d)});
+const mk=document.getElementById('mk');
+D.subs.forEach(s=>{const i=document.createElement('i');
+  i.style.left=(s.t/D.dur*100)+'%'; mk.appendChild(i)});
+
+function go(t){a.currentTime=Math.min(Math.max(0,t)+0.01,Math.max(0.05,D.dur-0.05)); paint(a.currentTime)}
+pp.onclick=()=>a.paused?a.play():a.pause();
+const SPEEDS=[1,1.25,1.5,1.75,2,3,0.75],SPN=['等速','1.25倍','1.5倍','1.75倍','2倍','3倍','0.75倍'];
+let si=0; const sp=document.getElementById('sp');
+sp.onclick=()=>{si=(si+1)%SPEEDS.length; a.playbackRate=SPEEDS[si];
+  a.preservesPitch=a.mozPreservesPitch=a.webkitPreservesPitch=true; sp.textContent=SPN[si]};
+a.onplay=()=>pp.textContent='❚❚ 停止'; a.onpause=()=>pp.textContent='▶ 再生';
+a.ontimeupdate=()=>paint(a.currentTime);
+sk.oninput=()=>{sk.dragging=1; go(sk.value/1000*D.dur)};
+sk.onchange=()=>sk.dragging=0;
+document.getElementById('pv').onclick=()=>{const i=subIdx(a.currentTime);
+  go(i>0?D.subs[i-1].t:0)};
+document.getElementById('nx').onclick=()=>{const i=subIdx(a.currentTime);
+  if(i+1<D.subs.length) go(D.subs[i+1].t)};
+addEventListener('keydown',e=>{const k=e.key;
+  if(k===' '){e.preventDefault();pp.onclick()}
+  else if(k==='ArrowRight')go(a.currentTime+5); else if(k==='ArrowLeft')go(a.currentTime-5);
+  else if(k==='ArrowDown'){e.preventDefault();document.getElementById('nx').onclick()}
+  else if(k==='ArrowUp'){e.preventDefault();document.getElementById('pv').onclick()}
+  else if(k==='s'||k==='S')sp.onclick()});
+paint(0);
+</script>
