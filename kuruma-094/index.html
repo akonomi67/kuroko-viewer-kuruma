@@ -1,0 +1,133 @@
+<title>シエンタとフリードどっち</title>
+<style>
+:root{--bg:#f6f4f1;--panel:#fffefc;--ink:#1c1a19;--dim:#6e6862;--line:#e2ded7;--accent:#b8422f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}}
+:root[data-theme="dark"]{--bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);margin:0;-webkit-text-size-adjust:100%;
+  font:16px/1.7 -apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic UI",sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+h1{font-size:17px;margin:4px 0 14px;font-weight:600;letter-spacing:.02em}
+.meta{color:var(--dim);font-size:13px;font-weight:400;margin-left:8px}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:12px;position:relative;
+  min-height:40vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:46px 20px 26px;box-shadow:0 2px 14px rgba(0,0,0,.10)}
+#now{margin:0;text-align:center;white-space:pre-wrap;word-break:break-word;font-weight:700;
+  font-size:clamp(23px,5.4vw,42px);line-height:1.5;letter-spacing:.01em}
+#nextline{margin:16px 0 0;text-align:center;white-space:pre-wrap;word-break:break-word;
+  color:var(--dim);font-size:clamp(13px,2.8vw,17px);line-height:1.6}
+.badge{position:absolute;left:12px;top:12px;background:rgba(127,127,127,.16);color:var(--dim);
+  font-size:12px;padding:3px 9px;border-radius:20px;line-height:1.6;letter-spacing:.04em}
+.bar{display:flex;align-items:center;gap:10px;margin:12px 0 6px;flex-wrap:wrap}
+button{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;
+  padding:9px 14px;font-size:15px;cursor:pointer;font-family:inherit}
+button:active{transform:translateY(1px)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.play{background:var(--accent);color:#fff;border-color:transparent;min-width:80px;font-weight:600}
+.time{font-variant-numeric:tabular-nums;color:var(--dim);font-size:13px;margin-left:auto}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.marks{position:relative;height:7px;margin:2px 0 14px}
+.marks i{position:absolute;top:0;width:1px;height:7px;background:var(--line)}
+.tabs{display:flex;gap:6px;margin:18px 0 10px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;
+  color:var(--ink);padding:7px 12px;font-weight:600}
+.list{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+  -webkit-overflow-scrolling:touch}
+.row{display:flex;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.row:last-child{border-bottom:0}
+.row:hover{background:rgba(127,127,127,.07)}
+.row.on{background:rgba(184,66,47,.12)}
+.row b{color:var(--dim);font-variant-numeric:tabular-nums;font-weight:500;font-size:13px;
+  min-width:48px;flex:none;padding-top:2px}
+.row span{white-space:pre-wrap;flex:1;font-size:16px;line-height:1.65}
+.tip{color:var(--dim);font-size:12.5px;margin:10px 2px 0}
+@media(max-width:620px){.wrap{padding:10px}.time{font-size:12px}
+  .bar button{padding:9px 11px;font-size:14px}.stage{padding:42px 14px 22px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+<div class="wrap">
+<h1 id="ttl"></h1>
+<div class="stage"><div class="badge" id="bdg"></div>
+  <p id="now"></p><p id="nextline"></p></div>
+<div class="bar">
+  <button class="play" id="pp">▶ 再生</button>
+  <button id="pv">◀ 前の字幕</button>
+  <button id="nx">次の字幕 ▶</button>
+  <button id="sp">等速</button>
+  <span class="time" id="tm">0:00 / 0:00</span>
+</div>
+<input type="range" id="sk" min="0" max="1000" value="0">
+<div class="marks" id="mk"></div>
+<div class="tabs"><button class="on">字幕</button></div>
+<div class="list" id="subs"></div>
+<p class="tip">スペース＝再生/停止　←→＝5秒送り　↑↓＝字幕送り。字幕をタップするとそこへ飛びます。</p>
+</div>
+<audio id="a" src="audio.mp3" preload="auto"></audio>
+<script>
+const D={"name": "シエンタとフリードどっち", "file": "094_シエンタとフリードどっち", "dur": 805.76665625, "segs": [], "subs": [{"t": 0.0, "x": "こんにちは、「となりの車屋さん」の店長です。"}, {"t": 3.066666666666667, "x": "今日は、いきなり答えから申し上げます。"}, {"t": 6.366666666666666, "x": "70代のご夫婦で三列目の席を使わないなら、シエンタです。"}, {"t": 11.766666666666667, "x": "ただし、ひとつだけ当てはまるかたは逆です。"}, {"t": 15.233333333333333, "x": "そのかたには、フリードを選んでいただきたいのです。"}, {"t": 19.0, "x": "そのひとつが何なのかは、第9章で種明かしをします。"}, {"t": 23.8, "x": "シエンタとフリードは、小さなミニバンの二大定番です。"}, {"t": 28.233333333333334, "x": "どちらも後ろの扉が横に開いて、街なかでも扱える大きさです。"}, {"t": 33.46666666666667, "x": "「孫が来たときに、みんなで乗れる車がほしい」。"}, {"t": 37.43333333333333, "x": "「でも、大きな車はもう運転したくない」。"}, {"t": 40.833333333333336, "x": "そう考えると、たいていこの2台に行き着きます。"}, {"t": 44.56666666666667, "x": "そして、ここからがなかなか決まらないのです。"}, {"t": 48.06666666666667, "x": "前にシエンタを一台だけ名指しした回がありました。"}, {"t": 51.93333333333333, "x": "あの回では、フリードとの比べっこは少しだけにしました。"}, {"t": 56.2, "x": "今日は、この2台だけを正面から比べます。"}, {"t": 59.86666666666667, "x": "比べるところは5つ、席の数と広さと装備とハイブリッドと値段です。"}, {"t": 65.86666666666666, "x": "そのなかでカギになるのは、三列目の席をどうするかです。"}, {"t": 70.5, "x": "70代のご夫婦が三列目まで人を乗せる日は、年に何回あるでしょう。"}, {"t": 76.73333333333333, "x": "お店で聞くと、「ほとんどない」と答えるかたがいちばん多いです。"}, {"t": 81.2, "x": "つまり、使わない席を毎日のせて走ることになります。"}, {"t": 85.93333333333334, "x": "ここから考えると、2台の答えははっきり分かれてきます。"}, {"t": 92.4, "x": "まず、2台がいつ生まれたかを確かめておきます。"}, {"t": 96.46666666666667, "x": "今のシエンタが出たのは、2022年の8月です。"}, {"t": 101.13333333333334, "x": "今年の8月にも改良を受けています。"}, {"t": 104.3, "x": "今のフリードは、2024年の6月に出た3代目です。"}, {"t": 109.46666666666667, "x": "新しさでいえば、フリードのほうが2年近く後輩になります。"}, {"t": 114.23333333333333, "x": "どちらも、街でよく見かける2台です。"}, {"t": 117.5, "x": "同じところも、たくさんあります。"}, {"t": 120.36666666666666, "x": "後ろの扉は、どちらも左右とも横に開く扉です。"}, {"t": 125.1, "x": "エンジンは、どちらも1.5リットルです。"}, {"t": 128.5, "x": "ハイブリッドとガソリンの両方から選べるのも同じです。"}, {"t": 132.4, "x": "大きさの数字は、シエンタを名指しした回で並べました。"}, {"t": 136.63333333333333, "x": "長さはほぼ同じで、小回りはシエンタが少し上でした。"}, {"t": 141.23333333333332, "x": "ですから今日は、その数字は繰り返しません。"}, {"t": 144.8, "x": "今日見ていくのは、席の数の選びかたと中身の違いです。"}, {"t": 150.1, "x": "じつはそこに、2台のいちばん大きな分かれ目があります。"}, {"t": 155.93333333333334, "x": "シエンタの席の数は、5人乗りと7人乗りの2つです。"}, {"t": 160.46666666666667, "x": "フリードは、5人乗りと6人乗りと7人乗りの3つです。"}, {"t": 165.13333333333333, "x": "数だけ見ると、フリードのほうが選べる幅は広く見えます。"}, {"t": 169.5, "x": "ところが、どの形で選べるのかを見ると話が変わります。"}, {"t": 174.2, "x": "シエンタなら、XでもGでもZでも5人乗りが選べます。"}, {"t": 179.1, "x": "いちばん安い形でも、いちばん上の形でも選べるのです。"}, {"t": 183.73333333333332, "x": "フリードには、エアーとクロスターという2つの顔があります。"}, {"t": 188.16666666666666, "x": "エアーは、すっきりした街乗り向けの顔です。"}, {"t": 192.06666666666666, "x": "クロスターは、外遊び向けのたくましい顔です。"}, {"t": 195.93333333333334, "x": "そして、フリードの5人乗りはクロスターにしかありません。"}, {"t": 199.86666666666667, "x": "エアーを選ぶと、6人乗りか7人乗りになります。"}, {"t": 204.0, "x": "つまり、三列目の付いた車になるわけです。"}, {"t": 207.6, "x": "使わないなら畳んでおけばいい、と思われるかもしれません。"}, {"t": 212.13333333333333, "x": "フリードの三列目は、荷室の左右へはね上げて畳む仕組みです。"}, {"t": 217.06666666666666, "x": "シエンタの7人乗りは、二列目の下へもぐらせて畳みます。"}, {"t": 221.73333333333332, "x": "どちらもよくできていますが、席そのものは車に残ります。"}, {"t": 226.5, "x": "年に数回のための席を、毎日運んで走ることになります。"}, {"t": 231.66666666666666, "x": "はじめから付いていないほうが、車の中は身軽です。"}, {"t": 235.9, "x": "ですから70代のご夫婦には、店長は5人乗りを勧めています。"}, {"t": 241.5, "x": "そうなると、シエンタはどの形からでも選べます。"}, {"t": 245.6, "x": "フリードのほうは、クロスター一本にしぼられてしまいます。"}, {"t": 251.16666666666666, "x": "ここで1つ、気をつけていただきたい数字があります。"}, {"t": 255.06666666666666, "x": "クロスターの幅は1720ミリです。"}, {"t": 258.43333333333334, "x": "エアーの幅は1695ミリで、シエンタと同じです。"}, {"t": 263.43333333333334, "x": "つまり5人乗りのフリードだけ、2.5センチ幅が広いのです。"}, {"t": 268.23333333333335, "x": "2.5センチなら大差ない、と思われるでしょう。"}, {"t": 272.1333333333333, "x": "ただ、この差で車の区分が変わります。"}, {"t": 275.4, "x": "5ナンバーと呼ばれる小型車の枠は、幅1700ミリまでです。"}, {"t": 280.6666666666667, "x": "クロスターはその枠を超えるので、3ナンバーの車になります。"}, {"t": 285.43333333333334, "x": "運転のしやすさが、2.5センチで急に変わるわけではありません。"}, {"t": 290.43333333333334, "x": "気をつけたいのは、車を置く場所のほうです。"}, {"t": 293.8666666666667, "x": "借りている駐車場の契約書に、車の幅の決まりがないか。"}, {"t": 298.43333333333334, "x": "これは、買う前に一度見ておいてください。"}, {"t": 302.73333333333335, "x": "シエンタの5人乗りなら、どの形を選んでも幅は1695ミリです。"}, {"t": 308.93333333333334, "x": "ここでも、シエンタのほうが迷う種が少なくなります。"}, {"t": 314.5, "x": "では、5人乗りどうしで車の中の広さを比べてみます。"}, {"t": 319.23333333333335, "x": "数字は、どちらもメーカーが測った室内の寸法です。"}, {"t": 323.53333333333336, "x": "前の席から後ろの端までの長さは、シエンタが2030ミリ。"}, {"t": 328.76666666666665, "x": "フリードのクロスターの5人乗りは、1935ミリです。"}, {"t": 333.3333333333333, "x": "シエンタのほうが、9.5センチ長くとってあります。"}, {"t": 337.3666666666667, "x": "室内の幅は、シエンタが1530ミリで、フリードは1470ミリ。"}, {"t": 343.93333333333334, "x": "こちらもシエンタが6センチ広くなっています。"}, {"t": 347.03333333333336, "x": "天井までの高さは、シエンタが1300ミリです。"}, {"t": 351.8333333333333, "x": "フリードのハイブリッドの5人乗りは1270ミリで、3センチの差です。"}, {"t": 357.93333333333334, "x": "面白いのは、外から見た背の高さは逆だということです。"}, {"t": 362.6333333333333, "x": "屋根の高さは、フリードのほうが6センチ高いのです。"}, {"t": 367.03333333333336, "x": "外の背の高さだけでは、中の広さは決められないわけです。"}, {"t": 371.8666666666667, "x": "後ろの席の足もとや荷物の置き場は、長さが効いてきます。"}, {"t": 376.8, "x": "ご夫婦2人なら、後ろの席はそのまま荷物置き場にもなります。"}, {"t": 381.96666666666664, "x": "法事の帰りに、お供えの箱を置くのも楽になります。"}, {"t": 386.26666666666665, "x": "5人乗りどうしなら、中はシエンタのほうがひと回り広い。"}, {"t": 390.8333333333333, "x": "ここは、はっきりシエンタに軍配が上がります。"}, {"t": 396.1333333333333, "x": "次は、運転席に座ったときの備えです。"}, {"t": 399.8666666666667, "x": "座席の高さを変える仕組みは、2台とも全部の形に付いています。"}, {"t": 405.26666666666665, "x": "ハンドルの前後と上下を合わせる仕組みも、2台とも全部です。"}, {"t": 410.2, "x": "スイッチで掛ける駐車ブレーキも、2台とも全部の形です。"}, {"t": 415.0, "x": "信号で足を離しても止まっていてくれる機能も、そろっています。"}, {"t": 419.8333333333333, "x": "体に合わせる道具は、どちらを選んでも困りません。"}, {"t": 423.73333333333335, "x": "安全の装備も、大きな差はありません。"}, {"t": 427.0, "x": "前の車について走る仕組みは、止まるところまで2台とも付いています。"}, {"t": 432.3, "x": "ぶつかりそうなときに止まろうとするブレーキも、2台とも標準です。"}, {"t": 437.46666666666664, "x": "駐車場での踏み間違いへの備えも、ほぼ同じです。"}, {"t": 441.5, "x": "前や後ろの壁にぶつかりそうになると、ブレーキが掛かります。"}, {"t": 446.23333333333335, "x": "シエンタもフリードも、これは全部の形に付いています。"}, {"t": 450.6333333333333, "x": "気をつけたいのは、走っているときの急なアクセルを抑える機能です。"}, {"t": 455.43333333333334, "x": "シエンタでは、販売店で付ける追加の装備になっています。"}, {"t": 459.6333333333333, "x": "フリードは、工場から出るときにはこの機能が切ってあります。"}, {"t": 463.9, "x": "使うには販売店で設定してもらう必要があり、費用もかかります。"}, {"t": 468.8666666666667, "x": "どちらを選んでも、ここは注文のときに頼んでください。"}, {"t": 473.3666666666667, "x": "運転席と安全の装備は、引き分けとしておきます。"}, {"t": 478.96666666666664, "x": "ハイブリッドを選ぶかたは、ここを知っておいてください。"}, {"t": 482.6333333333333, "x": "同じハイブリッドでも、2台は作りがずいぶん違います。"}, {"t": 486.76666666666665, "x": "エンジンはシエンタが三気筒で、フリードは四気筒です。"}, {"t": 491.2, "x": "モーターの力も違います。"}, {"t": 493.6, "x": "シエンタの走るためのモーターは、80馬力です。"}, {"t": 497.7, "x": "フリードはモーターを2つ持ち、走るほうは123馬力あります。"}, {"t": 503.5, "x": "電池も、シエンタはニッケル水素で、フリードはリチウムイオンです。"}, {"t": 508.7, "x": "数字の上では、フリードのほうがモーターの力で走る車です。"}, {"t": 513.9666666666667, "x": "出だしの力の感じ方は、ぜひ試乗で比べてみてください。"}, {"t": 518.5666666666667, "x": "一方で、燃費はシエンタが上です。"}, {"t": 521.9333333333333, "x": "5人乗りの前輪駆動どうしで比べます。"}, {"t": 525.1333333333333, "x": "国の審査の燃費で、シエンタのGは1リットルあたり28.0キロ。"}, {"t": 530.9666666666667, "x": "フリードのクロスターは、25.5キロです。"}, {"t": 534.5666666666667, "x": "同じ距離を走ると、フリードは1割ほど多くガソリンを使う計算です。"}, {"t": 539.8333333333334, "x": "年に5000キロ走るなら、差はガソリンでおよそ18リットルです。"}, {"t": 545.3333333333334, "x": "四輪駆動の選びかたも違います。"}, {"t": 548.2666666666667, "x": "シエンタの四輪駆動は、ハイブリッドにしかありません。"}, {"t": 552.3333333333334, "x": "フリードは、ガソリン車でも四輪駆動が選べます。"}, {"t": 556.0666666666667, "x": "雪の多い土地にお住まいのかたは、ここも覚えておいてください。"}, {"t": 562.2333333333333, "x": "値段も、5人乗りどうしで並べてみます。"}, {"t": 565.7666666666667, "x": "どれもメーカーの希望小売価格で、前輪駆動の車です。"}, {"t": 570.5666666666667, "x": "まずはハイブリッドからです。"}, {"t": 572.7333333333333, "x": "シエンタのハイブリッドは、Xが250万4700円です。"}, {"t": 577.9333333333333, "x": "いちばん上のZでも、314万2700円です。"}, {"t": 583.4, "x": "フリードの5人乗りのハイブリッドは、332万7500円です。"}, {"t": 589.4, "x": "シエンタのいちばん上の形より、まだ18万円ほど高くなります。"}, {"t": 594.6666666666666, "x": "いちばん安い形どうしなら、差は82万円ほどに広がります。"}, {"t": 600.3666666666667, "x": "ガソリン車でも、同じ傾向です。"}, {"t": 603.3, "x": "シエンタのガソリンのZの5人乗りは、276万3200円です。"}, {"t": 609.4333333333333, "x": "フリードのクロスターのガソリン車は、292万8200円です。"}, {"t": 615.1, "x": "こちらも、シエンタのいちばん上より16万円ほど高い値段です。"}, {"t": 620.5, "x": "フリードの5人乗りは、外遊び向けの装備が付くぶん高めなのです。"}, {"t": 625.7666666666667, "x": "屋根の上の荷物用のレールや、専用のバンパーが付いてきます。"}, {"t": 630.6, "x": "ただ70代のご夫婦に、屋根のレールが要るでしょうか。"}, {"t": 634.8333333333334, "x": "使わない飾りに払うなら、そのお金はほかに回せます。"}, {"t": 639.3333333333334, "x": "まわりを映すカメラを足しても、まだおつりがくる差です。"}, {"t": 643.7, "x": "値段は、はっきりシエンタが有利です。"}, {"t": 648.6666666666666, "x": "お待たせしました、最初に申し上げた「ひとつ」です。"}, {"t": 653.1, "x": "後ろの席に、足や腰の弱いご家族をよく乗せるかた。"}, {"t": 658.0333333333333, "x": "このかたには、フリードの6人乗りをお勧めします。"}, {"t": 662.4, "x": "理由は3つあります。"}, {"t": 664.3333333333334, "x": "1つめは、後ろの扉です。"}, {"t": 667.2333333333333, "x": "フリードは、全部の形で左右の扉が電動で開け閉めできます。"}, {"t": 672.3666666666667, "x": "シエンタのいちばん安いXでは、電動なのは助手席側だけです。"}, {"t": 677.6666666666666, "x": "運転席側から乗せる日もあるなら、ここは大きな違いです。"}, {"t": 682.7333333333333, "x": "2つめは、二列目の席です。"}, {"t": 685.5666666666667, "x": "フリードの6人乗りの二列目は、一人ずつ分かれた席です。"}, {"t": 690.0666666666667, "x": "左右の席のあいだが通り道になり、両側にひじ掛けも付いています。"}, {"t": 695.2, "x": "体を支えながら、ゆっくり腰を下ろしやすい形です。"}, {"t": 699.8666666666667, "x": "3つめは、つかまる所です。"}, {"t": 702.4666666666667, "x": "フリードは、後ろの入り口に大きな取っ手が全部の形に付いています。"}, {"t": 707.9, "x": "扉のあいだの柱にも、つかまるための取っ手があります。"}, {"t": 712.0333333333333, "x": "三列目は畳んだまま、二列目を特等席として使う考えかたです。"}, {"t": 717.5666666666667, "x": "エアーの6人乗りなら、幅も1695ミリで5ナンバーに収まります。"}, {"t": 723.3666666666667, "x": "付け加えると、雪国でガソリンの四輪駆動に乗りたいかた。"}, {"t": 728.1666666666666, "x": "このかたも、選べるのはフリードのほうです。"}, {"t": 731.4666666666667, "x": "どちらにも当てはまらなければ、シエンタで後悔はしません。"}, {"t": 737.1333333333333, "x": "では、今日のお話を振り返ります。"}, {"t": 740.2666666666667, "x": "70代のご夫婦で三列目を使わないなら、答えはシエンタです。"}, {"t": 745.6666666666666, "x": "シエンタは、どの形を選んでも5人乗りにできます。"}, {"t": 749.6666666666666, "x": "フリードの5人乗りはクロスターだけで、3ナンバーの幅になります。"}, {"t": 754.6, "x": "5人乗りどうしなら、中の広さもシエンタがひと回り上でした。"}, {"t": 759.5666666666667, "x": "燃費は1割ほど、値段は上の形どうしでも16万円以上シエンタが有利です。"}, {"t": 766.5666666666667, "x": "運転席と安全の装備は、ほぼ互角でした。"}, {"t": 770.4666666666667, "x": "後ろに足の弱いご家族をよく乗せるなら、フリードの6人乗りです。"}, {"t": 775.8666666666667, "x": "雪国でガソリンの四輪駆動がほしいかたも、フリードです。"}, {"t": 780.7666666666667, "x": "試乗に行ったら、運転席より先に後ろの席に乗ってみてください。"}, {"t": 785.8333333333334, "x": "扉の開き方とつかまる所を、ご自分の手で確かめるのが近道です。"}, {"t": 791.7, "x": "今日お話しした値段と装備は、いま時点のものです。"}, {"t": 795.9, "x": "ご契約の前に、販売店でいちばん新しい装備表をもらってください。"}, {"t": 801.3666666666667, "x": "それではまた、次の動画でお会いしましょう。"}], "w": 720, "h": 405, "n_cuts": 0, "noimage": true};
+const a=document.getElementById('a');
+const now=document.getElementById('now'), nl=document.getElementById('nextline');
+const pp=document.getElementById('pp'), sk=document.getElementById('sk');
+const tm=document.getElementById('tm'), bdg=document.getElementById('bdg');
+const SMOOTH=matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth';
+document.getElementById('ttl').innerHTML=D.name+
+  '<span class="meta">'+fmt(D.dur)+'　字幕'+D.subs.length+'　（音声＋字幕だけ）</span>';
+
+function fmt(s){s=Math.max(0,s|0);return (s/60|0)+':'+String(s%60).padStart(2,'0')}
+function subIdx(t){let lo=0,hi=D.subs.length-1,r=-1;
+  while(lo<=hi){const m=(lo+hi)>>1; if(D.subs[m].t<=t){r=m;lo=m+1}else hi=m-1} return r}
+
+let cur=-2;
+function paint(t){
+  const i=subIdx(t);
+  if(i!==cur){cur=i;
+    now.textContent = i<0 ? (D.subs.length?'（ここはまだ字幕がありません）'
+                                          :'（この回に字幕はありません）')
+                         : D.subs[i].x;
+    const n=D.subs[i+1]; nl.textContent = n ? '次　'+n.x : '';
+    bdg.textContent = D.subs.length ? '字幕 '+(i+1)+' / '+D.subs.length : '字幕なし';
+    mark('subs',i);
+  }
+  tm.textContent=fmt(t)+' / '+fmt(D.dur);
+  if(!sk.dragging) sk.value=Math.round(t/D.dur*1000);
+}
+function mark(pane,i){
+  const el=document.getElementById(pane);
+  if(el.dataset.on==i) return; el.dataset.on=i;
+  el.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));
+  const t=el.children[i]; if(!t) return; t.classList.add('on');
+  if(!el.hidden){const r=t.offsetTop-el.clientHeight/2; el.scrollTo({top:r,behavior:SMOOTH})}
+}
+
+D.subs.forEach(s=>{const d=document.createElement('div');d.className='row';
+  d.innerHTML='<b></b><span></span>';
+  d.querySelector('b').textContent=fmt(s.t);
+  d.querySelector('span').textContent=s.x;
+  d.onclick=()=>go(s.t); document.getElementById('subs').appendChild(d)});
+const mk=document.getElementById('mk');
+D.subs.forEach(s=>{const i=document.createElement('i');
+  i.style.left=(s.t/D.dur*100)+'%'; mk.appendChild(i)});
+
+function go(t){a.currentTime=Math.min(Math.max(0,t)+0.01,Math.max(0.05,D.dur-0.05)); paint(a.currentTime)}
+pp.onclick=()=>a.paused?a.play():a.pause();
+const SPEEDS=[1,1.25,1.5,1.75,2,3,0.75],SPN=['等速','1.25倍','1.5倍','1.75倍','2倍','3倍','0.75倍'];
+let si=0; const sp=document.getElementById('sp');
+sp.onclick=()=>{si=(si+1)%SPEEDS.length; a.playbackRate=SPEEDS[si];
+  a.preservesPitch=a.mozPreservesPitch=a.webkitPreservesPitch=true; sp.textContent=SPN[si]};
+a.onplay=()=>pp.textContent='❚❚ 停止'; a.onpause=()=>pp.textContent='▶ 再生';
+a.ontimeupdate=()=>paint(a.currentTime);
+sk.oninput=()=>{sk.dragging=1; go(sk.value/1000*D.dur)};
+sk.onchange=()=>sk.dragging=0;
+document.getElementById('pv').onclick=()=>{const i=subIdx(a.currentTime);
+  go(i>0?D.subs[i-1].t:0)};
+document.getElementById('nx').onclick=()=>{const i=subIdx(a.currentTime);
+  if(i+1<D.subs.length) go(D.subs[i+1].t)};
+addEventListener('keydown',e=>{const k=e.key;
+  if(k===' '){e.preventDefault();pp.onclick()}
+  else if(k==='ArrowRight')go(a.currentTime+5); else if(k==='ArrowLeft')go(a.currentTime-5);
+  else if(k==='ArrowDown'){e.preventDefault();document.getElementById('nx').onclick()}
+  else if(k==='ArrowUp'){e.preventDefault();document.getElementById('pv').onclick()}
+  else if(k==='s'||k==='S')sp.onclick()});
+paint(0);
+</script>
