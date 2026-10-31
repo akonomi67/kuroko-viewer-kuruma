@@ -1,0 +1,133 @@
+<title>軽のターボは要るか</title>
+<style>
+:root{--bg:#f6f4f1;--panel:#fffefc;--ink:#1c1a19;--dim:#6e6862;--line:#e2ded7;--accent:#b8422f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}}
+:root[data-theme="dark"]{--bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);margin:0;-webkit-text-size-adjust:100%;
+  font:16px/1.7 -apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic UI",sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+h1{font-size:17px;margin:4px 0 14px;font-weight:600;letter-spacing:.02em}
+.meta{color:var(--dim);font-size:13px;font-weight:400;margin-left:8px}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:12px;position:relative;
+  min-height:40vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:46px 20px 26px;box-shadow:0 2px 14px rgba(0,0,0,.10)}
+#now{margin:0;text-align:center;white-space:pre-wrap;word-break:break-word;font-weight:700;
+  font-size:clamp(23px,5.4vw,42px);line-height:1.5;letter-spacing:.01em}
+#nextline{margin:16px 0 0;text-align:center;white-space:pre-wrap;word-break:break-word;
+  color:var(--dim);font-size:clamp(13px,2.8vw,17px);line-height:1.6}
+.badge{position:absolute;left:12px;top:12px;background:rgba(127,127,127,.16);color:var(--dim);
+  font-size:12px;padding:3px 9px;border-radius:20px;line-height:1.6;letter-spacing:.04em}
+.bar{display:flex;align-items:center;gap:10px;margin:12px 0 6px;flex-wrap:wrap}
+button{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;
+  padding:9px 14px;font-size:15px;cursor:pointer;font-family:inherit}
+button:active{transform:translateY(1px)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.play{background:var(--accent);color:#fff;border-color:transparent;min-width:80px;font-weight:600}
+.time{font-variant-numeric:tabular-nums;color:var(--dim);font-size:13px;margin-left:auto}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.marks{position:relative;height:7px;margin:2px 0 14px}
+.marks i{position:absolute;top:0;width:1px;height:7px;background:var(--line)}
+.tabs{display:flex;gap:6px;margin:18px 0 10px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;
+  color:var(--ink);padding:7px 12px;font-weight:600}
+.list{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+  -webkit-overflow-scrolling:touch}
+.row{display:flex;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.row:last-child{border-bottom:0}
+.row:hover{background:rgba(127,127,127,.07)}
+.row.on{background:rgba(184,66,47,.12)}
+.row b{color:var(--dim);font-variant-numeric:tabular-nums;font-weight:500;font-size:13px;
+  min-width:48px;flex:none;padding-top:2px}
+.row span{white-space:pre-wrap;flex:1;font-size:16px;line-height:1.65}
+.tip{color:var(--dim);font-size:12.5px;margin:10px 2px 0}
+@media(max-width:620px){.wrap{padding:10px}.time{font-size:12px}
+  .bar button{padding:9px 11px;font-size:14px}.stage{padding:42px 14px 22px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+<div class="wrap">
+<h1 id="ttl"></h1>
+<div class="stage"><div class="badge" id="bdg"></div>
+  <p id="now"></p><p id="nextline"></p></div>
+<div class="bar">
+  <button class="play" id="pp">▶ 再生</button>
+  <button id="pv">◀ 前の字幕</button>
+  <button id="nx">次の字幕 ▶</button>
+  <button id="sp">等速</button>
+  <span class="time" id="tm">0:00 / 0:00</span>
+</div>
+<input type="range" id="sk" min="0" max="1000" value="0">
+<div class="marks" id="mk"></div>
+<div class="tabs"><button class="on">字幕</button></div>
+<div class="list" id="subs"></div>
+<p class="tip">スペース＝再生/停止　←→＝5秒送り　↑↓＝字幕送り。字幕をタップするとそこへ飛びます。</p>
+</div>
+<audio id="a" src="audio.mp3" preload="auto"></audio>
+<script>
+const D={"name": "軽のターボは要るか", "file": "107_軽のターボは要るか", "dur": 846.16665625, "segs": [], "subs": [{"t": 0.0, "x": "こんにちは、「となりの車屋さん」の店長です。"}, {"t": 3.066666666666667, "x": "今日は先に答えを置いてから中身のお話に入ります。"}, {"t": 7.066666666666666, "x": "軽自動車のターボは、たいていの70代のかたには要りません。"}, {"t": 11.633333333333333, "x": "ただしこれからお出しする3つの質問があります。"}, {"t": 15.033333333333333, "x": "そのうち2つに「はい」と答えたかたは、ターボ付きを選んでください。"}, {"t": 19.833333333333332, "x": "この答えにたどり着いたきっかけは、先月のお客さんの一言でした。"}, {"t": 24.833333333333332, "x": "ご夫婦で軽の見積もりを取りに来られたかたです。"}, {"t": 28.233333333333334, "x": "「よそのお店でターボ付きを勧められたんだよ」。"}, {"t": 31.5, "x": "「値段が上がるのに本当に要るのかね」。"}, {"t": 34.4, "x": "奥さまは横で見積書の数字を指でなぞっていました。"}, {"t": 38.7, "x": "同じ車でもターボの有り無しで値段が変わります。"}, {"t": 42.766666666666666, "x": "ではその差はいくらで、払ったぶん何が手に入るのでしょうか。"}, {"t": 47.43333333333333, "x": "今日は3台の軽を、同じ車のターボ付きと無しで比べます。"}, {"t": 52.5, "x": "ダイハツのタント、三菱のデリカミニ、スズキのスペーシア カスタムです。"}, {"t": 58.13333333333333, "x": "値段と燃費は、どれもメーカーが公式に出している数字だけを使います。"}, {"t": 63.733333333333334, "x": "最後にはご自分で答えを出せる表もお見せします。"}, {"t": 67.6, "x": "見積書がお手元にあるかたは、横に置いて聞いてみてください。"}, {"t": 73.9, "x": "まずターボとは何かを一言でお話しします。"}, {"t": 77.53333333333333, "x": "エンジンに空気を押し込んで力を足す仕組みです。"}, {"t": 81.56666666666666, "x": "大きさの決まった軽のエンジンに、力の余裕を足すための道具です。"}, {"t": 86.73333333333333, "x": "大事なのは、車の作りで変わるのはほとんどエンジンの中だけという点です。"}, {"t": 92.73333333333333, "x": "車の長さも幅もターボの有り無しでは変わりません。"}, {"t": 96.73333333333333, "x": "3台ともターボが付いても付かなくても、同じ大きさのままです。"}, {"t": 101.53333333333333, "x": "乗れる人数も4人で同じです。"}, {"t": 104.36666666666666, "x": "小回りのしやすさも3台ともターボの有り無しで同じ数字です。"}, {"t": 109.93333333333334, "x": "毎年かかる軽自動車の税金も、ターボが付いても区分は同じです。"}, {"t": 115.3, "x": "ガソリンも3台とも、ターボ付きでもレギュラーで走れます。"}, {"t": 119.9, "x": "ですからお金の差が出るのは主に2つです。"}, {"t": 123.33333333333333, "x": "1つは買うときの値段でもう1つは燃費です。"}, {"t": 127.23333333333333, "x": "ここから先はその2つを数字で確かめていきます。"}, {"t": 130.96666666666667, "x": "ただし車によっては、ターボの形にだけ付いてくる装備もあります。"}, {"t": 136.0, "x": "これが値段の差を読むときの落とし穴なので、第8章でお話しします。"}, {"t": 141.26666666666668, "x": "加速の速さの数字は、高速道路の合流の回でお話ししました。"}, {"t": 146.76666666666668, "x": "今日は速さではなく、お財布と暮らしの側から見ていきます。"}, {"t": 152.7, "x": "値段はどれもメーカー希望小売価格で、前輪駆動の車です。"}, {"t": 157.6, "x": "一台目はダイハツのタントです。"}, {"t": 160.96666666666667, "x": "ターボの無いXと、ターボの付いたXターボを比べます。"}, {"t": 165.63333333333333, "x": "2つの値段の差は16万5000円です。"}, {"t": 169.6, "x": "四輪駆動どうしで比べても、差は同じ16万5000円です。"}, {"t": 175.16666666666666, "x": "2台目は三菱のデリカミニです。"}, {"t": 178.2, "x": "ターボの無い形はGで、ターボの付いた形はTと呼ばれています。"}, {"t": 183.53333333333333, "x": "Gは196万4600円で、Tは204万2700円です。"}, {"t": 190.13333333333333, "x": "差は7万8100円です。"}, {"t": 192.43333333333334, "x": "四輪駆動どうしなら差は7万9200円になります。"}, {"t": 197.8, "x": "3台目はスズキのスペーシア カスタムです。"}, {"t": 201.53333333333333, "x": "HYBRID XSとそのターボ付きを比べます。"}, {"t": 205.53333333333333, "x": "HYBRID XSは199万5400円で、ターボ付きは207万3500円です。"}, {"t": 213.86666666666667, "x": "こちらも差は7万8100円で、デリカミニとぴったり同じでした。"}, {"t": 219.3, "x": "四輪駆動どうしで比べても差は同じ7万8100円です。"}, {"t": 225.16666666666666, "x": "並べてみると、8万円足らずから16万円台まで開きがあります。"}, {"t": 230.63333333333333, "x": "同じターボでも、車によって払う額が倍ほど違うのです。"}, {"t": 235.43333333333334, "x": "なぜタントだけ差が大きいのか、その種明かしは第8章でいたします。"}, {"t": 241.26666666666668, "x": "ここではまず、差は8万円弱から16万円台と覚えておいてください。"}, {"t": 247.03333333333333, "x": "この差をどう見るかは、このあとの燃費と装備のお話で変わってきます。"}, {"t": 253.8, "x": "次は燃費です。"}, {"t": 255.56666666666666, "x": "数字は国の審査の値で、1リットルあたりに走れる距離です。"}, {"t": 260.56666666666666, "x": "タントは、Xが22.6キロでXターボが20.9キロです。"}, {"t": 266.43333333333334, "x": "デリカミニは、Gが21.0キロでTが19.5キロです。"}, {"t": 272.6, "x": "スペーシア カスタムは、XSが23.9キロでターボ付きが21.9キロです。"}, {"t": 279.8, "x": "3台とも、ターボの付いた形のほうが少しずつ燃費が落ちます。"}, {"t": 285.03333333333336, "x": "国の審査には、街なかと郊外と高速道路の3つの数字もあります。"}, {"t": 290.6, "x": "ターボが得をする場面がないか、3台とも全部見比べてみました。"}, {"t": 295.8666666666667, "x": "タントの高速道路の数字は、Xが22.7キロでXターボが20.9キロです。"}, {"t": 302.9, "x": "デリカミニの高速道路は、Gが21.1キロでTが20.1キロでした。"}, {"t": 309.6, "x": "スペーシア カスタムも、高速道路ではターボ無しが1.7キロ上です。"}, {"t": 315.56666666666666, "x": "街なかでも郊外でも、ターボの付いた形が上回る場面はありませんでした。"}, {"t": 321.1333333333333, "x": "では、使うガソリンの量にするとどれくらいの差になるのか。"}, {"t": 325.6333333333333, "x": "ここでは1万キロ走ったときで計算してみます。"}, {"t": 329.2, "x": "タントは36リットルで、デリカミニは37リットルほどの差です。"}, {"t": 334.4, "x": "スペーシア カスタムは、38リットルほどの差になります。"}, {"t": 339.43333333333334, "x": "どの車も、タンクを一杯にした量を少し超えるくらいです。"}, {"t": 344.3333333333333, "x": "タントのタンクは30リットルでほかの2台は27リットルです。"}, {"t": 349.3666666666667, "x": "1万キロを何年もかけて走るかたなら、毎月にならせば小さな額です。"}, {"t": 355.23333333333335, "x": "ターボのお金の重さは、燃費よりも買うときの値段のほうにあります。"}, {"t": 360.3, "x": "燃費で元を取るお話ではないことを、先にお伝えしておきます。"}, {"t": 367.4, "x": "ここから3つの質問に入ります。"}, {"t": 370.03333333333336, "x": "1つめは、毎日通る道に長い上り坂があるかどうかです。"}, {"t": 374.8666666666667, "x": "たとえば家が高台の団地にあるかた。"}, {"t": 377.8666666666667, "x": "病院やスーパーへ行くたびに、峠のような道を越えるかた。"}, {"t": 382.76666666666665, "x": "こうしたかたは、ターボ無しの軽だとエンジンの音が大きくなりがちです。"}, {"t": 388.3, "x": "坂の途中で力を出そうとして、エンジンが高く回るからです。"}, {"t": 393.43333333333334, "x": "ターボがあると低い回転のうちから力が出ます。"}, {"t": 397.03333333333336, "x": "同じ坂でも、エンジンのうなる音が小さくて済むことが多いのです。"}, {"t": 402.1, "x": "毎日の坂は1年にすると何100回にもなります。"}, {"t": 406.03333333333336, "x": "その1回ごとの小さな気疲れが、ターボで軽くなります。"}, {"t": 410.53333333333336, "x": "坂で気をつかう回数が減れば出かけるのが億劫になりにくいものです。"}, {"t": 416.1, "x": "坂の町にお住まいなら、この質問の答えは「はい」です。"}, {"t": 420.8, "x": "近所に少しだけ坂がある程度なら、「いいえ」で構いません。"}, {"t": 425.1333333333333, "x": "目安は、上り坂でアクセルを踏み足すことが毎日あるかどうかです。"}, {"t": 430.56666666666666, "x": "坂の町で選ぶ普通車のお話は、前にノートの回でいたしました。"}, {"t": 436.03333333333336, "x": "今日は同じ軽の中で、ターボを付けるかどうかに絞ります。"}, {"t": 442.0, "x": "2つめは大人を乗せて走る日が多いかどうかです。"}, {"t": 446.1666666666667, "x": "軽自動車に乗れるのは4人までです。"}, {"t": 449.1666666666667, "x": "ご夫婦2人なら、ターボ無しで困ることはまずありません。"}, {"t": 453.56666666666666, "x": "ところが親戚を乗せてお墓参りに行く日もあります。"}, {"t": 457.46666666666664, "x": "近所のお友だちを3人乗せて、お花見に出かける日もあるでしょう。"}, {"t": 462.43333333333334, "x": "大人が一人増えるたびに車はどんどん重くなります。"}, {"t": 466.73333333333335, "x": "大人一人を60キロとすれば、3人増えて180キロです。"}, {"t": 472.1, "x": "デリカミニのGは、前輪駆動で車だけの重さが970キロです。"}, {"t": 478.93333333333334, "x": "そこへ180キロが乗れば、2割近く重くなる計算です。"}, {"t": 483.76666666666665, "x": "重くなったぶん、坂道や走り出しでエンジンには力が要ります。"}, {"t": 488.56666666666666, "x": "4人で乗った日の帰り道で力が足りないと感じたことがあればそれが答えです。"}, {"t": 494.6333333333333, "x": "月に何度も人を乗せるかたは、ここで「はい」になります。"}, {"t": 499.03333333333336, "x": "後ろの席がいつも買い物袋の置き場なら、「いいえ」です。"}, {"t": 503.96666666666664, "x": "年に一度か2度だけ乗せるくらいなら、これも「いいえ」で構いません。"}, {"t": 510.5, "x": "3つめは、高速道路を使って遠くへ出かける日があるかどうかです。"}, {"t": 515.6333333333333, "x": "合流のこわさのお話は、前の回でたっぷりいたしました。"}, {"t": 520.2666666666667, "x": "今日お伝えしたいのは、合流のあとの長い道のりのほうです。"}, {"t": 525.2333333333333, "x": "ターボ無しの軽は、同じ速さを保つのにエンジンをよく回します。"}, {"t": 530.6333333333333, "x": "その音を2時間も3時間も聞き続けるのは、なかなか疲れるものです。"}, {"t": 536.2333333333333, "x": "ターボがあれば、エンジンを回しすぎずに同じ速さで走れます。"}, {"t": 541.0333333333333, "x": "年に何度か、お孫さんの家まで高速道路で出かけるかた。"}, {"t": 545.9, "x": "遠くのお墓参りやご夫婦の旅行に車で行かれるかた。"}, {"t": 551.1333333333333, "x": "こうしたかたはここで「はい」です。"}, {"t": 553.9666666666667, "x": "行き先の途中に山越えの峠道がある場合も同じように考えてください。"}, {"t": 559.4333333333333, "x": "高速道路にはほとんど乗らないというかたは、「いいえ」です。"}, {"t": 563.7666666666667, "x": "家から10キロの中で暮らしが回るなら、迷わず「いいえ」を選んでください。"}, {"t": 570.9, "x": "ここで第3章でお約束した種明かしです。"}, {"t": 574.4, "x": "車によっては、ターボの付いた形にだけ付く装備があります。"}, {"t": 579.0333333333333, "x": "これを見落とすと値段の差を読み違えてしまいます。"}, {"t": 582.5666666666667, "x": "まずはタントです。"}, {"t": 584.2666666666667, "x": "前の車について走る仕組みと、車線からはみ出しにくくする仕組み。"}, {"t": 589.6333333333333, "x": "この2つがXターボには最初から付いています。"}, {"t": 593.3, "x": "ターボの無いXでは、5万5000円の追加の注文になります。"}, {"t": 598.5666666666667, "x": "いちばん手ごろなLには注文しても付けられません。"}, {"t": 602.8, "x": "Xにこの注文を足すと、Xターボとの差は11万円に縮まります。"}, {"t": 608.6333333333333, "x": "タントの差が大きく見えたのは、この装備のぶんが入っていたからです。"}, {"t": 613.9, "x": "次はスペーシア カスタムです。"}, {"t": 616.6666666666666, "x": "前の車について走る仕組みは、ターボ無しのXSにも付いています。"}, {"t": 622.3333333333334, "x": "ターボ付きにだけ付くのは3つです。"}, {"t": 625.0666666666667, "x": "1つめは力を強めに出すパワーモードです。"}, {"t": 628.5666666666667, "x": "2つめは、ハンドルの裏で指先で変速を選べるパドルシフトです。"}, {"t": 633.7333333333333, "x": "3つめは、前のブレーキが中に風の通り道のある作りになることです。"}, {"t": 639.5666666666667, "x": "坂道や遠出の多いかたに向けた装備だと言えます。"}, {"t": 643.4333333333333, "x": "XSもターボ付きも小さなモーターが走りを助ける仕組みは同じく付いています。"}, {"t": 649.7, "x": "最後はデリカミニです。"}, {"t": 651.8333333333334, "x": "三菱の装備表でGとTを一行ずつ見比べました。"}, {"t": 656.3, "x": "装備表の上では2つの形に同じ印が並んでいました。"}, {"t": 661.0, "x": "運転を助ける仕組みも、座席を温める仕組みも同じ付きかたです。"}, {"t": 666.3, "x": "ですからデリカミニの7万8100円は、ほぼエンジンだけの値段です。"}, {"t": 671.9666666666667, "x": "力の余裕にいくら払えるか、それがそのまま答えになる車です。"}, {"t": 677.4333333333333, "x": "Tを選んでも付いてくる物は増えないと覚えておいてください。"}, {"t": 683.2, "x": "では3つの質問をまとめます。"}, {"t": 685.8666666666667, "x": "坂の質問と人を乗せる質問、そして遠出の質問です。"}, {"t": 690.7, "x": "「はい」が2つ以上なら、ターボ付きを選んでください。"}, {"t": 694.9333333333333, "x": "「はい」が1つか1つもないなら、ターボ無しで十分です。"}, {"t": 699.4333333333333, "x": "車ごとに言い直すとこうなります。"}, {"t": 702.1, "x": "2つか1つかで迷うときは坂の質問をいちばん重く見てください。"}, {"t": 707.5, "x": "タントは、高速道路の「はい」があればそれ1つでもXターボです。"}, {"t": 712.8, "x": "前の車について走る仕組みが、11万円の差の中に入っているからです。"}, {"t": 718.4, "x": "デリカミニは、「はい」が2つ以上のときだけTにしてください。"}, {"t": 722.8333333333334, "x": "装備は同じなので、迷ったら値段の安いGで困ることはありません。"}, {"t": 727.7666666666667, "x": "スペーシア カスタムは、坂の「はい」があればターボ付きです。"}, {"t": 732.3333333333334, "x": "坂道に向けた3つの装備が、7万8100円の中に入っています。"}, {"t": 738.2666666666667, "x": "お店で伺っていると、表で「いいえ」が並ぶかたのほうが多いのです。"}, {"t": 743.3333333333334, "x": "買い物と病院が中心で乗るのはご夫婦2人まで。"}, {"t": 747.6333333333333, "x": "それならターボ無しで何の不足もありません。"}, {"t": 751.0, "x": "浮いた8万円から16万円は、別のことに使ってください。"}, {"t": 756.0666666666667, "x": "たとえば車の周りを映すカメラや、前と後ろを写す記録の機械です。"}, {"t": 761.5, "x": "70代の車選びでは、力の余裕より見る装備と記録する装備が助けになります。"}, {"t": 769.8666666666667, "x": "では先月のご夫婦のお話に戻ります。"}, {"t": 773.1333333333333, "x": "3つの質問をしたところ「はい」は1つだけでした。"}, {"t": 777.1, "x": "月に一度ご近所のかたを乗せて出かけるという、その1つです。"}, {"t": 782.0666666666667, "x": "お2人の家は平らな住宅地で、高速道路は年に一度も乗らないそうです。"}, {"t": 787.3333333333334, "x": "お勧めしたのはターボの無い形です。"}, {"t": 790.5333333333333, "x": "浮いたお金で、ご主人は車の周りを映すカメラを付けました。"}, {"t": 795.4, "x": "奥さまは見積書を見直して、ほっとした顔をなさいました。"}, {"t": 800.2, "x": "ターボは要るかたにはとても頼りになる道具です。"}, {"t": 803.8, "x": "でも全員に要る道具ではありません。"}, {"t": 806.7666666666667, "x": "お店でターボ付きを勧められたら、今日の3つの質問を思い出してください。"}, {"t": 812.3, "x": "そして試乗の日は、家の近くのいちばん長い坂を走ってみてください。"}, {"t": 817.6666666666666, "x": "ターボ付きと無しを、同じ坂で一度ずつ乗り比べるのがいちばんです。"}, {"t": 822.6333333333333, "x": "試乗の車に両方そろっているかは前もってお店に電話で聞いておくと安心です。"}, {"t": 829.1, "x": "今日の数字は、3つのメーカーが公式に出しているものを10月の末に拾いました。"}, {"t": 835.4, "x": "改良で変わることがあるので、ご契約の前に販売店で確かめてください。"}, {"t": 840.9333333333333, "x": "次の回も、お店の奥でお茶を用意してお待ちしております。"}], "w": 720, "h": 405, "n_cuts": 0, "noimage": true};
+const a=document.getElementById('a');
+const now=document.getElementById('now'), nl=document.getElementById('nextline');
+const pp=document.getElementById('pp'), sk=document.getElementById('sk');
+const tm=document.getElementById('tm'), bdg=document.getElementById('bdg');
+const SMOOTH=matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth';
+document.getElementById('ttl').innerHTML=D.name+
+  '<span class="meta">'+fmt(D.dur)+'　字幕'+D.subs.length+'　（音声＋字幕だけ）</span>';
+
+function fmt(s){s=Math.max(0,s|0);return (s/60|0)+':'+String(s%60).padStart(2,'0')}
+function subIdx(t){let lo=0,hi=D.subs.length-1,r=-1;
+  while(lo<=hi){const m=(lo+hi)>>1; if(D.subs[m].t<=t){r=m;lo=m+1}else hi=m-1} return r}
+
+let cur=-2;
+function paint(t){
+  const i=subIdx(t);
+  if(i!==cur){cur=i;
+    now.textContent = i<0 ? (D.subs.length?'（ここはまだ字幕がありません）'
+                                          :'（この回に字幕はありません）')
+                         : D.subs[i].x;
+    const n=D.subs[i+1]; nl.textContent = n ? '次　'+n.x : '';
+    bdg.textContent = D.subs.length ? '字幕 '+(i+1)+' / '+D.subs.length : '字幕なし';
+    mark('subs',i);
+  }
+  tm.textContent=fmt(t)+' / '+fmt(D.dur);
+  if(!sk.dragging) sk.value=Math.round(t/D.dur*1000);
+}
+function mark(pane,i){
+  const el=document.getElementById(pane);
+  if(el.dataset.on==i) return; el.dataset.on=i;
+  el.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));
+  const t=el.children[i]; if(!t) return; t.classList.add('on');
+  if(!el.hidden){const r=t.offsetTop-el.clientHeight/2; el.scrollTo({top:r,behavior:SMOOTH})}
+}
+
+D.subs.forEach(s=>{const d=document.createElement('div');d.className='row';
+  d.innerHTML='<b></b><span></span>';
+  d.querySelector('b').textContent=fmt(s.t);
+  d.querySelector('span').textContent=s.x;
+  d.onclick=()=>go(s.t); document.getElementById('subs').appendChild(d)});
+const mk=document.getElementById('mk');
+D.subs.forEach(s=>{const i=document.createElement('i');
+  i.style.left=(s.t/D.dur*100)+'%'; mk.appendChild(i)});
+
+function go(t){a.currentTime=Math.min(Math.max(0,t)+0.01,Math.max(0.05,D.dur-0.05)); paint(a.currentTime)}
+pp.onclick=()=>a.paused?a.play():a.pause();
+const SPEEDS=[1,1.25,1.5,1.75,2,3,0.75],SPN=['等速','1.25倍','1.5倍','1.75倍','2倍','3倍','0.75倍'];
+let si=0; const sp=document.getElementById('sp');
+sp.onclick=()=>{si=(si+1)%SPEEDS.length; a.playbackRate=SPEEDS[si];
+  a.preservesPitch=a.mozPreservesPitch=a.webkitPreservesPitch=true; sp.textContent=SPN[si]};
+a.onplay=()=>pp.textContent='❚❚ 停止'; a.onpause=()=>pp.textContent='▶ 再生';
+a.ontimeupdate=()=>paint(a.currentTime);
+sk.oninput=()=>{sk.dragging=1; go(sk.value/1000*D.dur)};
+sk.onchange=()=>sk.dragging=0;
+document.getElementById('pv').onclick=()=>{const i=subIdx(a.currentTime);
+  go(i>0?D.subs[i-1].t:0)};
+document.getElementById('nx').onclick=()=>{const i=subIdx(a.currentTime);
+  if(i+1<D.subs.length) go(D.subs[i+1].t)};
+addEventListener('keydown',e=>{const k=e.key;
+  if(k===' '){e.preventDefault();pp.onclick()}
+  else if(k==='ArrowRight')go(a.currentTime+5); else if(k==='ArrowLeft')go(a.currentTime-5);
+  else if(k==='ArrowDown'){e.preventDefault();document.getElementById('nx').onclick()}
+  else if(k==='ArrowUp'){e.preventDefault();document.getElementById('pv').onclick()}
+  else if(k==='s'||k==='S')sp.onclick()});
+paint(0);
+</script>
