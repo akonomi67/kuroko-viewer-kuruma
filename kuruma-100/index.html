@@ -1,0 +1,133 @@
+<title>百本目に残す一台</title>
+<style>
+:root{--bg:#f6f4f1;--panel:#fffefc;--ink:#1c1a19;--dim:#6e6862;--line:#e2ded7;--accent:#b8422f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}}
+:root[data-theme="dark"]{--bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);margin:0;-webkit-text-size-adjust:100%;
+  font:16px/1.7 -apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic UI",sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+h1{font-size:17px;margin:4px 0 14px;font-weight:600;letter-spacing:.02em}
+.meta{color:var(--dim);font-size:13px;font-weight:400;margin-left:8px}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:12px;position:relative;
+  min-height:40vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:46px 20px 26px;box-shadow:0 2px 14px rgba(0,0,0,.10)}
+#now{margin:0;text-align:center;white-space:pre-wrap;word-break:break-word;font-weight:700;
+  font-size:clamp(23px,5.4vw,42px);line-height:1.5;letter-spacing:.01em}
+#nextline{margin:16px 0 0;text-align:center;white-space:pre-wrap;word-break:break-word;
+  color:var(--dim);font-size:clamp(13px,2.8vw,17px);line-height:1.6}
+.badge{position:absolute;left:12px;top:12px;background:rgba(127,127,127,.16);color:var(--dim);
+  font-size:12px;padding:3px 9px;border-radius:20px;line-height:1.6;letter-spacing:.04em}
+.bar{display:flex;align-items:center;gap:10px;margin:12px 0 6px;flex-wrap:wrap}
+button{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;
+  padding:9px 14px;font-size:15px;cursor:pointer;font-family:inherit}
+button:active{transform:translateY(1px)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.play{background:var(--accent);color:#fff;border-color:transparent;min-width:80px;font-weight:600}
+.time{font-variant-numeric:tabular-nums;color:var(--dim);font-size:13px;margin-left:auto}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.marks{position:relative;height:7px;margin:2px 0 14px}
+.marks i{position:absolute;top:0;width:1px;height:7px;background:var(--line)}
+.tabs{display:flex;gap:6px;margin:18px 0 10px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;
+  color:var(--ink);padding:7px 12px;font-weight:600}
+.list{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+  -webkit-overflow-scrolling:touch}
+.row{display:flex;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.row:last-child{border-bottom:0}
+.row:hover{background:rgba(127,127,127,.07)}
+.row.on{background:rgba(184,66,47,.12)}
+.row b{color:var(--dim);font-variant-numeric:tabular-nums;font-weight:500;font-size:13px;
+  min-width:48px;flex:none;padding-top:2px}
+.row span{white-space:pre-wrap;flex:1;font-size:16px;line-height:1.65}
+.tip{color:var(--dim);font-size:12.5px;margin:10px 2px 0}
+@media(max-width:620px){.wrap{padding:10px}.time{font-size:12px}
+  .bar button{padding:9px 11px;font-size:14px}.stage{padding:42px 14px 22px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+<div class="wrap">
+<h1 id="ttl"></h1>
+<div class="stage"><div class="badge" id="bdg"></div>
+  <p id="now"></p><p id="nextline"></p></div>
+<div class="bar">
+  <button class="play" id="pp">▶ 再生</button>
+  <button id="pv">◀ 前の字幕</button>
+  <button id="nx">次の字幕 ▶</button>
+  <button id="sp">等速</button>
+  <span class="time" id="tm">0:00 / 0:00</span>
+</div>
+<input type="range" id="sk" min="0" max="1000" value="0">
+<div class="marks" id="mk"></div>
+<div class="tabs"><button class="on">字幕</button></div>
+<div class="list" id="subs"></div>
+<p class="tip">スペース＝再生/停止　←→＝5秒送り　↑↓＝字幕送り。字幕をタップするとそこへ飛びます。</p>
+</div>
+<audio id="a" src="audio.mp3" preload="auto"></audio>
+<script>
+const D={"name": "百本目に残す一台", "file": "100_百本目に残す一台", "dur": 800.16665625, "segs": [], "subs": [{"t": 0.0, "x": "こんにちは、「となりの車屋さん」の店長です。"}, {"t": 2.966666666666667, "x": "前の回はお孫さんの送り迎えにタントを勧めました。"}, {"t": 7.066666666666666, "x": "あの回を撮り終えたあと、お店の帳面をめくって数えてみたんです。"}, {"t": 12.0, "x": "この店のお話も、今日で100本目になりました。"}, {"t": 15.866666666666667, "x": "最初のころは道路の標識や免許の決まりの話が多かったですね。"}, {"t": 20.9, "x": "途中からは70代のかたの車選びの話がほとんどになりました。"}, {"t": 25.766666666666666, "x": "そうしますと、こんなお声をいただくようになります。"}, {"t": 29.266666666666666, "x": "「回ごとに違う車が出てきて、結局どれがいいのか分からない」。"}, {"t": 34.1, "x": "もっともなお話です。"}, {"t": 36.13333333333333, "x": "雪の回では四駆を勧め、坂の回ではモーターで走る車を勧めました。"}, {"t": 41.93333333333333, "x": "場面が変われば答えも変わります。それ自体はまちがいではありません。"}, {"t": 47.06666666666667, "x": "では一台だけ選べと言われたら、店長は何と答えるのか。"}, {"t": 52.06666666666667, "x": "100本目の今日は、そこから逃げずにお答えします。"}, {"t": 56.03333333333333, "x": "これまでの答えを全部並べて、3台まで減らしてから一台に決めます。"}, {"t": 61.766666666666666, "x": "答えは第5章で申し上げます。"}, {"t": 64.5, "x": "最後の章では、100本で店長が考えを変えたこともお話しします。"}, {"t": 70.9, "x": "まずはこれまでの回で名指しした車を1枚にまとめます。"}, {"t": 75.1, "x": "68本目は「70代が買うならこの一台」で、スペーシアでした。"}, {"t": 81.16666666666667, "x": "八十一本目は軽では心細いかたへのシエンタです。"}, {"t": 85.26666666666667, "x": "83本目は最後の車になるかもしれないかたへのアクア。"}, {"t": 90.3, "x": "84本目は中古で選ぶならフィットでした。"}, {"t": 94.03333333333333, "x": "85本目は雪の朝のハスラーで、90本目は夜道のCX-30です。"}, {"t": 100.46666666666667, "x": "92本目は小さなSUVのライズ。"}, {"t": 103.73333333333333, "x": "95本目はプリウスからの乗りかえで、カローラ クロスでした。"}, {"t": 108.53333333333333, "x": "96本目は坂の町のノートで、97本目は奥さまのムーヴです。"}, {"t": 115.16666666666667, "x": "98本目は運転が好きなかたのスイフト。"}, {"t": 119.0, "x": "そして99本目が、お孫さんを乗せるタントでした。"}, {"t": 123.4, "x": "数えますと、一台を名指しした回は12本あります。"}, {"t": 127.86666666666666, "x": "そのうち軽が4台で、普通車が8台でした。"}, {"t": 131.86666666666667, "x": "2台から選ぶ回でも答えを出してきました。"}, {"t": 135.2, "x": "N-BOXとくらべた82本目では、スペーシアを選びました。"}, {"t": 139.86666666666667, "x": "フリードとくらべた94本目では、シエンタを選びました。"}, {"t": 144.33333333333334, "x": "こうして並べると、だれのための一台かが回ごとに違います。"}, {"t": 149.16666666666666, "x": "雪国のかた、坂の多い町のかた、運転が好きなかた。"}, {"t": 155.1, "x": "今日はその「だれの」を外して、70代のかた全員に向けて選びます。"}, {"t": 161.8, "x": "では何を物差しにするか。"}, {"t": 164.23333333333332, "x": "100本のなかで何度も出てきて最後まで外れなかったものが3つあります。"}, {"t": 170.06666666666666, "x": "1つめは、体が変わったときに車のほうを合わせられるかです。"}, {"t": 174.76666666666668, "x": "座る高さとハンドルの角度、それにブレーキを踏み続ける足の力。"}, {"t": 180.56666666666666, "x": "70代はこの先も体が少しずつ変わっていきます。"}, {"t": 184.7, "x": "買った日にちょうど良くても、5年後に合わなくなっては困ります。"}, {"t": 189.33333333333334, "x": "車は買いかえられても、体は取りかえがききませんからね。"}, {"t": 193.73333333333332, "x": "2つめは、安全の確かさを外の数字で言えるかです。"}, {"t": 198.13333333333333, "x": "国の衝突試験の点数や、メーカーが公式に出している装備の表です。"}, {"t": 203.73333333333332, "x": "店長が「安全ですよ」と言うだけなら、だれにでも言えます。"}, {"t": 208.8, "x": "ですから点数か装備表に書いてあることだけを数えます。"}, {"t": 213.56666666666666, "x": "「乗ってみた感じ」は人によって違いますので、今日の物差しには入れません。"}, {"t": 219.2, "x": "3つめは、毎日走る道の幅と距離に合っているかです。"}, {"t": 223.8, "x": "70代のかたの運転は買い物と病院とご近所が中心です。"}, {"t": 229.16666666666666, "x": "その毎日に大きすぎず小さすぎないことです。"}, {"t": 232.76666666666668, "x": "逆に物差しから外したものもあります。"}, {"t": 235.76666666666668, "x": "雪や坂のように、住む場所で決まることです。"}, {"t": 239.5, "x": "これは場面ごとの回で答えを出していますので、今日は数えません。"}, {"t": 244.56666666666666, "x": "見た目の好みも外しました。好きな色は、どの車にもたいていあります。"}, {"t": 251.8, "x": "この3つで12台をふるいにかけます。"}, {"t": 255.1, "x": "まず場面がはっきりした回の車を外します。"}, {"t": 258.6666666666667, "x": "ハスラーとノートとCX-30、それにライズとカローラ クロスです。"}, {"t": 264.56666666666666, "x": "どれも良い車ですが、雪や坂や夜道のかたのための答えでした。"}, {"t": 269.93333333333334, "x": "ムーヴとタントとスイフトも、だれのための一台かが決まっていました。"}, {"t": 274.96666666666664, "x": "奥さまのため、お孫さんのため、運転を楽しみたいかたのためです。"}, {"t": 280.26666666666665, "x": "中古のフィットは新車の話と並べにくいので外します。"}, {"t": 284.3, "x": "残ったのはだれと決めずに広い問いに答えた3台です。"}, {"t": 288.9, "x": "スペーシアとシエンタとアクアです。"}, {"t": 291.46666666666664, "x": "スペーシアは「70代が買うなら」と聞かれて答えた車。"}, {"t": 296.1333333333333, "x": "シエンタは「軽では心細いなら」と聞かれて答えた車。"}, {"t": 300.8, "x": "アクアは「最後の車になるかもしれない」と聞かれて答えた車です。"}, {"t": 306.1, "x": "軽が一台に普通車が2台。"}, {"t": 308.6, "x": "大きさも値段も違う3台が、最後の候補になりました。"}, {"t": 313.3, "x": "ここから一台に絞るのが、今日いちばん悩んだところです。"}, {"t": 317.8666666666667, "x": "3台とも、名指しした回で胸を張って勧めた車ですからね。"}, {"t": 324.26666666666665, "x": "それでは申し上げます。"}, {"t": 326.1666666666667, "x": "100本お話しして最後に一台だけ残すなら、スズキのスペーシアです。"}, {"t": 331.76666666666665, "x": "今の型は2023年の11月に出たもので、新車で買えます。"}, {"t": 337.26666666666665, "x": "しかも今日は形まで決めておきます。"}, {"t": 340.2, "x": "Xという形にセーフティプラスパッケージを付けたものです。"}, {"t": 344.6, "x": "前輪駆動で177万1000円。"}, {"t": 348.3, "x": "今日の時点でスズキが公式に出している税込みの値段です。"}, {"t": 352.46666666666664, "x": "いちばん安いGは153万100円ですから、24万円ほど上がります。"}, {"t": 359.1, "x": "Xだけなら170万5000円で、パッケージの分は6万6000円です。"}, {"t": 364.8666666666667, "x": "70代のかた全員に向けて選ぶなら、値段も大事な物差しです。"}, {"t": 370.0, "x": "この177万円は、残った3台のなかでいちばん手の届きやすい値段です。"}, {"t": 376.8, "x": "なぜわざわざ高いほうを勧めるのか。"}, {"t": 379.8, "x": "それが今日の理由そのものですので、次の章でお話しします。"}, {"t": 384.6333333333333, "x": "念のために申し上げますと、答えは68本目と同じ車です。"}, {"t": 389.76666666666665, "x": "ただ、あの回とは理由がまったく違います。"}, {"t": 393.5, "x": "あれから30本あまり、別の物差しで何度もこの車を見直してきました。"}, {"t": 399.1333333333333, "x": "そのたびに残ったことが今日の理由です。"}, {"t": 402.26666666666665, "x": "同じ答えでも、たしかめた回数が違えば重みも違うと考えています。"}, {"t": 409.53333333333336, "x": "1つめの理由は、座ったあとのことです。"}, {"t": 412.7, "x": "Xから上の形には運転席の高さを変える仕組みが付いています。"}, {"t": 418.26666666666665, "x": "ハンドルの角度も、体に合わせて上下に動かせます。"}, {"t": 422.6, "x": "いちばん安いGにはこの2つが付いていません。"}, {"t": 426.3333333333333, "x": "70代になると背中が少し丸くなったり、膝が曲げにくくなったりします。"}, {"t": 432.3, "x": "そうなったときに座る高さとハンドルの位置を合わせ直せる。"}, {"t": 436.7, "x": "これが5年後のご自身への備えになります。"}, {"t": 440.1666666666667, "x": "冬に厚いコートを着る日と、夏の薄着の日でも座る位置は変わります。"}, {"t": 445.6666666666667, "x": "そのたびに高さを合わせ直せると、運転の姿勢がくずれません。"}, {"t": 450.8, "x": "セーフティプラスパッケージを付けると、さらに3つ増えます。"}, {"t": 455.1666666666667, "x": "まずパーキングブレーキが電動のスイッチになります。"}, {"t": 458.8666666666667, "x": "レバーを強く引いたり足で踏み込んだりする手間がなくなります。"}, {"t": 463.53333333333336, "x": "つぎにブレーキホールドです。"}, {"t": 465.76666666666665, "x": "信号で止まったとき、足を離しても止まったままでいてくれます。"}, {"t": 470.4, "x": "長い赤信号でもブレーキを踏み続ける足が楽になります。"}, {"t": 475.56666666666666, "x": "3つめは前の車について走る仕組みと、車線をはみ出しにくくする助けです。"}, {"t": 481.53333333333336, "x": "遠くの病院へ通う日の気疲れが少し減ります。"}, {"t": 485.5, "x": "6万6000円で体の変化に車が付いてきてくれる。"}, {"t": 489.76666666666665, "x": "店長はここにいちばんお金をかける値打ちがあると考えています。"}, {"t": 494.2, "x": "タイヤやナビにお金をかけるより、先にここです。"}, {"t": 499.53333333333336, "x": "2つめの理由は、何度ためしてもこの車が答えから外れなかったことです。"}, {"t": 505.3, "x": "68本目のあと、店長は3回ほど別の物差しでこの車を見直しました。"}, {"t": 511.23333333333335, "x": "1回目は82本目で、いちばん売れているN-BOXとの一騎打ちです。"}, {"t": 516.7333333333333, "x": "このパッケージを付けた形で比べて、スペーシアが勝ちました。"}, {"t": 521.4, "x": "2回目は87本目で、国の衝突試験の点数です。"}, {"t": 526.2333333333333, "x": "スペーシアは星4つで、軽からは2台だけが5台に入りました。"}, {"t": 531.4666666666667, "x": "店長が選んだのではなく、国の試験の数字が選んだ結果です。"}, {"t": 536.4333333333333, "x": "3回目は93本目で、新しくなった軽を入れた選び直しです。"}, {"t": 542.0333333333333, "x": "右や左に曲がるときに向かってくる車や渡る人に気づいてブレーキを掛ける。"}, {"t": 548.4666666666667, "x": "この見張りがいちばん安いGから付いていると確かめました。"}, {"t": 552.7, "x": "答えを変えてもいいつもりで見直して、それでも変わらなかった。"}, {"t": 557.4666666666667, "x": "3つの違う物差しで、3回とも答えに残りました。"}, {"t": 561.9333333333333, "x": "1つの回で勝つより、何回ためしても負けないほうが70代の一台には大事です。"}, {"t": 568.1666666666666, "x": "物差しの3つめの毎日の道にも合っています。"}, {"t": 572.0, "x": "軽の幅ですから細い道も古い車庫も困りません。"}, {"t": 576.2333333333333, "x": "小回りの数字は68本目でお話ししたとおりです。"}, {"t": 580.4, "x": "もうひとつ、今の型では前の窓の両わきの柱が細くなりました。"}, {"t": 585.9333333333333, "x": "交差点で渡っている人が見えやすくなった、とスズキは発表しています。"}, {"t": 591.1666666666666, "x": "ご近所の交差点を毎日通るかたほど、この細さが効いてきます。"}, {"t": 598.0, "x": "もちろん外した2台のほうが合うかたもいらっしゃいます。"}, {"t": 602.0333333333333, "x": "まずシエンタです。"}, {"t": 603.8666666666667, "x": "高速道路や遠出が多くて、軽ではどうしても心細いかた。"}, {"t": 608.6, "x": "5人で出かけることがあるご家庭。"}, {"t": 611.4666666666667, "x": "このどちらかに当てはまるなら、八十一本目のシエンタを選んでください。"}, {"t": 616.9, "x": "軽の定員は4人までで、ここは装備ではどうにもなりません。"}, {"t": 621.6666666666666, "x": "つぎにアクアです。"}, {"t": 623.3, "x": "膝や腰に心配がなく、背の高い車が風でゆれるのが苦手なかた。"}, {"t": 628.8, "x": "そして一台を長く大事に乗りたいかたです。"}, {"t": 632.3666666666667, "x": "アクアは座る位置が低めなので、乗り降りがつらいかたには向きません。"}, {"t": 637.1666666666666, "x": "ここは83本目でも正直にお話ししたところです。"}, {"t": 641.7333333333333, "x": "まとめますと、迷ったらまずスペーシアに座ってみる。"}, {"t": 646.0, "x": "軽では足りない理由がはっきりあるなら、シエンタかアクアへ進む。"}, {"t": 650.9666666666667, "x": "この順番なら3台のなかで必ず答えが出ます。"}, {"t": 654.9666666666667, "x": "どちらを選んでも、70代の車として外れではありません。"}, {"t": 659.5666666666667, "x": "ただ最初に座っていただきたいのは、やはりスペーシアです。"}, {"t": 665.2666666666667, "x": "100本目ですので、ひとつ打ち明け話をさせてください。"}, {"t": 669.2333333333333, "x": "はじめのころ、店長は車を5台並べるのが親切だと思っていました。"}, {"t": 674.7, "x": "良いところと気になるところを5台分お見せして、選ぶのはお客さん。"}, {"t": 679.9666666666667, "x": "それが公平なやりかただと信じていたのです。"}, {"t": 683.4666666666667, "x": "けれども5台も並べられたら決められない、というお声が届きました。"}, {"t": 688.2666666666667, "x": "考えてみればお店でも同じでした。"}, {"t": 691.4333333333333, "x": "迷っているかたに5台のカタログを渡しても、結局は持ち帰られます。"}, {"t": 696.7333333333333, "x": "「店長ならどれにする」と聞かれて一台を答えたときに話が進むのです。"}, {"t": 702.1, "x": "それから答えを言い切るようにしました。"}, {"t": 705.0, "x": "回ごとにいただくお声が、店長の先生だったわけです。"}, {"t": 709.7, "x": "もうひとつ変えたことがあります。"}, {"t": 712.0666666666667, "x": "同じ車でも、どの形を買うかで答えが入れ替わることがある。"}, {"t": 717.0, "x": "N-BOXとくらべた回で、店長自身がそれを思い知りました。"}, {"t": 721.7333333333333, "x": "ですから今日も車の名前だけでなく形まで申し上げたのです。"}, {"t": 727.0, "x": "これからも答えは1つに決めて、形まで添えてお話しします。"}, {"t": 733.3, "x": "100本お話しして最後に一台だけ残すなら、スズキのスペーシアです。"}, {"t": 738.8, "x": "形はXにセーフティプラスパッケージを付けたもので、177万1000円です。"}, {"t": 744.7666666666667, "x": "理由は2つでした。"}, {"t": 746.5666666666667, "x": "1つめは座る高さやハンドル、ブレーキの足まで体の変化に合わせられること。"}, {"t": 752.5666666666667, "x": "2つめは違う物差しで3回見直しても、答えから外れなかったことです。"}, {"t": 758.7, "x": "高速や遠出が多いか、5人で乗るならシエンタ。"}, {"t": 762.9666666666667, "x": "低い座席が平気で、一台を長く乗りたいならアクア。"}, {"t": 767.5333333333333, "x": "装備の付きかたは形や年式で変わります。"}, {"t": 771.5, "x": "最後は販売店の装備表で確かめてください。"}, {"t": 774.6333333333333, "x": "そして買う前には、運転席の高さを一番下と一番上の両方に動かしてみてください。"}, {"t": 781.8, "x": "ご自身にちょうどいい高さがそのあいだにあるかどうか。"}, {"t": 785.6, "x": "それがこの車を選ぶかどうかのいちばん確かな試しです。"}, {"t": 789.7666666666667, "x": "100本のあいだお店に寄ってくださって、本当にありがとうございました。"}, {"t": 794.5666666666667, "x": "次の100本も、となりの車屋としてのんびりお付き合いください。"}], "w": 720, "h": 405, "n_cuts": 0, "noimage": true};
+const a=document.getElementById('a');
+const now=document.getElementById('now'), nl=document.getElementById('nextline');
+const pp=document.getElementById('pp'), sk=document.getElementById('sk');
+const tm=document.getElementById('tm'), bdg=document.getElementById('bdg');
+const SMOOTH=matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth';
+document.getElementById('ttl').innerHTML=D.name+
+  '<span class="meta">'+fmt(D.dur)+'　字幕'+D.subs.length+'　（音声＋字幕だけ）</span>';
+
+function fmt(s){s=Math.max(0,s|0);return (s/60|0)+':'+String(s%60).padStart(2,'0')}
+function subIdx(t){let lo=0,hi=D.subs.length-1,r=-1;
+  while(lo<=hi){const m=(lo+hi)>>1; if(D.subs[m].t<=t){r=m;lo=m+1}else hi=m-1} return r}
+
+let cur=-2;
+function paint(t){
+  const i=subIdx(t);
+  if(i!==cur){cur=i;
+    now.textContent = i<0 ? (D.subs.length?'（ここはまだ字幕がありません）'
+                                          :'（この回に字幕はありません）')
+                         : D.subs[i].x;
+    const n=D.subs[i+1]; nl.textContent = n ? '次　'+n.x : '';
+    bdg.textContent = D.subs.length ? '字幕 '+(i+1)+' / '+D.subs.length : '字幕なし';
+    mark('subs',i);
+  }
+  tm.textContent=fmt(t)+' / '+fmt(D.dur);
+  if(!sk.dragging) sk.value=Math.round(t/D.dur*1000);
+}
+function mark(pane,i){
+  const el=document.getElementById(pane);
+  if(el.dataset.on==i) return; el.dataset.on=i;
+  el.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));
+  const t=el.children[i]; if(!t) return; t.classList.add('on');
+  if(!el.hidden){const r=t.offsetTop-el.clientHeight/2; el.scrollTo({top:r,behavior:SMOOTH})}
+}
+
+D.subs.forEach(s=>{const d=document.createElement('div');d.className='row';
+  d.innerHTML='<b></b><span></span>';
+  d.querySelector('b').textContent=fmt(s.t);
+  d.querySelector('span').textContent=s.x;
+  d.onclick=()=>go(s.t); document.getElementById('subs').appendChild(d)});
+const mk=document.getElementById('mk');
+D.subs.forEach(s=>{const i=document.createElement('i');
+  i.style.left=(s.t/D.dur*100)+'%'; mk.appendChild(i)});
+
+function go(t){a.currentTime=Math.min(Math.max(0,t)+0.01,Math.max(0.05,D.dur-0.05)); paint(a.currentTime)}
+pp.onclick=()=>a.paused?a.play():a.pause();
+const SPEEDS=[1,1.25,1.5,1.75,2,3,0.75],SPN=['等速','1.25倍','1.5倍','1.75倍','2倍','3倍','0.75倍'];
+let si=0; const sp=document.getElementById('sp');
+sp.onclick=()=>{si=(si+1)%SPEEDS.length; a.playbackRate=SPEEDS[si];
+  a.preservesPitch=a.mozPreservesPitch=a.webkitPreservesPitch=true; sp.textContent=SPN[si]};
+a.onplay=()=>pp.textContent='❚❚ 停止'; a.onpause=()=>pp.textContent='▶ 再生';
+a.ontimeupdate=()=>paint(a.currentTime);
+sk.oninput=()=>{sk.dragging=1; go(sk.value/1000*D.dur)};
+sk.onchange=()=>sk.dragging=0;
+document.getElementById('pv').onclick=()=>{const i=subIdx(a.currentTime);
+  go(i>0?D.subs[i-1].t:0)};
+document.getElementById('nx').onclick=()=>{const i=subIdx(a.currentTime);
+  if(i+1<D.subs.length) go(D.subs[i+1].t)};
+addEventListener('keydown',e=>{const k=e.key;
+  if(k===' '){e.preventDefault();pp.onclick()}
+  else if(k==='ArrowRight')go(a.currentTime+5); else if(k==='ArrowLeft')go(a.currentTime-5);
+  else if(k==='ArrowDown'){e.preventDefault();document.getElementById('nx').onclick()}
+  else if(k==='ArrowUp'){e.preventDefault();document.getElementById('pv').onclick()}
+  else if(k==='s'||k==='S')sp.onclick()});
+paint(0);
+</script>
