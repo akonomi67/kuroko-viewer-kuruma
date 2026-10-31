@@ -1,0 +1,133 @@
+<title>運転が好きなかたの一台</title>
+<style>
+:root{--bg:#f6f4f1;--panel:#fffefc;--ink:#1c1a19;--dim:#6e6862;--line:#e2ded7;--accent:#b8422f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}}
+:root[data-theme="dark"]{--bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);margin:0;-webkit-text-size-adjust:100%;
+  font:16px/1.7 -apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic UI",sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+h1{font-size:17px;margin:4px 0 14px;font-weight:600;letter-spacing:.02em}
+.meta{color:var(--dim);font-size:13px;font-weight:400;margin-left:8px}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:12px;position:relative;
+  min-height:40vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:46px 20px 26px;box-shadow:0 2px 14px rgba(0,0,0,.10)}
+#now{margin:0;text-align:center;white-space:pre-wrap;word-break:break-word;font-weight:700;
+  font-size:clamp(23px,5.4vw,42px);line-height:1.5;letter-spacing:.01em}
+#nextline{margin:16px 0 0;text-align:center;white-space:pre-wrap;word-break:break-word;
+  color:var(--dim);font-size:clamp(13px,2.8vw,17px);line-height:1.6}
+.badge{position:absolute;left:12px;top:12px;background:rgba(127,127,127,.16);color:var(--dim);
+  font-size:12px;padding:3px 9px;border-radius:20px;line-height:1.6;letter-spacing:.04em}
+.bar{display:flex;align-items:center;gap:10px;margin:12px 0 6px;flex-wrap:wrap}
+button{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;
+  padding:9px 14px;font-size:15px;cursor:pointer;font-family:inherit}
+button:active{transform:translateY(1px)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.play{background:var(--accent);color:#fff;border-color:transparent;min-width:80px;font-weight:600}
+.time{font-variant-numeric:tabular-nums;color:var(--dim);font-size:13px;margin-left:auto}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.marks{position:relative;height:7px;margin:2px 0 14px}
+.marks i{position:absolute;top:0;width:1px;height:7px;background:var(--line)}
+.tabs{display:flex;gap:6px;margin:18px 0 10px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;
+  color:var(--ink);padding:7px 12px;font-weight:600}
+.list{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+  -webkit-overflow-scrolling:touch}
+.row{display:flex;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.row:last-child{border-bottom:0}
+.row:hover{background:rgba(127,127,127,.07)}
+.row.on{background:rgba(184,66,47,.12)}
+.row b{color:var(--dim);font-variant-numeric:tabular-nums;font-weight:500;font-size:13px;
+  min-width:48px;flex:none;padding-top:2px}
+.row span{white-space:pre-wrap;flex:1;font-size:16px;line-height:1.65}
+.tip{color:var(--dim);font-size:12.5px;margin:10px 2px 0}
+@media(max-width:620px){.wrap{padding:10px}.time{font-size:12px}
+  .bar button{padding:9px 11px;font-size:14px}.stage{padding:42px 14px 22px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+<div class="wrap">
+<h1 id="ttl"></h1>
+<div class="stage"><div class="badge" id="bdg"></div>
+  <p id="now"></p><p id="nextline"></p></div>
+<div class="bar">
+  <button class="play" id="pp">▶ 再生</button>
+  <button id="pv">◀ 前の字幕</button>
+  <button id="nx">次の字幕 ▶</button>
+  <button id="sp">等速</button>
+  <span class="time" id="tm">0:00 / 0:00</span>
+</div>
+<input type="range" id="sk" min="0" max="1000" value="0">
+<div class="marks" id="mk"></div>
+<div class="tabs"><button class="on">字幕</button></div>
+<div class="list" id="subs"></div>
+<p class="tip">スペース＝再生/停止　←→＝5秒送り　↑↓＝字幕送り。字幕をタップするとそこへ飛びます。</p>
+</div>
+<audio id="a" src="audio.mp3" preload="auto"></audio>
+<script>
+const D={"name": "運転が好きなかたの一台", "file": "098_運転が好きなかたの一台", "dur": 841.66665625, "segs": [], "subs": [{"t": 0.0, "x": "こんにちは、「となりの車屋さん」の店長です。"}, {"t": 2.966666666666667, "x": "少しだけ目をつぶってみてください。"}, {"t": 5.966666666666667, "x": "これまで乗ってきた車のなかで、いちばん楽しかった一台を思い出します。"}, {"t": 11.133333333333333, "x": "若いころに初めて自分のお金で買った車でしょうか。"}, {"t": 14.966666666666667, "x": "仕事で毎日のように走らせた車かもしれません。"}, {"t": 18.733333333333334, "x": "休みの日に山の道をのんびり走った車、というかたもいるでしょう。"}, {"t": 23.933333333333334, "x": "思い出せたら目を開けてください。"}, {"t": 28.133333333333333, "x": "その車は、たぶん背の低い車だったのではないでしょうか。"}, {"t": 32.7, "x": "ハンドルを切ったぶんだけ素直に曲がって、軽やかに走る車です。"}, {"t": 37.733333333333334, "x": "ところが70代で車を買い替えに行くと、話が変わってきます。"}, {"t": 42.93333333333333, "x": "「これからは乗り降りの楽な、背の高い車にしましょう」。"}, {"t": 47.333333333333336, "x": "こう言われて、四角い箱のような車ばかり並べられるのです。"}, {"t": 52.13333333333333, "x": "もちろん、それで助かるかたもたくさんいらっしゃいます。"}, {"t": 56.03333333333333, "x": "ただ運転そのものが好きなかたには、少しさびしい話です。"}, {"t": 60.8, "x": "今日はそういうかたのための一台をお話しします。"}, {"t": 64.5, "x": "運転の楽しさを残したまま、今の安全装備もそろっている車です。"}, {"t": 70.16666666666667, "x": "答えは早めに第3章で申し上げます。"}, {"t": 73.4, "x": "後半では、マニュアル車を選んでよいかというご質問にもお答えします。"}, {"t": 79.96666666666667, "x": "お店で70代のかたに勧められやすい車には、決まった型があります。"}, {"t": 85.43333333333334, "x": "背が高くて、後ろの扉が横に開く軽自動車や小さなミニバンです。"}, {"t": 91.23333333333333, "x": "乗り降りが楽で荷物もたくさん積めます。"}, {"t": 94.7, "x": "勧める側から見れば外れの少ない選びかたです。"}, {"t": 98.66666666666667, "x": "ところが運転好きのかたからは別の声をよく聞きます。"}, {"t": 103.26666666666667, "x": "「座るとバスの運転席みたいでどうも落ち着かない」。"}, {"t": 107.56666666666666, "x": "「曲がるときに体が外へ振られる感じが苦手なんだ」。"}, {"t": 111.63333333333334, "x": "「風の強い日の橋の上で車が横に押される気がする」。"}, {"t": 116.23333333333333, "x": "背の高い車はどうしても重心が上のほうに来ます。"}, {"t": 120.33333333333333, "x": "横から風を受ける面も大きくなります。"}, {"t": 123.8, "x": "これは形の性質なので、作りの良し悪しとは別の話です。"}, {"t": 128.96666666666667, "x": "もう1つは気持ちの問題です。"}, {"t": 131.46666666666667, "x": "好きでもない車に乗ると、運転がただの用事になります。"}, {"t": 136.2, "x": "用事になると、出かける回数が少しずつ減っていきます。"}, {"t": 140.66666666666666, "x": "出かけなくなって毎日に張りがなくなった、というお客さまもいました。"}, {"t": 145.8, "x": "楽しいから出かけるという気持ちは、とても大切な力です。"}, {"t": 150.43333333333334, "x": "ですから好みを我慢してまで、箱型を選ばなくてよいと店長は考えています。"}, {"t": 156.06666666666666, "x": "ただし条件が1つあります。"}, {"t": 158.5, "x": "今の安全装備がしっかり付いていることです。"}, {"t": 161.9, "x": "楽しさと安全の両方を満たす一台を、次の章で名指しします。"}, {"t": 169.16666666666666, "x": "今日の答えはスズキのスイフトです。"}, {"t": 172.53333333333333, "x": "今の型が売り出されたのは2023年の12月です。"}, {"t": 177.3, "x": "マニュアル車は少し遅れて、2024年の1月に加わりました。"}, {"t": 182.6, "x": "長さは3860ミリで幅は1695ミリです。"}, {"t": 188.33333333333334, "x": "屋根の高さは前輪駆動の車で1500ミリです。"}, {"t": 192.63333333333333, "x": "背の高い軽自動車と並べると、ずっと低く構えた形をしています。"}, {"t": 197.8, "x": "エンジンは1.2リットルの三気筒です。"}, {"t": 201.06666666666666, "x": "上の2つの形には、小さなモーターで走りを手助けする仕組みが付きます。"}, {"t": 207.0, "x": "形は大きく分けて3つあります。"}, {"t": 209.96666666666667, "x": "いちばん手ごろなのがXGで、真ん中がハイブリッドMX。"}, {"t": 215.1, "x": "いちばん上がハイブリッドMZです。"}, {"t": 218.0, "x": "この車を選んだ理由は3つあります。"}, {"t": 221.16666666666666, "x": "1つめは、軽くて小さいので思ったとおりに走ってくれることです。"}, {"t": 226.2, "x": "2つめは、座る高さとハンドルを体に合わせて変えられることです。"}, {"t": 231.2, "x": "3つめは、この大きさで安全装備がしっかりそろっていることです。"}, {"t": 236.13333333333333, "x": "しかも今では数少ないマニュアル車まで選べます。"}, {"t": 239.76666666666668, "x": "運転好きのかたが見て乗って納得しやすい一台です。"}, {"t": 243.8, "x": "では順番に見ていきましょう。"}, {"t": 247.66666666666666, "x": "まずは重さの話です。"}, {"t": 249.86666666666667, "x": "いちばん軽いのはXGの前輪駆動で910キロです。"}, {"t": 255.2, "x": "マニュアル車は920キロで、いちばん上のMZでも950キロです。"}, {"t": 261.43333333333334, "x": "前輪駆動ならどの形を選んでも1トンを下回ります。"}, {"t": 266.4, "x": "四輪駆動にしても1020キロにとどまります。"}, {"t": 270.1333333333333, "x": "車が軽いと、エンジンの力が小さくても走りが重たくなりません。"}, {"t": 275.6333333333333, "x": "燃費にももちろん良く効いてきます。"}, {"t": 278.4, "x": "次は大きさです。"}, {"t": 280.3333333333333, "x": "長さの3860ミリは、軽自動車の枠より46センチ長いだけです。"}, {"t": 287.26666666666665, "x": "幅の1695ミリは、5ナンバーの枠に収まっています。"}, {"t": 292.2, "x": "小回りの目安になる数字は、前輪駆動で4.8メートルです。"}, {"t": 297.8666666666667, "x": "細い路地や狭い駐車場でも、持て余すことはないでしょう。"}, {"t": 302.53333333333336, "x": "それでいて、軽自動車よりひと回り大きな体を持っています。"}, {"t": 307.3333333333333, "x": "高速道路で落ち着いて走れる、と乗り換えたお客さまはよく言われます。"}, {"t": 312.56666666666666, "x": "運転好きのかたにとって、この軽さは楽しさそのものです。"}, {"t": 317.03333333333336, "x": "アクセルを少し踏めばすっと前に出る。"}, {"t": 320.06666666666666, "x": "ハンドルを少し切ればすっと向きを変える。"}, {"t": 323.26666666666665, "x": "この「すっと」が、毎日の買い物を少し楽しい時間に変えてくれます。"}, {"t": 328.46666666666664, "x": "スズキも、曲がるときに車が傾きにくいよう足回りを見直したと説明しています。"}, {"t": 335.1, "x": "数字だけでは分からないので、試乗では角を1つ曲がってみてください。"}, {"t": 341.76666666666665, "x": "運転が好きなかたほど、座ったときの感じを大事にされます。"}, {"t": 346.96666666666664, "x": "スイフトの運転席は、背の高い車のように上から見下ろす形ではありません。"}, {"t": 352.76666666666665, "x": "足を前に伸ばして座る、昔ながらの乗用車の座り方です。"}, {"t": 358.23333333333335, "x": "長く乗ってきた車と同じ感覚で、体がなじみやすいはずです。"}, {"t": 363.06666666666666, "x": "一方で気になるのは乗り降りではないでしょうか。"}, {"t": 366.46666666666664, "x": "屋根が低いぶん、頭を少しかがめて乗り込むことになります。"}, {"t": 370.9, "x": "ここで役に立つのが座る高さを変えるレバーです。"}, {"t": 375.0, "x": "スイフトは、全部の形に運転席の高さを変える仕組みが付いています。"}, {"t": 380.4, "x": "ハンドルの高さを変える仕組みも、全部の形に付いています。"}, {"t": 385.1666666666667, "x": "座面を少し上げると、前の見え方も乗り降りも楽になります。"}, {"t": 390.3333333333333, "x": "上げすぎると頭が天井に近づくので、ちょうどよい所を探してください。"}, {"t": 395.96666666666664, "x": "車庫入れで、まわりが見えにくいと感じるかたもいるでしょう。"}, {"t": 400.2, "x": "まわりを映すカメラ付きのナビを付けると、車を上から見たような映像が出ます。"}, {"t": 405.93333333333334, "x": "これは真ん中のMXと上のMZで、注文のときに選べる追加の装備です。"}, {"t": 412.03333333333336, "x": "お店で運転好きのかたが最初にされるのは、座ってハンドルを握ることです。"}, {"t": 417.76666666666665, "x": "そのとき「しっくりくる」と感じるかどうかが、何より正直な答えです。"}, {"t": 425.1333333333333, "x": "楽しさの次は安全の話です。"}, {"t": 428.46666666666664, "x": "国の衝突試験の結果は、以前の安全な5台の回でお話ししました。"}, {"t": 433.9, "x": "今日は点数ではなく、どんな装備が付いているかを見ていきます。"}, {"t": 438.6, "x": "まずは、ぶつかりそうなときに止まろうとするブレーキです。"}, {"t": 443.0, "x": "スイフトのものは、電波とカメラの2つの目で前を見ています。"}, {"t": 447.9, "x": "車や歩く人だけでなく、自転車やオートバイも見分けます。"}, {"t": 452.76666666666665, "x": "急に出てくる自転車がこわい、というかたには大事な点です。"}, {"t": 457.5, "x": "次はライトの装備です。"}, {"t": 459.6333333333333, "x": "MXとXGには、ハイビームとロービームを自動で切り替える機能が付きます。"}, {"t": 465.46666666666664, "x": "上のMZには、前の車をまぶしくしないよう光の一部を隠すライトが付きます。"}, {"t": 471.8333333333333, "x": "道の白線からはみ出しそうになると、知らせて戻そうとする機能もあります。"}, {"t": 477.43333333333334, "x": "道路の標識を読み取って画面に映す機能もあります。"}, {"t": 481.3, "x": "エアバッグは前の席の正面と横、窓側のカーテンを合わせて6つです。"}, {"t": 487.23333333333335, "x": "そしてスズキで初めて、運転する人の様子をカメラで見守る仕組みも用意されました。"}, {"t": 493.3666666666667, "x": "これはMZで、まわりを映すナビと一緒に選ぶ追加の装備です。"}, {"t": 498.53333333333336, "x": "ここまでの装備は、背の高い車と比べても見劣りしません。"}, {"t": 503.3333333333333, "x": "ただし大事な注意が1つあります。"}, {"t": 506.1666666666667, "x": "駐車場での踏み間違いに備える装備は、マニュアル車には付きません。"}, {"t": 511.26666666666665, "x": "この話は第8章でくわしくお話しします。"}, {"t": 516.3333333333334, "x": "次はお財布の話です。"}, {"t": 518.5333333333333, "x": "国の審査の燃費は、ハイブリッドのCVTで1リットルあたり24.5キロです。"}, {"t": 525.3666666666667, "x": "マニュアル車は25.4キロで、全部の形のなかでいちばん良い数字です。"}, {"t": 531.3, "x": "いちばん手ごろなXGでも23.4キロあります。"}, {"t": 535.4333333333333, "x": "年に5000キロ走るとすると、ハイブリッドのCVTでおよそ204リットルです。"}, {"t": 541.6333333333333, "x": "値段はメーカーの希望小売価格で見ていきます。"}, {"t": 545.2666666666667, "x": "いちばん手ごろなXGの前輪駆動は、172万7000円です。"}, {"t": 551.2333333333333, "x": "真ん中のハイブリッドMXは、CVTでもマニュアルでも192万2800円です。"}, {"t": 558.0333333333333, "x": "いちばん上のハイブリッドMZは、216万7000円です。"}, {"t": 563.5333333333333, "x": "四輪駆動にすると、どの形も16万5000円上がります。"}, {"t": 568.3333333333334, "x": "店長のおすすめは真ん中のMXのCVTです。"}, {"t": 572.6666666666666, "x": "ハイブリッドの燃費と、ひととおりの安全装備がそろっています。"}, {"t": 577.2333333333333, "x": "光を隠すライトや、信号待ちで足を離せる機能が欲しいならMZです。"}, {"t": 583.7, "x": "MZとMXの差は24万4200円です。"}, {"t": 588.8, "x": "発売のときと同じ値段が、今もスズキの表に載っています。"}, {"t": 593.6333333333333, "x": "200万円前後で、走って楽しい普通車が手に入るわけです。"}, {"t": 600.3666666666667, "x": "お店でよく聞かれるのがこの質問です。"}, {"t": 603.3333333333334, "x": "「若いころからずっとマニュアルなんだが、まだ乗っていいだろうか」。"}, {"t": 608.0666666666667, "x": "スイフトは、今では数少ないマニュアル車が選べる車です。"}, {"t": 612.8, "x": "選べるのは、真ん中のハイブリッドMXの前輪駆動だけです。"}, {"t": 617.9666666666667, "x": "ギアは5段で値段はCVTと同じです。"}, {"t": 621.9, "x": "ただ先に知っておいていただきたい違いがあります。"}, {"t": 625.3666666666667, "x": "マニュアル車には、低い速さで壁や車にぶつからないよう助ける機能が付きません。"}, {"t": 631.3, "x": "止まった所からの踏み間違いに備える機能も、前と後ろとも付きません。"}, {"t": 636.9, "x": "前の車について走る機能も、止まるところまでは追いかけません。"}, {"t": 641.8, "x": "ではサポカー限定の免許との関係はどうでしょう。"}, {"t": 645.9666666666667, "x": "これは、安全装備の付いた車だけを運転できるようにする免許の条件です。"}, {"t": 652.2333333333333, "x": "警察庁の説明では、マニュアル車は国の認定を受けたブレーキだけが条件です。"}, {"t": 658.3333333333334, "x": "踏み間違いの装備がなくても、条件を満たす場合があるということです。"}, {"t": 663.4333333333333, "x": "スイフトのマニュアル車が当てはまるかは、販売店で書類を見せてもらってください。"}, {"t": 668.8333333333334, "x": "とはいえ店長の考えははっきりしています。"}, {"t": 672.1, "x": "マニュアル車は、長年乗り続けてきたかただけにお勧めします。"}, {"t": 676.8333333333334, "x": "しばらくオートマに乗っていたかたが、今から戻るのはお勧めしません。"}, {"t": 681.6333333333333, "x": "迷ったらCVTを選んでください。"}, {"t": 684.5333333333333, "x": "CVTなら、踏み間違いへの備えがきちんと付いてきます。"}, {"t": 689.2, "x": "運転の楽しさは、変速機の種類だけで決まるものではありません。"}, {"t": 693.7666666666667, "x": "軽い車体と素直な曲がり方は、CVTでも同じように味わえます。"}, {"t": 700.8333333333334, "x": "もちろんスイフトが向かないかたもいます。"}, {"t": 704.1666666666666, "x": "まず、膝や腰が痛くて、低い座席への乗り降りがつらいかた。"}, {"t": 709.6333333333333, "x": "座る高さを上げても、背の高い車ほどの楽さにはなりません。"}, {"t": 714.7, "x": "このかたは無理をせず背の高い車を選んでください。"}, {"t": 718.9, "x": "次に後ろの席に人を乗せる日が多いかた。"}, {"t": 722.4666666666667, "x": "後ろの扉は普通の開き戸で、横に滑る扉ではありません。"}, {"t": 727.4333333333333, "x": "足の弱いご家族の乗り降りを手伝うなら、横に開く扉のほうが楽です。"}, {"t": 733.4, "x": "3つめは大きな荷物をよく運ぶかたです。"}, {"t": 736.9, "x": "後ろの席は6対4に分けて倒せますが、背の高い車ほどは積めません。"}, {"t": 742.6, "x": "最後に雪の深い土地にお住まいのかたです。"}, {"t": 745.9666666666667, "x": "地面とのすき間は前輪駆動で120ミリ、四輪駆動でも145ミリです。"}, {"t": 752.5333333333333, "x": "深い雪の道を毎日走るなら、車高のある車とも比べてみてください。"}, {"t": 758.5666666666667, "x": "どれにも当てはまらなければ、スイフトは長く付き合える相棒になります。"}, {"t": 765.4333333333333, "x": "今日のお話を短く振り返ります。"}, {"t": 768.3333333333334, "x": "年を重ねたからといって、箱型の車を選ばなければならない決まりはありません。"}, {"t": 774.1, "x": "運転が好きなかたには、スズキのスイフトをお勧めします。"}, {"t": 778.7333333333333, "x": "前輪駆動ならどの形も重さは1トンを下回ります。"}, {"t": 783.6666666666666, "x": "幅は1695ミリで5ナンバーの枠に収まります。"}, {"t": 788.0333333333333, "x": "自転車まで見分けるブレーキと、6つのエアバッグが付いています。"}, {"t": 793.0, "x": "値段は172万7000円からで、店長のおすすめはMXのCVTです。"}, {"t": 799.9333333333333, "x": "マニュアル車はずっと乗り続けてきたかただけに。"}, {"t": 803.2333333333333, "x": "迷ったら、踏み間違いへの備えが付くCVTにしてください。"}, {"t": 808.1666666666666, "x": "最後にもう一度だけ目をつぶってみてください。"}, {"t": 811.6666666666666, "x": "はじめに思い出したあの楽しかった車です。"}, {"t": 815.6, "x": "試乗でスイフトに乗ったら、その車と比べてみてください。"}, {"t": 820.0666666666667, "x": "似た気持ちがよみがえったら、それがあなたの答えです。"}, {"t": 824.1666666666666, "x": "値段と装備は、今日の時点でスズキが公式に載せているものです。"}, {"t": 829.1333333333333, "x": "契約の前には、販売店で最新の装備表を見せてもらってください。"}, {"t": 834.3333333333334, "x": "楽しい運転を、これからも長く続けていただけますように。"}], "w": 720, "h": 405, "n_cuts": 0, "noimage": true};
+const a=document.getElementById('a');
+const now=document.getElementById('now'), nl=document.getElementById('nextline');
+const pp=document.getElementById('pp'), sk=document.getElementById('sk');
+const tm=document.getElementById('tm'), bdg=document.getElementById('bdg');
+const SMOOTH=matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth';
+document.getElementById('ttl').innerHTML=D.name+
+  '<span class="meta">'+fmt(D.dur)+'　字幕'+D.subs.length+'　（音声＋字幕だけ）</span>';
+
+function fmt(s){s=Math.max(0,s|0);return (s/60|0)+':'+String(s%60).padStart(2,'0')}
+function subIdx(t){let lo=0,hi=D.subs.length-1,r=-1;
+  while(lo<=hi){const m=(lo+hi)>>1; if(D.subs[m].t<=t){r=m;lo=m+1}else hi=m-1} return r}
+
+let cur=-2;
+function paint(t){
+  const i=subIdx(t);
+  if(i!==cur){cur=i;
+    now.textContent = i<0 ? (D.subs.length?'（ここはまだ字幕がありません）'
+                                          :'（この回に字幕はありません）')
+                         : D.subs[i].x;
+    const n=D.subs[i+1]; nl.textContent = n ? '次　'+n.x : '';
+    bdg.textContent = D.subs.length ? '字幕 '+(i+1)+' / '+D.subs.length : '字幕なし';
+    mark('subs',i);
+  }
+  tm.textContent=fmt(t)+' / '+fmt(D.dur);
+  if(!sk.dragging) sk.value=Math.round(t/D.dur*1000);
+}
+function mark(pane,i){
+  const el=document.getElementById(pane);
+  if(el.dataset.on==i) return; el.dataset.on=i;
+  el.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));
+  const t=el.children[i]; if(!t) return; t.classList.add('on');
+  if(!el.hidden){const r=t.offsetTop-el.clientHeight/2; el.scrollTo({top:r,behavior:SMOOTH})}
+}
+
+D.subs.forEach(s=>{const d=document.createElement('div');d.className='row';
+  d.innerHTML='<b></b><span></span>';
+  d.querySelector('b').textContent=fmt(s.t);
+  d.querySelector('span').textContent=s.x;
+  d.onclick=()=>go(s.t); document.getElementById('subs').appendChild(d)});
+const mk=document.getElementById('mk');
+D.subs.forEach(s=>{const i=document.createElement('i');
+  i.style.left=(s.t/D.dur*100)+'%'; mk.appendChild(i)});
+
+function go(t){a.currentTime=Math.min(Math.max(0,t)+0.01,Math.max(0.05,D.dur-0.05)); paint(a.currentTime)}
+pp.onclick=()=>a.paused?a.play():a.pause();
+const SPEEDS=[1,1.25,1.5,1.75,2,3,0.75],SPN=['等速','1.25倍','1.5倍','1.75倍','2倍','3倍','0.75倍'];
+let si=0; const sp=document.getElementById('sp');
+sp.onclick=()=>{si=(si+1)%SPEEDS.length; a.playbackRate=SPEEDS[si];
+  a.preservesPitch=a.mozPreservesPitch=a.webkitPreservesPitch=true; sp.textContent=SPN[si]};
+a.onplay=()=>pp.textContent='❚❚ 停止'; a.onpause=()=>pp.textContent='▶ 再生';
+a.ontimeupdate=()=>paint(a.currentTime);
+sk.oninput=()=>{sk.dragging=1; go(sk.value/1000*D.dur)};
+sk.onchange=()=>sk.dragging=0;
+document.getElementById('pv').onclick=()=>{const i=subIdx(a.currentTime);
+  go(i>0?D.subs[i-1].t:0)};
+document.getElementById('nx').onclick=()=>{const i=subIdx(a.currentTime);
+  if(i+1<D.subs.length) go(D.subs[i+1].t)};
+addEventListener('keydown',e=>{const k=e.key;
+  if(k===' '){e.preventDefault();pp.onclick()}
+  else if(k==='ArrowRight')go(a.currentTime+5); else if(k==='ArrowLeft')go(a.currentTime-5);
+  else if(k==='ArrowDown'){e.preventDefault();document.getElementById('nx').onclick()}
+  else if(k==='ArrowUp'){e.preventDefault();document.getElementById('pv').onclick()}
+  else if(k==='s'||k==='S')sp.onclick()});
+paint(0);
+</script>
