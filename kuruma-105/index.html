@@ -1,0 +1,133 @@
+<title>遠出が多いかたの一台</title>
+<style>
+:root{--bg:#f6f4f1;--panel:#fffefc;--ink:#1c1a19;--dim:#6e6862;--line:#e2ded7;--accent:#b8422f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}}
+:root[data-theme="dark"]{--bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);margin:0;-webkit-text-size-adjust:100%;
+  font:16px/1.7 -apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic UI",sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+h1{font-size:17px;margin:4px 0 14px;font-weight:600;letter-spacing:.02em}
+.meta{color:var(--dim);font-size:13px;font-weight:400;margin-left:8px}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:12px;position:relative;
+  min-height:40vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:46px 20px 26px;box-shadow:0 2px 14px rgba(0,0,0,.10)}
+#now{margin:0;text-align:center;white-space:pre-wrap;word-break:break-word;font-weight:700;
+  font-size:clamp(23px,5.4vw,42px);line-height:1.5;letter-spacing:.01em}
+#nextline{margin:16px 0 0;text-align:center;white-space:pre-wrap;word-break:break-word;
+  color:var(--dim);font-size:clamp(13px,2.8vw,17px);line-height:1.6}
+.badge{position:absolute;left:12px;top:12px;background:rgba(127,127,127,.16);color:var(--dim);
+  font-size:12px;padding:3px 9px;border-radius:20px;line-height:1.6;letter-spacing:.04em}
+.bar{display:flex;align-items:center;gap:10px;margin:12px 0 6px;flex-wrap:wrap}
+button{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;
+  padding:9px 14px;font-size:15px;cursor:pointer;font-family:inherit}
+button:active{transform:translateY(1px)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.play{background:var(--accent);color:#fff;border-color:transparent;min-width:80px;font-weight:600}
+.time{font-variant-numeric:tabular-nums;color:var(--dim);font-size:13px;margin-left:auto}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.marks{position:relative;height:7px;margin:2px 0 14px}
+.marks i{position:absolute;top:0;width:1px;height:7px;background:var(--line)}
+.tabs{display:flex;gap:6px;margin:18px 0 10px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;
+  color:var(--ink);padding:7px 12px;font-weight:600}
+.list{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+  -webkit-overflow-scrolling:touch}
+.row{display:flex;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.row:last-child{border-bottom:0}
+.row:hover{background:rgba(127,127,127,.07)}
+.row.on{background:rgba(184,66,47,.12)}
+.row b{color:var(--dim);font-variant-numeric:tabular-nums;font-weight:500;font-size:13px;
+  min-width:48px;flex:none;padding-top:2px}
+.row span{white-space:pre-wrap;flex:1;font-size:16px;line-height:1.65}
+.tip{color:var(--dim);font-size:12.5px;margin:10px 2px 0}
+@media(max-width:620px){.wrap{padding:10px}.time{font-size:12px}
+  .bar button{padding:9px 11px;font-size:14px}.stage{padding:42px 14px 22px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+<div class="wrap">
+<h1 id="ttl"></h1>
+<div class="stage"><div class="badge" id="bdg"></div>
+  <p id="now"></p><p id="nextline"></p></div>
+<div class="bar">
+  <button class="play" id="pp">▶ 再生</button>
+  <button id="pv">◀ 前の字幕</button>
+  <button id="nx">次の字幕 ▶</button>
+  <button id="sp">等速</button>
+  <span class="time" id="tm">0:00 / 0:00</span>
+</div>
+<input type="range" id="sk" min="0" max="1000" value="0">
+<div class="marks" id="mk"></div>
+<div class="tabs"><button class="on">字幕</button></div>
+<div class="list" id="subs"></div>
+<p class="tip">スペース＝再生/停止　←→＝5秒送り　↑↓＝字幕送り。字幕をタップするとそこへ飛びます。</p>
+</div>
+<audio id="a" src="audio.mp3" preload="auto"></audio>
+<script>
+const D={"name": "遠出が多いかたの一台", "file": "105_遠出が多いかたの一台", "dur": 798.7, "segs": [], "subs": [{"t": 0.0, "x": "こんにちは、「となりの車屋さん」の店長です。"}, {"t": 3.066666666666667, "x": "12月30日の朝6時です。"}, {"t": 5.833333333333333, "x": "外はまだ真っ暗で、車の窓には霜が白く付いています。"}, {"t": 10.633333333333333, "x": "荷物を積む場所には娘さんの家へ持っていくお米とみかん。"}, {"t": 15.666666666666666, "x": "行き先まではおよそ300キロです。"}, {"t": 18.933333333333334, "x": "着くのは途中で休みを入れてお昼すぎの予定です。"}, {"t": 23.066666666666666, "x": "お店のお客さまからこういう年末のお話をよく聞きます。"}, {"t": 27.366666666666667, "x": "そして皆さん決まって同じことをおっしゃいます。"}, {"t": 30.533333333333335, "x": "「着いたら孫と遊ぶつもりが、横になって寝てしまうんだよ」。"}, {"t": 35.0, "x": "近所の買い物なら、いまの軽で何の不足もない。"}, {"t": 39.166666666666664, "x": "けれど年に何度かの遠出だけは、帰ってからもぐったりする。"}, {"t": 43.63333333333333, "x": "帰省に温泉、お墓参りに、遠くに住む友だちの家。"}, {"t": 48.43333333333333, "x": "遠くへ出かける用事は年を重ねるとむしろ増えるものです。"}, {"t": 53.2, "x": "今日はそういうかたに向けて店長が一台をお勧めします。"}, {"t": 57.766666666666666, "x": "年末の帰省の前にぜひ聞いていただきたいお話です。"}, {"t": 63.5, "x": "長い道のりで疲れるのは年のせいだけではありません。"}, {"t": 67.56666666666666, "x": "車の側にもくたびれる理由がいくつかあります。"}, {"t": 71.03333333333333, "x": "1つめは座席です。"}, {"t": 72.86666666666666, "x": "道のでこぼこで車が揺れると、そのたびに頭も小さく揺れます。"}, {"t": 78.06666666666666, "x": "体はそれを支えようとして、知らないうちに首や肩に力が入ります。"}, {"t": 83.76666666666667, "x": "一時間ならがまんできても、3時間続くと背中まで重くなります。"}, {"t": 89.46666666666667, "x": "2つめは音です。"}, {"t": 91.3, "x": "タイヤが道をこする音や、エンジンのうなる音。"}, {"t": 95.23333333333333, "x": "小さな音でも長く聞いていると耳から疲れていきます。"}, {"t": 99.7, "x": "助手席の奥さまとの会話もつい大きな声になってしまいます。"}, {"t": 104.36666666666666, "x": "3つめは上り坂です。"}, {"t": 106.4, "x": "山を越える道でエンジンが苦しそうにうなる車があります。"}, {"t": 111.4, "x": "アクセルを深く踏み続けるのは思った以上に足にこたえます。"}, {"t": 116.06666666666666, "x": "4つめは天気と道の変わりやすさです。"}, {"t": 119.2, "x": "家を出たときは晴れていても、峠の上では雪がちらつくことがあります。"}, {"t": 124.33333333333333, "x": "この先は大丈夫だろうかと気をもむだけで、心がすり減ります。"}, {"t": 129.7, "x": "ですから遠出の車に求めたいのは速さではありません。"}, {"t": 133.96666666666667, "x": "揺れと音が少なく坂に強く、天気の変化に慌てない車です。"}, {"t": 141.26666666666668, "x": "今日お勧めする一台はスバルのクロストレックです。"}, {"t": 145.46666666666667, "x": "背が少し高い、SUVと呼ばれる形の車です。"}, {"t": 150.06666666666666, "x": "国の安全試験の回で、この車の名前を出したのを覚えておいででしょうか。"}, {"t": 156.06666666666666, "x": "今の型のクロストレックは、2023年度の国の試験で大賞を受けています。"}, {"t": 162.0, "x": "その年に試験を受けた車のなかでいちばんの点数でした。"}, {"t": 166.83333333333334, "x": "そのクロストレックが今年の9月に改良を受けました。"}, {"t": 170.76666666666668, "x": "いちばん大きな変化は売られる形が2つに絞られたことです。"}, {"t": 175.53333333333333, "x": "どちらもストロングハイブリッドと呼ばれる仕組みです。"}, {"t": 178.96666666666667, "x": "エンジンとモーターを場面に合わせて使い分けて走ります。"}, {"t": 183.06666666666666, "x": "エンジンは2.5リットルで、スバルが長く作ってきた水平対向という形です。"}, {"t": 189.23333333333332, "x": "部品が左右対称に並んでいて、揺れが少ないのが持ち味です。"}, {"t": 194.13333333333333, "x": "前の2リットルの形は作り終えて、今はお店の在庫だけになりました。"}, {"t": 199.56666666666666, "x": "コメント欄でも、スバルやクロストレックの名前をよくいただきます。"}, {"t": 204.03333333333333, "x": "今日はそのご期待に遠出という切り口でお応えします。"}, {"t": 209.8, "x": "遠出の車でいちばん大事なのは座席だと、店長は考えています。"}, {"t": 215.1, "x": "クロストレックの前の席は骨盤を支える作りになっています。"}, {"t": 219.9, "x": "骨盤が落ち着くと、車が揺れても頭が揺れにくくなるそうです。"}, {"t": 224.8, "x": "スバルは、人が頭の揺れを不快に感じることに目を付けたと説明しています。"}, {"t": 230.56666666666666, "x": "運転席と助手席はどちらも電気で動く座席です。"}, {"t": 235.23333333333332, "x": "これは2つの形のどちらにも付いています。"}, {"t": 238.5, "x": "ボタンで少しずつ合わせられるので、ご夫婦で運転を代わるときも楽です。"}, {"t": 243.86666666666667, "x": "前の席を温めるヒーターと、ハンドルのヒーターも両方の形に付きます。"}, {"t": 249.46666666666667, "x": "冬の朝の冷え切ったハンドルは、手から体をこわばらせます。"}, {"t": 254.1, "x": "年末の帰省にはうれしい装備です。"}, {"t": 257.06666666666666, "x": "静けさにも工夫があります。"}, {"t": 259.43333333333334, "x": "屋根には揺れを吸い取って抑える接着剤が使われています。"}, {"t": 264.1666666666667, "x": "音から揺れを感じるという人の特性に合わせた工夫だそうです。"}, {"t": 269.1, "x": "後ろの車輪は、左右が別々に動いて衝撃を受け止める作りです。"}, {"t": 274.3666666666667, "x": "道の段差を片側で受けても、車全体を揺らしにくくするためのものです。"}, {"t": 280.1666666666667, "x": "試乗のときは、できれば三十分ほど走らせてもらってください。"}, {"t": 285.1333333333333, "x": "降りたあと、首と腰がどう感じるか。"}, {"t": 288.46666666666664, "x": "それが遠出の車選びでは、いちばん確かな物差しになります。"}, {"t": 294.8666666666667, "x": "次は運転席からの見え方と、車の大きさです。"}, {"t": 299.1333333333333, "x": "クロストレックは普通の乗用車より少し高い位置に座ります。"}, {"t": 303.6333333333333, "x": "前の車の向こうまで見えるので、先の様子がつかみやすくなります。"}, {"t": 308.73333333333335, "x": "窓の柱を細くして、周りを見やすくする工夫もされています。"}, {"t": 313.7, "x": "道路から車の床下までは200ミリあります。"}, {"t": 317.53333333333336, "x": "雪の残る道や、舗装されていない駐車場でも底を擦りにくい高さです。"}, {"t": 323.6, "x": "温泉宿の砂利の駐車場にも気をつかわずに入れます。"}, {"t": 327.96666666666664, "x": "一方で、乗り降りは体格によって感じかたが分かれます。"}, {"t": 332.53333333333336, "x": "低いセダンからなら、腰を落とさずに座れて楽になるかたもいます。"}, {"t": 337.53333333333336, "x": "背の低いかたは足を上げる高さを確かめてください。"}, {"t": 341.8333333333333, "x": "お店で乗って降りるのを3回くり返してみると分かります。"}, {"t": 345.8666666666667, "x": "大きさの数字も申し上げます。"}, {"t": 348.4, "x": "長さは4480ミリ、幅は1800ミリ、屋根の高さは1575ミリです。"}, {"t": 356.6, "x": "5ナンバーの幅の上限は1700ミリなので、それより10センチ広い3ナンバーです。"}, {"t": 363.26666666666665, "x": "軽自動車の幅は1480ミリまでですから、軽からだと30センチ以上広がります。"}, {"t": 370.23333333333335, "x": "小回りの目安になる数字は5.4メートルです。"}, {"t": 374.43333333333334, "x": "屋根に荷物用の棒を付けた車は、高さが5ミリ増えます。"}, {"t": 379.2, "x": "機械式の駐車場には、高さや幅に決まりがあるところもあります。"}, {"t": 384.1666666666667, "x": "ご自宅の車庫と、帰省先の駐車場の両方を先に測っておくと安心です。"}, {"t": 391.6333333333333, "x": "クロストレックは全部の形が四輪駆動です。"}, {"t": 395.23333333333335, "x": "前の車輪だけで走る形は今は選べません。"}, {"t": 399.3333333333333, "x": "スバルはこの作りをシンメトリカルAWDと呼んでいます。"}, {"t": 403.6333333333333, "x": "重い部品を左右対称に並べて、重さの釣り合いを取った作りです。"}, {"t": 409.06666666666666, "x": "雪の峠でも雨に濡れた坂でも、4つの車輪で道をつかみます。"}, {"t": 414.8666666666667, "x": "さらにX-MODEというスイッチがあります。"}, {"t": 418.06666666666666, "x": "雪道や泥の道で選ぶと、滑りにくいように車が力の出し方を変えます。"}, {"t": 424.23333333333335, "x": "急な下り坂では速さを一定に保つ手助けもします。"}, {"t": 428.43333333333334, "x": "以前の回で、雪の朝に出かけるかたへ軽の四駆をお勧めしました。"}, {"t": 434.0, "x": "あちらが家の近くの雪道なら、今日は遠くの峠道です。"}, {"t": 438.8, "x": "家の周りに雪がなくても、帰省先が雪国というかたは多いものです。"}, {"t": 444.3, "x": "ただし四輪駆動でも、冬用のタイヤは別に用意してください。"}, {"t": 449.26666666666665, "x": "もう1つの味方が、ストロングハイブリッドのモーターです。"}, {"t": 453.73333333333335, "x": "走り出しや上り坂ではモーターが力強く車を押し出します。"}, {"t": 458.7, "x": "エンジンを無理にうならせなくても、すっと坂を上っていきます。"}, {"t": 463.46666666666664, "x": "アクセルを踏み込み続ける時間が減るのは、遠出ではありがたいことです。"}, {"t": 468.7, "x": "時速30キロくらいまでなら、モーターだけで静かに走る切り替えもできます。"}, {"t": 474.43333333333334, "x": "早朝の住宅街を出るときに、ご近所へ気をつかわずに済みます。"}, {"t": 480.8, "x": "長い道のりを手伝ってくれるのがスバルのアイサイトです。"}, {"t": 485.1333333333333, "x": "3つのカメラとレーダーで前や横の様子を見張っています。"}, {"t": 489.76666666666665, "x": "ぶつかりそうなときに止まろうとするブレーキは、両方の形に付きます。"}, {"t": 494.96666666666664, "x": "交差点を曲がるときの、向かってくる車や歩く人、自転車にも働きます。"}, {"t": 501.4, "x": "見通しの悪い所で、横から近づく車に備えるブレーキもあります。"}, {"t": 506.8666666666667, "x": "ペダルの踏み間違いで急に飛び出すのを抑える仕組みもあります。"}, {"t": 511.1, "x": "前に進むときだけでなく、後ろに下がるときにも働きます。"}, {"t": 515.9, "x": "高速道路などでは、アクセルとブレーキとハンドルを手伝う機能もあります。"}, {"t": 520.8, "x": "前の車についていき、渋滞で止まったり動いたりするのも手伝います。"}, {"t": 526.3333333333334, "x": "ただし、ここは大事なところなのではっきり申し上げます。"}, {"t": 530.4, "x": "アイサイトは自動で運転してくれる装置ではありません。"}, {"t": 534.1333333333333, "x": "雪や濃い霧、夜や日差しの具合で、カメラがうまく見えないことがあります。"}, {"t": 539.8333333333334, "x": "スバル自身も、アイサイトだけに頼った運転は絶対にしないでと書いています。"}, {"t": 545.7333333333333, "x": "あくまで長い時間の運転の負担を少し軽くする助っ人です。"}, {"t": 550.7666666666667, "x": "上の形には、アイサイトXというもう一段進んだ仕組みが付きます。"}, {"t": 556.2333333333333, "x": "条件がそろった渋滞の自動車専用道路で、ハンドルから手を離せるものです。"}, {"t": 562.2666666666667, "x": "ただ、使える場面がかなり限られる機能です。"}, {"t": 566.0, "x": "店長は、これだけを理由に上の形を選ばなくてよいと考えています。"}, {"t": 572.8333333333334, "x": "売られている2つの形の値段です。"}, {"t": 575.8666666666667, "x": "Premium S:HEVという形が383万3500円です。"}, {"t": 582.6666666666666, "x": "上のPremium S:HEV EXが405万3500円です。"}, {"t": 588.6666666666666, "x": "差は22万円です。"}, {"t": 590.8666666666667, "x": "どちらもメーカーの希望小売価格で、消費税込みの値段です。"}, {"t": 595.6666666666666, "x": "上の形で増えるのは、さきほどのアイサイトXとナビの機能です。"}, {"t": 600.9666666666667, "x": "運転席の前の計器も12.3インチの大きな画面になります。"}, {"t": 606.0666666666667, "x": "今年の改良で下の形にもナビを追加で選べるようになりました。"}, {"t": 611.1666666666666, "x": "店長のお勧めは下のPremium S:HEVです。"}, {"t": 615.6666666666666, "x": "座席もヒーターも四輪駆動も、遠出に要るものはこちらで揃っています。"}, {"t": 621.1, "x": "燃費は国の審査の数字で、1リットルあたり19.5キロです。"}, {"t": 626.5, "x": "今年の改良で前の18.9キロから少し良くなりました。"}, {"t": 631.7, "x": "そして燃料のタンクが63リットルと大きめです。"}, {"t": 635.8333333333334, "x": "入れるのはレギュラーガソリンです。"}, {"t": 638.1333333333333, "x": "計算のうえでは、満タンで1200キロあまり走れることになります。"}, {"t": 643.3, "x": "片道300キロの帰省なら、往復してもまだ半分ほど残る計算です。"}, {"t": 649.2333333333333, "x": "もちろん寒さや渋滞、荷物の重さで、実際の燃費は下がります。"}, {"t": 654.7666666666667, "x": "それでも、旅先でガソリンスタンドを探して走り回ることは減ります。"}, {"t": 659.9, "x": "知らない土地で、残りの量を気にしながら走るのは疲れるものです。"}, {"t": 665.0, "x": "大きなタンクは目立ちませんが、遠出にはよく効く装備です。"}, {"t": 671.0, "x": "もちろんクロストレックを勧めないかたもいます。"}, {"t": 674.2, "x": "まず、遠出は年に一度あるかないか、というかたです。"}, {"t": 678.7666666666667, "x": "近所の買い物と病院だけなら、この大きさと値段はもったいない。"}, {"t": 683.8, "x": "今の軽を大事に乗って、遠出の日は電車にする手もあります。"}, {"t": 688.7666666666667, "x": "次に、家の前の道が狭く、すれ違いに苦労しているかたです。"}, {"t": 694.2, "x": "幅1800ミリは、毎日通る細い道では気になる大きさです。"}, {"t": 700.1333333333333, "x": "3つめは、大人4人で長旅に出ることが多いかたです。"}, {"t": 704.8, "x": "後ろの席に座って、ひざの前と頭の上を確かめてから決めてください。"}, {"t": 710.1333333333333, "x": "最後に、値段をできるだけ抑えたいかたです。"}, {"t": 713.8333333333334, "x": "下の形でも383万円を超えます。"}, {"t": 718.0666666666667, "x": "遠出が楽になることに、そのお金を払う気持ちになれるかどうか。"}, {"t": 723.1, "x": "そこはご夫婦でよく話し合ってみてください。"}, {"t": 727.9333333333333, "x": "今日は、遠くへ出かけることが多いかたに向けた一台のお話でした。"}, {"t": 733.1, "x": "遠出のくたびれは、揺れと音、上り坂、天気の変化から来ます。"}, {"t": 739.1, "x": "クロストレックはそのどれにも手を打ってある車です。"}, {"t": 742.8666666666667, "x": "頭が揺れにくい座席と、静かさのための工夫。"}, {"t": 746.8333333333334, "x": "全部の形が四輪駆動で、坂ではモーターが押してくれます。"}, {"t": 752.2, "x": "63リットルのタンクで給油の回数も減らせます。"}, {"t": 756.7333333333333, "x": "値段は383万3500円からで、店長のお勧めは下の形です。"}, {"t": 763.4333333333333, "x": "一方で幅は1800ミリあり、狭い道や車庫では確かめが要ります。"}, {"t": 769.3, "x": "値段と数字は、スバルのいまの公式の案内から拾いました。"}, {"t": 774.2, "x": "お見積もりのときに最後にもう一度数字を合わせてください。"}, {"t": 778.4, "x": "最後に店長からひとつだけお願いがあります。"}, {"t": 781.8333333333334, "x": "どんなに疲れにくい車でも、2時間に一度は車を停めて休んでください。"}, {"t": 787.6666666666666, "x": "サービスエリアで飲む温かいお茶が、いちばんの疲れ止めです。"}, {"t": 792.3, "x": "今年の年の瀬も、ご家族の待つ玄関まで、どうぞご無事で。"}], "w": 720, "h": 405, "n_cuts": 0, "noimage": true};
+const a=document.getElementById('a');
+const now=document.getElementById('now'), nl=document.getElementById('nextline');
+const pp=document.getElementById('pp'), sk=document.getElementById('sk');
+const tm=document.getElementById('tm'), bdg=document.getElementById('bdg');
+const SMOOTH=matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth';
+document.getElementById('ttl').innerHTML=D.name+
+  '<span class="meta">'+fmt(D.dur)+'　字幕'+D.subs.length+'　（音声＋字幕だけ）</span>';
+
+function fmt(s){s=Math.max(0,s|0);return (s/60|0)+':'+String(s%60).padStart(2,'0')}
+function subIdx(t){let lo=0,hi=D.subs.length-1,r=-1;
+  while(lo<=hi){const m=(lo+hi)>>1; if(D.subs[m].t<=t){r=m;lo=m+1}else hi=m-1} return r}
+
+let cur=-2;
+function paint(t){
+  const i=subIdx(t);
+  if(i!==cur){cur=i;
+    now.textContent = i<0 ? (D.subs.length?'（ここはまだ字幕がありません）'
+                                          :'（この回に字幕はありません）')
+                         : D.subs[i].x;
+    const n=D.subs[i+1]; nl.textContent = n ? '次　'+n.x : '';
+    bdg.textContent = D.subs.length ? '字幕 '+(i+1)+' / '+D.subs.length : '字幕なし';
+    mark('subs',i);
+  }
+  tm.textContent=fmt(t)+' / '+fmt(D.dur);
+  if(!sk.dragging) sk.value=Math.round(t/D.dur*1000);
+}
+function mark(pane,i){
+  const el=document.getElementById(pane);
+  if(el.dataset.on==i) return; el.dataset.on=i;
+  el.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));
+  const t=el.children[i]; if(!t) return; t.classList.add('on');
+  if(!el.hidden){const r=t.offsetTop-el.clientHeight/2; el.scrollTo({top:r,behavior:SMOOTH})}
+}
+
+D.subs.forEach(s=>{const d=document.createElement('div');d.className='row';
+  d.innerHTML='<b></b><span></span>';
+  d.querySelector('b').textContent=fmt(s.t);
+  d.querySelector('span').textContent=s.x;
+  d.onclick=()=>go(s.t); document.getElementById('subs').appendChild(d)});
+const mk=document.getElementById('mk');
+D.subs.forEach(s=>{const i=document.createElement('i');
+  i.style.left=(s.t/D.dur*100)+'%'; mk.appendChild(i)});
+
+function go(t){a.currentTime=Math.min(Math.max(0,t)+0.01,Math.max(0.05,D.dur-0.05)); paint(a.currentTime)}
+pp.onclick=()=>a.paused?a.play():a.pause();
+const SPEEDS=[1,1.25,1.5,1.75,2,3,0.75],SPN=['等速','1.25倍','1.5倍','1.75倍','2倍','3倍','0.75倍'];
+let si=0; const sp=document.getElementById('sp');
+sp.onclick=()=>{si=(si+1)%SPEEDS.length; a.playbackRate=SPEEDS[si];
+  a.preservesPitch=a.mozPreservesPitch=a.webkitPreservesPitch=true; sp.textContent=SPN[si]};
+a.onplay=()=>pp.textContent='❚❚ 停止'; a.onpause=()=>pp.textContent='▶ 再生';
+a.ontimeupdate=()=>paint(a.currentTime);
+sk.oninput=()=>{sk.dragging=1; go(sk.value/1000*D.dur)};
+sk.onchange=()=>sk.dragging=0;
+document.getElementById('pv').onclick=()=>{const i=subIdx(a.currentTime);
+  go(i>0?D.subs[i-1].t:0)};
+document.getElementById('nx').onclick=()=>{const i=subIdx(a.currentTime);
+  if(i+1<D.subs.length) go(D.subs[i+1].t)};
+addEventListener('keydown',e=>{const k=e.key;
+  if(k===' '){e.preventDefault();pp.onclick()}
+  else if(k==='ArrowRight')go(a.currentTime+5); else if(k==='ArrowLeft')go(a.currentTime-5);
+  else if(k==='ArrowDown'){e.preventDefault();document.getElementById('nx').onclick()}
+  else if(k==='ArrowUp'){e.preventDefault();document.getElementById('pv').onclick()}
+  else if(k==='s'||k==='S')sp.onclick()});
+paint(0);
+</script>
