@@ -1,0 +1,133 @@
+<title>小さなSUVならこの一台</title>
+<style>
+:root{--bg:#f6f4f1;--panel:#fffefc;--ink:#1c1a19;--dim:#6e6862;--line:#e2ded7;--accent:#b8422f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}}
+:root[data-theme="dark"]{--bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);margin:0;-webkit-text-size-adjust:100%;
+  font:16px/1.7 -apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic UI",sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+h1{font-size:17px;margin:4px 0 14px;font-weight:600;letter-spacing:.02em}
+.meta{color:var(--dim);font-size:13px;font-weight:400;margin-left:8px}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:12px;position:relative;
+  min-height:40vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:46px 20px 26px;box-shadow:0 2px 14px rgba(0,0,0,.10)}
+#now{margin:0;text-align:center;white-space:pre-wrap;word-break:break-word;font-weight:700;
+  font-size:clamp(23px,5.4vw,42px);line-height:1.5;letter-spacing:.01em}
+#nextline{margin:16px 0 0;text-align:center;white-space:pre-wrap;word-break:break-word;
+  color:var(--dim);font-size:clamp(13px,2.8vw,17px);line-height:1.6}
+.badge{position:absolute;left:12px;top:12px;background:rgba(127,127,127,.16);color:var(--dim);
+  font-size:12px;padding:3px 9px;border-radius:20px;line-height:1.6;letter-spacing:.04em}
+.bar{display:flex;align-items:center;gap:10px;margin:12px 0 6px;flex-wrap:wrap}
+button{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;
+  padding:9px 14px;font-size:15px;cursor:pointer;font-family:inherit}
+button:active{transform:translateY(1px)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.play{background:var(--accent);color:#fff;border-color:transparent;min-width:80px;font-weight:600}
+.time{font-variant-numeric:tabular-nums;color:var(--dim);font-size:13px;margin-left:auto}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.marks{position:relative;height:7px;margin:2px 0 14px}
+.marks i{position:absolute;top:0;width:1px;height:7px;background:var(--line)}
+.tabs{display:flex;gap:6px;margin:18px 0 10px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;
+  color:var(--ink);padding:7px 12px;font-weight:600}
+.list{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+  -webkit-overflow-scrolling:touch}
+.row{display:flex;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.row:last-child{border-bottom:0}
+.row:hover{background:rgba(127,127,127,.07)}
+.row.on{background:rgba(184,66,47,.12)}
+.row b{color:var(--dim);font-variant-numeric:tabular-nums;font-weight:500;font-size:13px;
+  min-width:48px;flex:none;padding-top:2px}
+.row span{white-space:pre-wrap;flex:1;font-size:16px;line-height:1.65}
+.tip{color:var(--dim);font-size:12.5px;margin:10px 2px 0}
+@media(max-width:620px){.wrap{padding:10px}.time{font-size:12px}
+  .bar button{padding:9px 11px;font-size:14px}.stage{padding:42px 14px 22px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+<div class="wrap">
+<h1 id="ttl"></h1>
+<div class="stage"><div class="badge" id="bdg"></div>
+  <p id="now"></p><p id="nextline"></p></div>
+<div class="bar">
+  <button class="play" id="pp">▶ 再生</button>
+  <button id="pv">◀ 前の字幕</button>
+  <button id="nx">次の字幕 ▶</button>
+  <button id="sp">等速</button>
+  <span class="time" id="tm">0:00 / 0:00</span>
+</div>
+<input type="range" id="sk" min="0" max="1000" value="0">
+<div class="marks" id="mk"></div>
+<div class="tabs"><button class="on">字幕</button></div>
+<div class="list" id="subs"></div>
+<p class="tip">スペース＝再生/停止　←→＝5秒送り　↑↓＝字幕送り。字幕をタップするとそこへ飛びます。</p>
+</div>
+<audio id="a" src="audio.mp3" preload="auto"></audio>
+<script>
+const D={"name": "小さなSUVならこの一台", "file": "092_小さなSUVならこの一台", "dur": 834.7333125, "segs": [], "subs": [{"t": 0.0, "x": "こんにちは、「となりの車屋さん」の店長です。"}, {"t": 3.066666666666667, "x": "「後悔するって言われても、一度はSUVに乗ってみたいんだよ」。"}, {"t": 7.9, "x": "こういうご相談が、このところとても増えています。"}, {"t": 11.866666666666667, "x": "以前の回で、SUVを買って後悔する理由を4つお話ししました。"}, {"t": 17.333333333333332, "x": "それでも憧れの気持ちは、そう簡単には消えないものです。"}, {"t": 22.233333333333334, "x": "若いころから、いつかは背の高い車に乗ってみたかった。"}, {"t": 26.6, "x": "そういうかたに「やめましょう」とだけ言うのは、さみしい話です。"}, {"t": 31.6, "x": "そこで今日は、あの回とは反対のお話をします。"}, {"t": 35.6, "x": "後悔のもとを小さくできるSUVを、一台だけ名指しします。"}, {"t": 41.2, "x": "条件はふたつです。"}, {"t": 42.96666666666667, "x": "見晴らしの良さがちゃんと残っていること。"}, {"t": 45.833333333333336, "x": "そして、今の車庫と近所の細い道で困らない大きさであること。"}, {"t": 50.86666666666667, "x": "このふたつを両方満たす車は、じつはとても少ないんです。"}, {"t": 55.96666666666667, "x": "最後には、この車をお勧めしないかたのお話もします。"}, {"t": 60.4, "x": "ご自分がどちらに入るか、考えながら聞いてみてください。"}, {"t": 66.3, "x": "まずはSUVのどこに惹かれるのかを整理しておきます。"}, {"t": 70.26666666666667, "x": "お店でお話を聞いていると、理由はだいたい3つに分かれます。"}, {"t": 74.96666666666667, "x": "ひとつめは見晴らしです。"}, {"t": 77.06666666666666, "x": "座る位置が高いので、前の車の向こうまで見通せます。"}, {"t": 81.46666666666667, "x": "渋滞の先や交差点の信号が早めに目に入ります。"}, {"t": 86.06666666666666, "x": "ふたつめは雪や悪い道での安心感です。"}, {"t": 89.66666666666667, "x": "車の底と地面のあいだが広いので、雪のわだちでお腹をこすりにくいんです。"}, {"t": 95.9, "x": "みっつめは荷物です。"}, {"t": 97.83333333333333, "x": "後ろの扉が大きく開くので、背の高い荷物も積みやすくなります。"}, {"t": 102.96666666666667, "x": "あなたが惹かれているのは、この3つのうちどれでしょうか。"}, {"t": 107.1, "x": "見晴らしだけなら選べる車はぐっと広がります。"}, {"t": 111.2, "x": "雪道がいちばんなら四駆をどうするかが大事になります。"}, {"t": 115.36666666666666, "x": "荷物がいちばんなら、背の高い普通の車で足りることもあります。"}, {"t": 120.13333333333334, "x": "今日は3つ全部をほどよく満たす一台のお話です。"}, {"t": 124.26666666666667, "x": "どれか1つを極めたいかたは、第9章まで聞いてから決めてください。"}, {"t": 131.23333333333332, "x": "それでは今日の一台です。"}, {"t": 133.46666666666667, "x": "トヨタのライズです。"}, {"t": 135.03333333333333, "x": "売り出されたのは2019年の11月5日でした。"}, {"t": 139.4, "x": "長さは3995ミリで、4メートルにわずか5ミリ届きません。"}, {"t": 145.63333333333333, "x": "値段はトヨタの公式の表で180万700円からです。"}, {"t": 150.9, "x": "いちばん上のハイブリッドでも244万2000円です。"}, {"t": 155.43333333333334, "x": "この車はトヨタのお店で売っていますが、作っているのはダイハツです。"}, {"t": 160.36666666666667, "x": "ダイハツにはロッキーという兄弟の車があります。"}, {"t": 164.2, "x": "中身はほぼ同じで、顔つきや装備の組み合わせが違う車です。"}, {"t": 169.56666666666666, "x": "ただダイハツの公式ページでは、ロッキーの今の型は生産を終えています。"}, {"t": 175.46666666666667, "x": "2026年の8月下旬で終わったと書かれています。"}, {"t": 180.1, "x": "これから新車で選ぶなら、ライズが話の中心になります。"}, {"t": 184.73333333333332, "x": "2023年の5月には、ライズのハイブリッドで認証の不正が分かりました。"}, {"t": 191.0, "x": "ダイハツが、横からぶつかる試験で正しくない手続きをしていたものです。"}, {"t": 196.3, "x": "出荷と販売がいったん止まりましたが、その後に国の試験で確かめられました。"}, {"t": 202.0, "x": "ハイブリッドは2024年の4月19日に、出荷を止める指示が解かれています。"}, {"t": 208.1, "x": "ガソリン車は、それより先の3月4日に出荷が再開されました。"}, {"t": 213.16666666666666, "x": "改良が入ると装備や値段が変わることもあります。"}, {"t": 217.1, "x": "今日の数字は、いまトヨタの公式サイトに載っている型のものです。"}, {"t": 223.3, "x": "次は今日いちばん大事な幅のお話です。"}, {"t": 226.9, "x": "ライズの幅は1695ミリです。"}, {"t": 230.2, "x": "車には、5ナンバーと3ナンバーという分けかたがあります。"}, {"t": 234.73333333333332, "x": "5ナンバーの小型車は、法律で大きさの上限が決まっています。"}, {"t": 239.16666666666666, "x": "長さは4.7メートルまで、幅は1.7メートルまで。"}, {"t": 243.8, "x": "高さは2メートルまでで、エンジンの大きさにも上限があります。"}, {"t": 248.4, "x": "ライズは長さも幅も高さも、この枠の中に収まっています。"}, {"t": 253.26666666666668, "x": "幅が何に効くのかを3つの場面で考えてみます。"}, {"t": 257.43333333333334, "x": "ひとつめは古い家の車庫です。"}, {"t": 260.46666666666664, "x": "幅が数センチ広いだけで、扉を開けて降りるすきまがなくなることがあります。"}, {"t": 265.8666666666667, "x": "ふたつめは生け垣や塀にはさまれた細い道です。"}, {"t": 270.1666666666667, "x": "向こうから車が来たとき、左に寄せるゆとりが残るかは幅で決まります。"}, {"t": 275.8, "x": "みっつめはスーパーの駐車場の白線の中です。"}, {"t": 279.43333333333334, "x": "隣の車とのあいだに、ドアを開けるすきまが残るかどうかです。"}, {"t": 284.46666666666664, "x": "小回りの数字も見ておきます。"}, {"t": 286.93333333333334, "x": "いちばん小さく回れる円の半径は、XとGで4.9メートルです。"}, {"t": 292.73333333333335, "x": "いちばん上のZは、タイヤが大きいので5.0メートルになります。"}, {"t": 297.76666666666665, "x": "ひとつ注意していただきたいのは高さです。"}, {"t": 300.9, "x": "屋根までの高さは1620ミリあります。"}, {"t": 304.7, "x": "立体駐車場の高さの制限は看板で必ず確かめてください。"}, {"t": 309.8, "x": "お宅の車庫の入り口の幅を、一度メジャーで測ってみてください。"}, {"t": 314.26666666666665, "x": "その数字から1695を引いた残りが、左右のすきまの合計です。"}, {"t": 321.73333333333335, "x": "SUVで後悔する理由のひとつめは乗り降りでした。"}, {"t": 326.3333333333333, "x": "大きなSUVだと、座席までよじ登るような高さになることがあります。"}, {"t": 332.0, "x": "ライズはそこまで高い車ではありません。"}, {"t": 334.8666666666667, "x": "車の底から地面までは185ミリです。"}, {"t": 338.76666666666665, "x": "ただ、ちょうどいい座席の高さは脚の長さで人それぞれです。"}, {"t": 343.26666666666665, "x": "ですから店長は数字で決めずに、お店で3つ試していただいています。"}, {"t": 348.6666666666667, "x": "ひとつめは、ドアの横に立って座面がどこに来るかを見ることです。"}, {"t": 353.8, "x": "お尻の少し下あたりなら腰をおろすように座れます。"}, {"t": 358.1, "x": "ふたつめは、座ってから足を外に出してそのまま立つことです。"}, {"t": 363.1666666666667, "x": "膝に手をつかずに立てれば、毎日の乗り降りで苦労しにくくなります。"}, {"t": 368.26666666666665, "x": "みっつめは扉の上の縁に頭が当たらないかどうかです。"}, {"t": 372.6333333333333, "x": "運転席の座面を上下に動かす調整も、装備表で確かめておきましょう。"}, {"t": 378.26666666666665, "x": "ハンドルの角度を上下に変える調整は全車に付いています。"}, {"t": 382.76666666666665, "x": "もうひとつ、見晴らしについて正直に申し上げます。"}, {"t": 386.9, "x": "背の高い車は遠くはよく見えますが、すぐ前は見えにくくなります。"}, {"t": 392.4, "x": "小さな子どもや低い車止めが、ボンネットに隠れることがあるんです。"}, {"t": 397.76666666666665, "x": "車の周りを上から見たように映す画面は、ZとGに注文で付けられます。"}, {"t": 403.8666666666667, "x": "試乗では車の前に低い箱を置いて、見えるか試すのもおすすめです。"}, {"t": 410.9, "x": "次はハイブリッドとガソリンのお話です。"}, {"t": 414.1666666666667, "x": "ライズのハイブリッドは少し変わった仕組みです。"}, {"t": 417.3666666666667, "x": "エンジンは電気を作るだけで、走るのはすべてモーターです。"}, {"t": 421.8333333333333, "x": "アクセルを踏んだとたんに、すっと前に出る感じがあります。"}, {"t": 426.3, "x": "燃費は国の基準の測りかたで1リットル28.0キロです。"}, {"t": 431.43333333333334, "x": "ガソリンの1.2リッターは20.7キロです。"}, {"t": 435.1666666666667, "x": "年に5000キロ走るとして、使う燃料の量を比べてみます。"}, {"t": 440.2, "x": "ガソリン車はおよそ242リットル、ハイブリッドはおよそ179リットル。"}, {"t": 446.03333333333336, "x": "差は1年で63リットルほどです。"}, {"t": 449.46666666666664, "x": "真ん中のGで比べると、ハイブリッドは30万5800円高くなります。"}, {"t": 455.1, "x": "元が取れるかの計算は前の回でやりましたので、今日は省きます。"}, {"t": 460.6666666666667, "x": "ライズの場合は燃費のほかにも違いが3つあります。"}, {"t": 464.8666666666667, "x": "ひとつめはパーキングブレーキです。"}, {"t": 467.3333333333333, "x": "ハイブリッドは、ボタンで掛ける電動のパーキングブレーキです。"}, {"t": 471.76666666666665, "x": "信号待ちでブレーキから足を離しても、止まっていられる機能も付きます。"}, {"t": 477.2, "x": "ガソリン車のGとXは手で引くレバー式です。"}, {"t": 481.1333333333333, "x": "ふたつめは荷室の床板の下にある物入れです。"}, {"t": 484.8666666666667, "x": "床板を上の段にしたとき、ハイブリッドは81リットル。"}, {"t": 489.6666666666667, "x": "ガソリンの前輪駆動は145リットルあります。"}, {"t": 493.8, "x": "みっつめは、もしものときの電源です。"}, {"t": 497.1333333333333, "x": "ハイブリッドには、家電が使える100ボルトのコンセントを付けられます。"}, {"t": 501.9, "x": "4万4000円の注文で、1500ワットまで使えるものです。"}, {"t": 507.1333333333333, "x": "停電のときに携帯電話を充電できるのは、心強いところです。"}, {"t": 511.96666666666664, "x": "店長の答えは、近所の買い物が中心ならガソリンで十分。"}, {"t": 517.0333333333333, "x": "静かさと電動のブレーキが欲しいかたは、ハイブリッドです。"}, {"t": 523.3333333333334, "x": "SUVと聞くと、四駆を思い浮かべるかたも多いと思います。"}, {"t": 528.0, "x": "ライズで四駆を選ぶと、エンジンは1リッターのターボだけになります。"}, {"t": 532.8333333333334, "x": "ハイブリッドには四駆の設定がありません。"}, {"t": 535.8333333333334, "x": "燃費は1リットル17.4キロで、前輪駆動のガソリン車より下がります。"}, {"t": 542.0666666666667, "x": "値段はGで比べると27万7200円上がります。"}, {"t": 547.2333333333333, "x": "床板の下の物入れも、上の段で104リットルと小さくなります。"}, {"t": 553.4333333333333, "x": "では、どんなかたなら四駆が要るのでしょうか。"}, {"t": 557.2333333333333, "x": "店長は3つの場面に毎年出会うかどうかで考えます。"}, {"t": 561.4, "x": "ひとつめは家の前や車庫の前が坂で、冬に凍ることです。"}, {"t": 566.1666666666666, "x": "ふたつめは、雪の朝でも出かけなければならない用事があることです。"}, {"t": 571.0333333333333, "x": "みっつめは、ぬかるむ畑の道や舗装されていない坂を走ることです。"}, {"t": 576.1, "x": "どれにも当てはまらないなら、前輪駆動で足りることが多いです。"}, {"t": 581.2333333333333, "x": "年に一度か2度の雪なら、その日は出かけないと決めるのも手です。"}, {"t": 586.5, "x": "それから四駆にしても冬のタイヤは欠かせません。"}, {"t": 590.0, "x": "四駆は進む力を助けますが、止まる力までは増やしてくれないからです。"}, {"t": 595.4333333333333, "x": "雪道の車選びはハスラーの回でくわしくお話ししています。"}, {"t": 601.7333333333333, "x": "ライズのグレードは、値段の安い順にX、G、Zの3つです。"}, {"t": 607.9666666666667, "x": "トヨタの公式ページには、サポカーSワイドの車だと書かれています。"}, {"t": 613.1666666666666, "x": "ぶつかりそうなときに、自動でブレーキをかけて助ける装備があります。"}, {"t": 618.2333333333333, "x": "相手が車なら、速さの差がおよそ30キロから120キロで働きます。"}, {"t": 624.2, "x": "歩いている人なら、およそ30キロから60キロのあいだです。"}, {"t": 629.4, "x": "ペダルの踏み間違いで急に動き出すのを抑える仕組みは、前にも後ろにも働きます。"}, {"t": 635.9333333333333, "x": "ここからがグレードの分かれ目です。"}, {"t": 638.6333333333333, "x": "いちばん上のZには前の車について走る機能が付いています。"}, {"t": 643.9, "x": "高速道路で、アクセルとブレーキを車が手伝ってくれる機能です。"}, {"t": 648.7, "x": "車線の真ん中を保つように、ハンドルを手伝う機能もZにあります。"}, {"t": 653.7333333333333, "x": "ライトもZだけは前の車を避けて照らし分ける形です。"}, {"t": 658.3666666666667, "x": "ライトのお話は前の回でくわしくいたしました。"}, {"t": 662.1, "x": "GとXは上向きと下向きを自動で切り替えるライトです。"}, {"t": 666.9333333333333, "x": "もうひとつ、70代のかたにぜひ付けてほしい装備があります。"}, {"t": 671.9666666666667, "x": "斜め後ろから近づく車を知らせる装備です。"}, {"t": 675.8, "x": "車線を変えるときや、駐車場でバックで出るときに知らせてくれます。"}, {"t": 680.9333333333333, "x": "これはZとGに6万6000円の注文で付けられます。"}, {"t": 685.1666666666666, "x": "Xにはこの注文の装備が用意されていません。"}, {"t": 689.0, "x": "ですから店長のお勧めはGです。"}, {"t": 691.9333333333333, "x": "ガソリンのGなら195万8000円で、ハイブリッドのGなら226万3800円です。"}, {"t": 702.1, "x": "ここまで褒めてきましたが、ライズが合わないかたもいます。"}, {"t": 706.2333333333333, "x": "ひとつめは後ろの席に大人をよく乗せるかたです。"}, {"t": 709.8333333333334, "x": "長さが4メートルを切る車ですから、後ろの席のゆとりはそれなりです。"}, {"t": 715.3, "x": "ご家族をよく乗せるなら、試乗で後ろにも座ってみてください。"}, {"t": 720.2333333333333, "x": "ふたつめは、高さ1550ミリまでの立体駐車場を毎日使うかたです。"}, {"t": 726.3666666666667, "x": "屋根が1620ミリありますので、そうした駐車場には入りません。"}, {"t": 731.3333333333334, "x": "みっつめは、雪の深い地域でハイブリッドの四駆が欲しいかたです。"}, {"t": 736.6, "x": "ライズではその組み合わせは選べません。"}, {"t": 739.5, "x": "よっつめは見晴らしだけが目当てのかたです。"}, {"t": 742.9, "x": "目線の高い車はSUVのほかにもたくさんあります。"}, {"t": 747.4666666666667, "x": "最後に、いちばん大きな心配に触れておきます。"}, {"t": 751.2333333333333, "x": "「SUVにして後悔しないだろうか」という心配です。"}, {"t": 755.5333333333333, "x": "店長は、SUVの後悔のいちばんのもとは大きさだと考えています。"}, {"t": 760.9666666666667, "x": "ライズはそこを小型車の枠の中で解いている車です。"}, {"t": 766.4, "x": "今日のお話をまとめます。"}, {"t": 768.6, "x": "SUVの見晴らしは欲しい、でも大きい車は困る。"}, {"t": 773.3666666666667, "x": "その迷いに、店長はトヨタのライズでお答えしました。"}, {"t": 777.7, "x": "長さは4メートルを切り、幅は5ナンバーの枠に収まります。"}, {"t": 782.5, "x": "買い物が中心ならガソリンで、静かさと電動のブレーキならハイブリッド。"}, {"t": 788.1, "x": "四駆は坂と雪と悪い道の3つで決めます。"}, {"t": 792.2, "x": "グレードは、斜め後ろを知らせる装備を付けられるGをお勧めします。"}, {"t": 797.6333333333333, "x": "兄弟のロッキーは今の型の生産をもう終えています。"}, {"t": 802.2666666666667, "x": "値段は2024年11月現在のトヨタの公式の表の数字です。"}, {"t": 808.5333333333333, "x": "買う前には、お店で今の装備表と見積もりを必ず確かめてください。"}, {"t": 814.1, "x": "最後に、今日の宿題をひとつお出しします。"}, {"t": 817.6666666666666, "x": "お宅の車庫の幅と、入り口の上の高さをメジャーで測ってみてください。"}, {"t": 823.0333333333333, "x": "その2つの数字をメモして試乗に持っていってください。"}, {"t": 826.9666666666667, "x": "「となりの車屋さん」の店長でした。"}, {"t": 829.9, "x": "また次の回でお会いできるのを楽しみにしています。"}], "w": 720, "h": 405, "n_cuts": 0, "noimage": true};
+const a=document.getElementById('a');
+const now=document.getElementById('now'), nl=document.getElementById('nextline');
+const pp=document.getElementById('pp'), sk=document.getElementById('sk');
+const tm=document.getElementById('tm'), bdg=document.getElementById('bdg');
+const SMOOTH=matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth';
+document.getElementById('ttl').innerHTML=D.name+
+  '<span class="meta">'+fmt(D.dur)+'　字幕'+D.subs.length+'　（音声＋字幕だけ）</span>';
+
+function fmt(s){s=Math.max(0,s|0);return (s/60|0)+':'+String(s%60).padStart(2,'0')}
+function subIdx(t){let lo=0,hi=D.subs.length-1,r=-1;
+  while(lo<=hi){const m=(lo+hi)>>1; if(D.subs[m].t<=t){r=m;lo=m+1}else hi=m-1} return r}
+
+let cur=-2;
+function paint(t){
+  const i=subIdx(t);
+  if(i!==cur){cur=i;
+    now.textContent = i<0 ? (D.subs.length?'（ここはまだ字幕がありません）'
+                                          :'（この回に字幕はありません）')
+                         : D.subs[i].x;
+    const n=D.subs[i+1]; nl.textContent = n ? '次　'+n.x : '';
+    bdg.textContent = D.subs.length ? '字幕 '+(i+1)+' / '+D.subs.length : '字幕なし';
+    mark('subs',i);
+  }
+  tm.textContent=fmt(t)+' / '+fmt(D.dur);
+  if(!sk.dragging) sk.value=Math.round(t/D.dur*1000);
+}
+function mark(pane,i){
+  const el=document.getElementById(pane);
+  if(el.dataset.on==i) return; el.dataset.on=i;
+  el.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));
+  const t=el.children[i]; if(!t) return; t.classList.add('on');
+  if(!el.hidden){const r=t.offsetTop-el.clientHeight/2; el.scrollTo({top:r,behavior:SMOOTH})}
+}
+
+D.subs.forEach(s=>{const d=document.createElement('div');d.className='row';
+  d.innerHTML='<b></b><span></span>';
+  d.querySelector('b').textContent=fmt(s.t);
+  d.querySelector('span').textContent=s.x;
+  d.onclick=()=>go(s.t); document.getElementById('subs').appendChild(d)});
+const mk=document.getElementById('mk');
+D.subs.forEach(s=>{const i=document.createElement('i');
+  i.style.left=(s.t/D.dur*100)+'%'; mk.appendChild(i)});
+
+function go(t){a.currentTime=Math.min(Math.max(0,t)+0.01,Math.max(0.05,D.dur-0.05)); paint(a.currentTime)}
+pp.onclick=()=>a.paused?a.play():a.pause();
+const SPEEDS=[1,1.25,1.5,1.75,2,3,0.75],SPN=['等速','1.25倍','1.5倍','1.75倍','2倍','3倍','0.75倍'];
+let si=0; const sp=document.getElementById('sp');
+sp.onclick=()=>{si=(si+1)%SPEEDS.length; a.playbackRate=SPEEDS[si];
+  a.preservesPitch=a.mozPreservesPitch=a.webkitPreservesPitch=true; sp.textContent=SPN[si]};
+a.onplay=()=>pp.textContent='❚❚ 停止'; a.onpause=()=>pp.textContent='▶ 再生';
+a.ontimeupdate=()=>paint(a.currentTime);
+sk.oninput=()=>{sk.dragging=1; go(sk.value/1000*D.dur)};
+sk.onchange=()=>sk.dragging=0;
+document.getElementById('pv').onclick=()=>{const i=subIdx(a.currentTime);
+  go(i>0?D.subs[i-1].t:0)};
+document.getElementById('nx').onclick=()=>{const i=subIdx(a.currentTime);
+  if(i+1<D.subs.length) go(D.subs[i+1].t)};
+addEventListener('keydown',e=>{const k=e.key;
+  if(k===' '){e.preventDefault();pp.onclick()}
+  else if(k==='ArrowRight')go(a.currentTime+5); else if(k==='ArrowLeft')go(a.currentTime-5);
+  else if(k==='ArrowDown'){e.preventDefault();document.getElementById('nx').onclick()}
+  else if(k==='ArrowUp'){e.preventDefault();document.getElementById('pv').onclick()}
+  else if(k==='s'||k==='S')sp.onclick()});
+paint(0);
+</script>
