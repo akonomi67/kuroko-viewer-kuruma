@@ -1,0 +1,133 @@
+<title>七十代からの軽5台</title>
+<style>
+:root{--bg:#f6f4f1;--panel:#fffefc;--ink:#1c1a19;--dim:#6e6862;--line:#e2ded7;--accent:#b8422f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}}
+:root[data-theme="dark"]{--bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);margin:0;-webkit-text-size-adjust:100%;
+  font:16px/1.7 -apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic UI",sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+h1{font-size:17px;margin:4px 0 14px;font-weight:600;letter-spacing:.02em}
+.meta{color:var(--dim);font-size:13px;font-weight:400;margin-left:8px}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:12px;position:relative;
+  min-height:40vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:46px 20px 26px;box-shadow:0 2px 14px rgba(0,0,0,.10)}
+#now{margin:0;text-align:center;white-space:pre-wrap;word-break:break-word;font-weight:700;
+  font-size:clamp(23px,5.4vw,42px);line-height:1.5;letter-spacing:.01em}
+#nextline{margin:16px 0 0;text-align:center;white-space:pre-wrap;word-break:break-word;
+  color:var(--dim);font-size:clamp(13px,2.8vw,17px);line-height:1.6}
+.badge{position:absolute;left:12px;top:12px;background:rgba(127,127,127,.16);color:var(--dim);
+  font-size:12px;padding:3px 9px;border-radius:20px;line-height:1.6;letter-spacing:.04em}
+.bar{display:flex;align-items:center;gap:10px;margin:12px 0 6px;flex-wrap:wrap}
+button{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;
+  padding:9px 14px;font-size:15px;cursor:pointer;font-family:inherit}
+button:active{transform:translateY(1px)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.play{background:var(--accent);color:#fff;border-color:transparent;min-width:80px;font-weight:600}
+.time{font-variant-numeric:tabular-nums;color:var(--dim);font-size:13px;margin-left:auto}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.marks{position:relative;height:7px;margin:2px 0 14px}
+.marks i{position:absolute;top:0;width:1px;height:7px;background:var(--line)}
+.tabs{display:flex;gap:6px;margin:18px 0 10px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;
+  color:var(--ink);padding:7px 12px;font-weight:600}
+.list{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+  -webkit-overflow-scrolling:touch}
+.row{display:flex;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.row:last-child{border-bottom:0}
+.row:hover{background:rgba(127,127,127,.07)}
+.row.on{background:rgba(184,66,47,.12)}
+.row b{color:var(--dim);font-variant-numeric:tabular-nums;font-weight:500;font-size:13px;
+  min-width:48px;flex:none;padding-top:2px}
+.row span{white-space:pre-wrap;flex:1;font-size:16px;line-height:1.65}
+.tip{color:var(--dim);font-size:12.5px;margin:10px 2px 0}
+@media(max-width:620px){.wrap{padding:10px}.time{font-size:12px}
+  .bar button{padding:9px 11px;font-size:14px}.stage{padding:42px 14px 22px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+<div class="wrap">
+<h1 id="ttl"></h1>
+<div class="stage"><div class="badge" id="bdg"></div>
+  <p id="now"></p><p id="nextline"></p></div>
+<div class="bar">
+  <button class="play" id="pp">▶ 再生</button>
+  <button id="pv">◀ 前の字幕</button>
+  <button id="nx">次の字幕 ▶</button>
+  <button id="sp">等速</button>
+  <span class="time" id="tm">0:00 / 0:00</span>
+</div>
+<input type="range" id="sk" min="0" max="1000" value="0">
+<div class="marks" id="mk"></div>
+<div class="tabs"><button class="on">字幕</button></div>
+<div class="list" id="subs"></div>
+<p class="tip">スペース＝再生/停止　←→＝5秒送り　↑↓＝字幕送り。字幕をタップするとそこへ飛びます。</p>
+</div>
+<audio id="a" src="audio.mp3" preload="auto"></audio>
+<script>
+const D={"name": "七十代からの軽5台", "file": "093_七十代からの軽5台", "dur": 839.06665625, "segs": [], "subs": [{"t": 0.0, "x": "こんにちは、「となりの車屋さん」の店長です。"}, {"t": 3.066666666666667, "x": "今年の4月から9月までの半年で、よく売れた軽自動車を調べてみました。"}, {"t": 9.033333333333333, "x": "全国の軽自動車の団体が、車の名前ごとに数を出しています。"}, {"t": 14.433333333333334, "x": "上から5台を並べるとひとつ共通点が見えてきます。"}, {"t": 18.9, "x": "1位はN-BOXで半年でおよそ10万台です。"}, {"t": 22.766666666666666, "x": "2位がスペーシア、3位がタント。"}, {"t": 25.766666666666666, "x": "4位がムーヴで5位がルークスです。"}, {"t": 28.7, "x": "この5台は、5台とも後ろのドアが横に開くスライドドアなんです。"}, {"t": 33.833333333333336, "x": "6位のハスラーになって、やっと普通に開くドアの車が出てきます。"}, {"t": 39.1, "x": "いま軽を買うかたの多くが、スライドドアを選んでいるわけです。"}, {"t": 43.9, "x": "もう1つ店長が目を止めた数字があります。"}, {"t": 47.3, "x": "5位のルークスは、前の年の同じ半年より1.5倍も売れていました。"}, {"t": 52.8, "x": "去年の秋にまるごと新しい型に変わったからです。"}, {"t": 56.766666666666666, "x": "タントも今年の8月に、ぶつからないための仕組みが新しくなりました。"}, {"t": 62.03333333333333, "x": "N-BOXも今年の7月に手が入っています。"}, {"t": 65.63333333333334, "x": "軽自動車はこの1年でずいぶん顔ぶれが動きました。"}, {"t": 69.73333333333333, "x": "この店で前に軽をくらべたときから、中身がだいぶ変わりました。"}, {"t": 74.63333333333334, "x": "そこで今日は70代から乗る軽を選び直します。"}, {"t": 78.4, "x": "選んだのはルークス、タント、N-BOX、スペーシア。"}, {"t": 83.13333333333334, "x": "そしてもう一台、ワゴンRスマイルです。"}, {"t": 86.56666666666666, "x": "4位のムーヴはわざと5台に入れていません。"}, {"t": 89.73333333333333, "x": "その訳は後のほうでお話しします。"}, {"t": 94.43333333333334, "x": "車を一台ずつ見る前にどこを見るかを決めておきます。"}, {"t": 98.9, "x": "前に軽をくらべたときは、乗り降りや維持費を中心に見ました。"}, {"t": 103.8, "x": "今日は70代のかたに向けて別の3つにしぼります。"}, {"t": 108.36666666666666, "x": "1つめは、交差点で曲がるときも見張ってくれるかです。"}, {"t": 112.33333333333333, "x": "ぶつかりそうなときに止まろうとするブレーキは、今はどの車にもあります。"}, {"t": 117.6, "x": "ただ何を見張ってくれるかは車によって違います。"}, {"t": 121.66666666666667, "x": "右に曲がるとき、向こうからまっすぐ来る車。"}, {"t": 125.53333333333333, "x": "曲がった先で横断歩道を渡ってくる人や自転車。"}, {"t": 129.73333333333332, "x": "ここまで見てくれるかどうかが、この1年で大きく変わったところです。"}, {"t": 135.06666666666666, "x": "2つめは、信号待ちで足を休められるかです。"}, {"t": 138.96666666666667, "x": "止まったあとにブレーキから足を離しても、車が止まったままでいてくれる。"}, {"t": 144.63333333333333, "x": "そういう仕組みがあり、ブレーキホールドと呼ばれています。"}, {"t": 148.6, "x": "これは、電気で掛けるパーキングブレーキと組みで付きます。"}, {"t": 153.16666666666666, "x": "長い赤信号で右足がつらいかたにはありがたい装備です。"}, {"t": 157.7, "x": "3つめは、いちばん安い形を選んだときに何が抜けるかです。"}, {"t": 162.73333333333332, "x": "軽はどれも安い形と高い形で中身がかなり違います。"}, {"t": 167.86666666666667, "x": "値札の数字だけで決めると、欲しい装備が付いていないことがあります。"}, {"t": 172.73333333333332, "x": "そこで今日は、1つめと2つめがそろう形の値段を調べました。"}, {"t": 177.73333333333332, "x": "その中でいちばん安い形の値段を、5台そろえてお見せします。"}, {"t": 182.9, "x": "この3つの確かめどころを5台に順番に当てていきます。"}, {"t": 188.7, "x": "最初はいちばん新しいルークスです。"}, {"t": 191.7, "x": "日産が去年の9月に発表した、まったく新しい型です。"}, {"t": 196.56666666666666, "x": "中に入ってまず驚くのは前から後ろまでの長さです。"}, {"t": 201.36666666666667, "x": "室内の長さは2315ミリで、前の型より11.5センチ長くなりました。"}, {"t": 208.13333333333333, "x": "後ろのスライドドアの入り口の幅も、650ミリあります。"}, {"t": 213.03333333333333, "x": "日産は、どちらもこの種類の軽でいちばんだと言っています。"}, {"t": 218.06666666666666, "x": "では1つめの確かめどころの交差点です。"}, {"t": 221.56666666666666, "x": "ルークスのブレーキには、交差点で見張る力が新しく加わりました。"}, {"t": 226.83333333333334, "x": "歩行者に加えて、向こうから来る車や横切る車も見張ります。"}, {"t": 232.36666666666667, "x": "これはいちばん安いSから、どの形にも付いています。"}, {"t": 236.76666666666668, "x": "踏み間違えたときの飛び出しを抑える仕組みも、全部の形にあります。"}, {"t": 242.16666666666666, "x": "2つめの、信号待ちで足を休める装備はどうでしょう。"}, {"t": 246.6, "x": "ここがルークスで気をつけたいところです。"}, {"t": 249.26666666666668, "x": "電気のパーキングブレーキとブレーキホールドは、限られた形だけです。"}, {"t": 254.43333333333334, "x": "プロパイロットエディションという名前の付いた形にしか付きません。"}, {"t": 258.8, "x": "その中でいちばん安いのはハイウェイスターXの形です。"}, {"t": 263.06666666666666, "x": "値段は210万5400円になります。"}, {"t": 266.56666666666666, "x": "いちばん安いSは167万2000円ですから、40万円あまり上がります。"}, {"t": 273.1666666666667, "x": "もう1つ、車を真上から見たような画面を映す装備があります。"}, {"t": 278.6666666666667, "x": "これはSでは選べず、XとハイウェイスターXでは注文のときに頼むものです。"}, {"t": 285.0, "x": "新しくて広い車ですが、欲しい装備まで足すと値段がかさみます。"}, {"t": 291.93333333333334, "x": "2台目はダイハツのタントです。"}, {"t": 294.76666666666665, "x": "タントは2003年に生まれた車で、背の高い軽の草分けです。"}, {"t": 300.1, "x": "今年の8月31日に大事な改良がありました。"}, {"t": 304.1333333333333, "x": "ぶつからないための仕組みに、3つの見張りが加わったのです。"}, {"t": 308.6333333333333, "x": "右に曲がるとき、向こうからまっすぐ来る車。"}, {"t": 312.7, "x": "右や左に曲がるとき、向こうから渡ってくる歩行者。"}, {"t": 317.1333333333333, "x": "そして目の前を横切っていく自転車です。"}, {"t": 320.3666666666667, "x": "1つめの確かめどころはこの改良で合格になりました。"}, {"t": 324.7, "x": "2つめの足を休める装備は、Xという形から上に付いています。"}, {"t": 330.2, "x": "Xの値段は162万8000円です。"}, {"t": 334.23333333333335, "x": "1つめと2つめがそろう形で、5台の中でいちばん安くなります。"}, {"t": 339.7, "x": "気をつけたいのは、いちばん下のLという形です。"}, {"t": 343.8333333333333, "x": "149万6000円と安いのですが、パーキングブレーキは足で踏む形です。"}, {"t": 350.56666666666666, "x": "前の車について走る装備は、Xでは注文のときに付けます。"}, {"t": 355.6666666666667, "x": "高速道路をよく走るかたは、はじめから付くターボの形も見てください。"}, {"t": 361.1, "x": "タントといえば、助手席側の柱のない大きなドアが知られています。"}, {"t": 366.3333333333333, "x": "この大きなドアのお話はまた別の回でゆっくりいたします。"}, {"t": 372.8, "x": "3台目は売れている数で一番のN-BOXです。"}, {"t": 376.8333333333333, "x": "今の型は2023年の秋に出て、今年の7月に手直しされました。"}, {"t": 382.8, "x": "いちばん安い形の値段は176万8800円です。"}, {"t": 388.8333333333333, "x": "N-BOXの強みは、どの形を選んでも安全の装備が同じことです。"}, {"t": 394.1666666666667, "x": "2つめの足を休める装備も全部の形に付いています。"}, {"t": 398.96666666666664, "x": "ですから、いちばん安い形を選んでも抜けるものがありません。"}, {"t": 403.53333333333336, "x": "3つめの確かめどころで、ここまで迷わずに済む車はほかにありません。"}, {"t": 408.76666666666665, "x": "それから踏み間違えへの備えで1つ大事なことがあります。"}, {"t": 413.1, "x": "前の回でお話しした急アクセル抑制機能です。"}, {"t": 417.26666666666665, "x": "N-BOXにも用意されていますが、工場を出たときは切ってあります。"}, {"t": 422.3666666666667, "x": "販売店で設定してもらう作業が要り、その費用も別にかかります。"}, {"t": 427.96666666666664, "x": "買うときに「入れてください」と一言そえてください。"}, {"t": 432.03333333333336, "x": "気になるのは1つめの交差点のほうです。"}, {"t": 435.2, "x": "ホンダの装備表には、曲がるときの見張りの説明が見当たりませんでした。"}, {"t": 440.23333333333335, "x": "書いていないことを、あるともないとも店長は言えません。"}, {"t": 444.46666666666664, "x": "交差点の見張りが気になるかたは、販売店でじかに聞いてみてください。"}, {"t": 451.06666666666666, "x": "4台目はスズキのスペーシアです。"}, {"t": 453.6333333333333, "x": "今の型は2023年の11月に出たもので、この1年では変わっていません。"}, {"t": 460.0, "x": "けれども交差点の見張りは、はじめから持っていました。"}, {"t": 464.1333333333333, "x": "右や左に曲がるとき、向かってくる車の前を横切る場面。"}, {"t": 469.1666666666667, "x": "向こうから渡ってくる歩行者や自転車がいる場面。"}, {"t": 472.8, "x": "こうしたときも、ぶつかりそうなら知らせてブレーキを掛けます。"}, {"t": 477.1333333333333, "x": "これはどの形にも付いています。"}, {"t": 479.7, "x": "気をつけたいのは2つめと3つめのほうです。"}, {"t": 483.2, "x": "いちばん安いHYBRID Gは、153万100円と手ごろです。"}, {"t": 488.9, "x": "ただしこの形では、運転席の高さを変えられません。"}, {"t": 493.03333333333336, "x": "ハンドルの角度を変える仕組みもなく、足を休める装備も付きません。"}, {"t": 497.6666666666667, "x": "足を休める装備がそろうのは、HYBRID Xに付け足しをした形です。"}, {"t": 503.3333333333333, "x": "セーフティプラスパッケージという組み合わせを付けます。"}, {"t": 507.1, "x": "値段は177万1000円で、N-BOXとほとんど同じになります。"}, {"t": 513.3666666666667, "x": "燃費も、装備がそろう形どうしなら背の高い4台でいちばんです。"}, {"t": 519.2333333333333, "x": "前の回で、70代に一台だけならスペーシアとお話ししました。"}, {"t": 524.4333333333333, "x": "N-BOXとくらべた回でも、このパッケージを付けた形を勧めました。"}, {"t": 529.8, "x": "今日の確かめどころで見直しても、その答えは変わりません。"}, {"t": 535.7666666666667, "x": "5台目は少し毛色の違うワゴンRスマイルです。"}, {"t": 540.1, "x": "スマイルは背の高い軽と普通の軽のあいだにいる車です。"}, {"t": 544.9, "x": "屋根の高さは1695ミリです。"}, {"t": 548.8, "x": "今日のほかの4台より、6センチから9.5センチ低くなっています。"}, {"t": 554.3, "x": "それでも後ろのドアは左右ともスライドドアです。"}, {"t": 558.4666666666667, "x": "背の高さはいらないけれど、横に開くドアは欲しい。"}, {"t": 562.7666666666667, "x": "そんなかたに向けて作られた車です。"}, {"t": 565.6666666666666, "x": "2024年の12月には顔つきがやさしく変わり、色も増えました。"}, {"t": 571.6, "x": "1つめの交差点の見張りは、スペーシアと同じスズキの仕組みです。"}, {"t": 576.4666666666667, "x": "右や左に曲がるときに加えて、横から近づく車も見張ります。"}, {"t": 581.7333333333333, "x": "これも全部の形に付いています。"}, {"t": 584.4666666666667, "x": "2つめの足を休める装備は、HYBRID Sから上に付いています。"}, {"t": 589.5, "x": "HYBRID Sの値段は、屋根まで一色の車で171万7100円です。"}, {"t": 596.1333333333333, "x": "いちばん安いGは148万9400円ですが、ここは気をつけてください。"}, {"t": 602.5333333333333, "x": "Gには足を休める装備も、運転席の高さを変える仕組みもありません。"}, {"t": 607.9666666666667, "x": "後ろのドアも電気で開け閉めする仕組みが付きません。"}, {"t": 611.4666666666667, "x": "燃費はハイブリッドの形で、1リットルあたり25.1キロです。"}, {"t": 616.9, "x": "スペーシアのいちばん安い形と並んで、5台でいちばん良い数字です。"}, {"t": 623.8666666666667, "x": "ここまでを3つの確かめどころで並べてみます。"}, {"t": 627.4, "x": "まず1つめの交差点で曲がるときの見張りです。"}, {"t": 630.9, "x": "ルークス、タント、スペーシア、スマイルの4台は全部の形に付いています。"}, {"t": 637.2666666666667, "x": "N-BOXだけは、装備表にこの説明が見当たりませんでした。"}, {"t": 641.9666666666667, "x": "次に足を休める装備がそろういちばん安い値段です。"}, {"t": 646.5, "x": "安い順に読み上げます。"}, {"t": 648.6333333333333, "x": "タントのXが162万8000円。"}, {"t": 652.2, "x": "スマイルのHYBRID Sが171万7100円。"}, {"t": 657.1333333333333, "x": "N-BOXが176万8800円。"}, {"t": 661.2333333333333, "x": "スペーシアのパッケージ付きが177万1000円。"}, {"t": 665.4, "x": "ルークスのプロパイロットエディションが210万5400円です。"}, {"t": 670.5333333333333, "x": "最後に3つめのいちばん安い形で抜けるものです。"}, {"t": 674.5, "x": "N-BOXは、いちばん安い形でも抜けるものがありません。"}, {"t": 679.1, "x": "ほかの4台は、いちばん安い形だと足を休める装備が付きません。"}, {"t": 684.7333333333333, "x": "こうして並べるとはっきり分かることがあります。"}, {"t": 688.1, "x": "値札でいちばん安いのはスマイルのGです。"}, {"t": 692.2, "x": "けれども欲しい装備まで足すと、いちばん安いのはタントになります。"}, {"t": 697.2333333333333, "x": "いちばん安い形で迷わずに済むのはN-BOXです。"}, {"t": 701.5666666666667, "x": "いちばん新しいルークスは、装備を足すといちばん高くなります。"}, {"t": 706.4333333333333, "x": "値札の安さと、欲しい形の安さは別のものです。"}, {"t": 710.9, "x": "これが今日の表でいちばんお伝えしたいことです。"}, {"t": 715.9, "x": "今日の5台に入れなかった軽にも、一言ずつふれておきます。"}, {"t": 720.5666666666667, "x": "まず売れている数で4位のムーヴです。"}, {"t": 723.6, "x": "ムーヴは去年の6月に新しい型になり、初めてスライドドアが付きました。"}, {"t": 728.9, "x": "気になる一台なので、近いうちにムーヴだけで1回お話しします。"}, {"t": 733.8333333333334, "x": "次はハスラーとタフトです。"}, {"t": 736.1, "x": "遊びに出かける人に向けた軽で、後ろのドアは普通に開きます。"}, {"t": 741.2666666666667, "x": "この2台も別の回でくらべる予定です。"}, {"t": 744.2666666666667, "x": "それから、背の低いワゴンRやN-WGN、アルトです。"}, {"t": 748.8333333333334, "x": "後ろの席をほとんど使わないかたなら、こちらで足りることも多いです。"}, {"t": 754.2333333333333, "x": "ただ今日はスライドドアの車にしぼってお話ししました。"}, {"t": 758.0, "x": "電気で走る軽については、前の回でお話ししたとおりです。"}, {"t": 764.5, "x": "最後に今日のお話をまとめます。"}, {"t": 767.2, "x": "軽で売れている上位5台は、5台ともスライドドアでした。"}, {"t": 771.7666666666667, "x": "その中から入れ替えをして、70代向けに5台を選び直しました。"}, {"t": 777.1333333333333, "x": "交差点の見張りが新しくなったのは、ルークスとタントです。"}, {"t": 781.7666666666667, "x": "どの形を選んでも装備が同じで迷わないのは、N-BOXです。"}, {"t": 786.7333333333333, "x": "装備がそろう形をいちばん安く買えるのは、タントのXです。"}, {"t": 792.0, "x": "背を低くしてスライドドアを付けたのがスマイルです。"}, {"t": 796.6333333333333, "x": "そして一台だけと言われたら、店長の答えはやはりスペーシアです。"}, {"t": 801.9333333333333, "x": "パッケージを付けたHYBRID Xなら、交差点も足も燃費もそろいます。"}, {"t": 807.2, "x": "ただ今年は、値段をおさえるならタントのXという道が加わりました。"}, {"t": 812.9333333333333, "x": "試乗に行ったら、ブレーキホールドのスイッチの場所を教わってください。"}, {"t": 817.9666666666667, "x": "信号で止まるたびに右足が楽になるのが分かるはずです。"}, {"t": 822.4666666666667, "x": "なお装備や値段は改良のたびに変わることがあります。"}, {"t": 826.6, "x": "買う前には、販売店で今の装備表を見せてもらってください。"}, {"t": 831.7, "x": "今日も最後まで聞いてくださって、ありがとうございました。"}, {"t": 835.6333333333333, "x": "また次の動画でお会いしましょう。"}], "w": 720, "h": 405, "n_cuts": 0, "noimage": true};
+const a=document.getElementById('a');
+const now=document.getElementById('now'), nl=document.getElementById('nextline');
+const pp=document.getElementById('pp'), sk=document.getElementById('sk');
+const tm=document.getElementById('tm'), bdg=document.getElementById('bdg');
+const SMOOTH=matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth';
+document.getElementById('ttl').innerHTML=D.name+
+  '<span class="meta">'+fmt(D.dur)+'　字幕'+D.subs.length+'　（音声＋字幕だけ）</span>';
+
+function fmt(s){s=Math.max(0,s|0);return (s/60|0)+':'+String(s%60).padStart(2,'0')}
+function subIdx(t){let lo=0,hi=D.subs.length-1,r=-1;
+  while(lo<=hi){const m=(lo+hi)>>1; if(D.subs[m].t<=t){r=m;lo=m+1}else hi=m-1} return r}
+
+let cur=-2;
+function paint(t){
+  const i=subIdx(t);
+  if(i!==cur){cur=i;
+    now.textContent = i<0 ? (D.subs.length?'（ここはまだ字幕がありません）'
+                                          :'（この回に字幕はありません）')
+                         : D.subs[i].x;
+    const n=D.subs[i+1]; nl.textContent = n ? '次　'+n.x : '';
+    bdg.textContent = D.subs.length ? '字幕 '+(i+1)+' / '+D.subs.length : '字幕なし';
+    mark('subs',i);
+  }
+  tm.textContent=fmt(t)+' / '+fmt(D.dur);
+  if(!sk.dragging) sk.value=Math.round(t/D.dur*1000);
+}
+function mark(pane,i){
+  const el=document.getElementById(pane);
+  if(el.dataset.on==i) return; el.dataset.on=i;
+  el.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));
+  const t=el.children[i]; if(!t) return; t.classList.add('on');
+  if(!el.hidden){const r=t.offsetTop-el.clientHeight/2; el.scrollTo({top:r,behavior:SMOOTH})}
+}
+
+D.subs.forEach(s=>{const d=document.createElement('div');d.className='row';
+  d.innerHTML='<b></b><span></span>';
+  d.querySelector('b').textContent=fmt(s.t);
+  d.querySelector('span').textContent=s.x;
+  d.onclick=()=>go(s.t); document.getElementById('subs').appendChild(d)});
+const mk=document.getElementById('mk');
+D.subs.forEach(s=>{const i=document.createElement('i');
+  i.style.left=(s.t/D.dur*100)+'%'; mk.appendChild(i)});
+
+function go(t){a.currentTime=Math.min(Math.max(0,t)+0.01,Math.max(0.05,D.dur-0.05)); paint(a.currentTime)}
+pp.onclick=()=>a.paused?a.play():a.pause();
+const SPEEDS=[1,1.25,1.5,1.75,2,3,0.75],SPN=['等速','1.25倍','1.5倍','1.75倍','2倍','3倍','0.75倍'];
+let si=0; const sp=document.getElementById('sp');
+sp.onclick=()=>{si=(si+1)%SPEEDS.length; a.playbackRate=SPEEDS[si];
+  a.preservesPitch=a.mozPreservesPitch=a.webkitPreservesPitch=true; sp.textContent=SPN[si]};
+a.onplay=()=>pp.textContent='❚❚ 停止'; a.onpause=()=>pp.textContent='▶ 再生';
+a.ontimeupdate=()=>paint(a.currentTime);
+sk.oninput=()=>{sk.dragging=1; go(sk.value/1000*D.dur)};
+sk.onchange=()=>sk.dragging=0;
+document.getElementById('pv').onclick=()=>{const i=subIdx(a.currentTime);
+  go(i>0?D.subs[i-1].t:0)};
+document.getElementById('nx').onclick=()=>{const i=subIdx(a.currentTime);
+  if(i+1<D.subs.length) go(D.subs[i+1].t)};
+addEventListener('keydown',e=>{const k=e.key;
+  if(k===' '){e.preventDefault();pp.onclick()}
+  else if(k==='ArrowRight')go(a.currentTime+5); else if(k==='ArrowLeft')go(a.currentTime-5);
+  else if(k==='ArrowDown'){e.preventDefault();document.getElementById('nx').onclick()}
+  else if(k==='ArrowUp'){e.preventDefault();document.getElementById('pv').onclick()}
+  else if(k==='s'||k==='S')sp.onclick()});
+paint(0);
+</script>
