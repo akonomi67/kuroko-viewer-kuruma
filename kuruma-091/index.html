@@ -1,0 +1,133 @@
+<title>ヤリスとフィットどっち</title>
+<style>
+:root{--bg:#f6f4f1;--panel:#fffefc;--ink:#1c1a19;--dim:#6e6862;--line:#e2ded7;--accent:#b8422f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}}
+:root[data-theme="dark"]{--bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);margin:0;-webkit-text-size-adjust:100%;
+  font:16px/1.7 -apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic UI",sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+h1{font-size:17px;margin:4px 0 14px;font-weight:600;letter-spacing:.02em}
+.meta{color:var(--dim);font-size:13px;font-weight:400;margin-left:8px}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:12px;position:relative;
+  min-height:40vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:46px 20px 26px;box-shadow:0 2px 14px rgba(0,0,0,.10)}
+#now{margin:0;text-align:center;white-space:pre-wrap;word-break:break-word;font-weight:700;
+  font-size:clamp(23px,5.4vw,42px);line-height:1.5;letter-spacing:.01em}
+#nextline{margin:16px 0 0;text-align:center;white-space:pre-wrap;word-break:break-word;
+  color:var(--dim);font-size:clamp(13px,2.8vw,17px);line-height:1.6}
+.badge{position:absolute;left:12px;top:12px;background:rgba(127,127,127,.16);color:var(--dim);
+  font-size:12px;padding:3px 9px;border-radius:20px;line-height:1.6;letter-spacing:.04em}
+.bar{display:flex;align-items:center;gap:10px;margin:12px 0 6px;flex-wrap:wrap}
+button{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;
+  padding:9px 14px;font-size:15px;cursor:pointer;font-family:inherit}
+button:active{transform:translateY(1px)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.play{background:var(--accent);color:#fff;border-color:transparent;min-width:80px;font-weight:600}
+.time{font-variant-numeric:tabular-nums;color:var(--dim);font-size:13px;margin-left:auto}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.marks{position:relative;height:7px;margin:2px 0 14px}
+.marks i{position:absolute;top:0;width:1px;height:7px;background:var(--line)}
+.tabs{display:flex;gap:6px;margin:18px 0 10px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;
+  color:var(--ink);padding:7px 12px;font-weight:600}
+.list{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+  -webkit-overflow-scrolling:touch}
+.row{display:flex;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.row:last-child{border-bottom:0}
+.row:hover{background:rgba(127,127,127,.07)}
+.row.on{background:rgba(184,66,47,.12)}
+.row b{color:var(--dim);font-variant-numeric:tabular-nums;font-weight:500;font-size:13px;
+  min-width:48px;flex:none;padding-top:2px}
+.row span{white-space:pre-wrap;flex:1;font-size:16px;line-height:1.65}
+.tip{color:var(--dim);font-size:12.5px;margin:10px 2px 0}
+@media(max-width:620px){.wrap{padding:10px}.time{font-size:12px}
+  .bar button{padding:9px 11px;font-size:14px}.stage{padding:42px 14px 22px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+<div class="wrap">
+<h1 id="ttl"></h1>
+<div class="stage"><div class="badge" id="bdg"></div>
+  <p id="now"></p><p id="nextline"></p></div>
+<div class="bar">
+  <button class="play" id="pp">▶ 再生</button>
+  <button id="pv">◀ 前の字幕</button>
+  <button id="nx">次の字幕 ▶</button>
+  <button id="sp">等速</button>
+  <span class="time" id="tm">0:00 / 0:00</span>
+</div>
+<input type="range" id="sk" min="0" max="1000" value="0">
+<div class="marks" id="mk"></div>
+<div class="tabs"><button class="on">字幕</button></div>
+<div class="list" id="subs"></div>
+<p class="tip">スペース＝再生/停止　←→＝5秒送り　↑↓＝字幕送り。字幕をタップするとそこへ飛びます。</p>
+</div>
+<audio id="a" src="audio.mp3" preload="auto"></audio>
+<script>
+const D={"name": "ヤリスとフィットどっち", "file": "091_ヤリスとフィットどっち", "dur": 787.9333125, "segs": [], "subs": [{"t": 0.0, "x": "こんにちは、「となりの車屋さん」の店長です。"}, {"t": 3.066666666666667, "x": "2020年の2月、わずか4日のあいだに2台の小さな車が売り出されました。"}, {"t": 9.333333333333334, "x": "2月10日にトヨタのヤリス。"}, {"t": 11.866666666666667, "x": "2月14日にホンダのフィットです。"}, {"t": 15.033333333333333, "x": "同じ年の同じ月に生まれた同級生の2台です。"}, {"t": 19.166666666666668, "x": "それから6年あまり、この2台はずっと比べられてきました。"}, {"t": 23.533333333333335, "x": "お店でも、ここまで絞って決められなくなるかたがとても多いです。"}, {"t": 28.466666666666665, "x": "「どっちも評判がいいと聞くから、よけいに迷うのよ」。"}, {"t": 32.53333333333333, "x": "この2台の前でそんな声を何度も聞いてきました。"}, {"t": 36.4, "x": "今日はこの同級生を一騎打ちで比べます。"}, {"t": 39.766666666666666, "x": "そして最後に、70代のかたにはどちらか一台に決めてお答えします。"}, {"t": 45.233333333333334, "x": "答えを先に言うと、比べる楽しみがなくなってしまいます。"}, {"t": 49.733333333333334, "x": "ですから今日は勝ち負けの表を作りながら進めます。"}, {"t": 53.6, "x": "比べるところは6つです。"}, {"t": 55.9, "x": "中の広さと前の見え方と安全の装備。"}, {"t": 59.53333333333333, "x": "それから燃費と値段と小回りです。"}, {"t": 62.36666666666667, "x": "ひとつ比べるたびに勝ったほうに丸を付けていきます。"}, {"t": 66.1, "x": "最後に丸を数えてそこから答えを出します。"}, {"t": 71.76666666666667, "x": "まずは2台の同じところから確かめておきます。"}, {"t": 75.13333333333334, "x": "ひとつめは幅です。"}, {"t": 76.96666666666667, "x": "ヤリスもフィットも幅は1695ミリでぴったり同じです。"}, {"t": 82.36666666666666, "x": "5ナンバーと呼ばれる小型車の枠は、幅1700ミリまでです。"}, {"t": 87.5, "x": "2台ともその枠にあと5ミリで収まっています。"}, {"t": 91.2, "x": "古い家の車庫でも細い道でのすれ違いでも、幅では差が出ません。"}, {"t": 96.76666666666667, "x": "ふたつめは長さです。"}, {"t": 98.83333333333333, "x": "ヤリスは3950ミリ、フィットのいちばん短い形は3995ミリ。"}, {"t": 106.1, "x": "差は4.5センチしかありません。"}, {"t": 108.9, "x": "軽自動車と比べても、ヤリスなら55センチほど長いだけです。"}, {"t": 114.06666666666666, "x": "ただしフィットは形によって長さが変わります。"}, {"t": 117.53333333333333, "x": "上の形のZでは4080ミリになります。"}, {"t": 121.6, "x": "それから、フィットにはクロスターという少し背の高い形もあります。"}, {"t": 126.96666666666667, "x": "こちらは幅が1725ミリになり、3ナンバーの車になります。"}, {"t": 132.23333333333332, "x": "車庫の幅がぎりぎりのかたは、クロスターだけは気をつけてください。"}, {"t": 136.96666666666667, "x": "みっつめは、ハイブリッドとガソリン車の両方から選べることです。"}, {"t": 141.76666666666668, "x": "どちらにするかは前の回で計算してお話ししました。"}, {"t": 146.1, "x": "年に走る距離で答えが変わるというお話でした。"}, {"t": 150.2, "x": "今日はそこには深入りせず、2台の違いだけに絞ります。"}, {"t": 154.56666666666666, "x": "よっつめは、座席とハンドルの調整です。"}, {"t": 158.0, "x": "座席の高さを変える仕組みと、ハンドルの前後と上下の調整。"}, {"t": 163.03333333333333, "x": "この3つは2台ともどの形にも付いています。"}, {"t": 166.66666666666666, "x": "ひとつだけ例外があり、ヤリスで回る座席を選ぶと高さの調整は付きません。"}, {"t": 172.63333333333333, "x": "腰に合わせた座りかたは前の回でくわしくお話ししました。"}, {"t": 177.43333333333334, "x": "つまりこの2台は外の大きさでは勝ち負けがつきません。"}, {"t": 181.5, "x": "差が出るのはここから先の中身です。"}, {"t": 186.1, "x": "では1つめの比べっこです。"}, {"t": 188.56666666666666, "x": "外から見た屋根の高さは、ヤリスが1495ミリです。"}, {"t": 193.46666666666667, "x": "フィットのいちばん低い形は1515ミリです。"}, {"t": 197.73333333333332, "x": "差はたった2センチで、並べてもほとんど分かりません。"}, {"t": 201.93333333333334, "x": "ところが、車の中の天井までの高さを比べると話が変わります。"}, {"t": 207.5, "x": "メーカーが測った室内の高さは、ヤリスが1190ミリ。"}, {"t": 212.43333333333334, "x": "フィットは1260ミリあります。"}, {"t": 215.1, "x": "外では2センチの差が、中では7センチの差になっているのです。"}, {"t": 220.26666666666668, "x": "7センチといえば湯のみ茶わん1つぶんくらいの高さです。"}, {"t": 224.73333333333332, "x": "座ったときの頭の上にそのぶんゆとりが生まれます。"}, {"t": 229.03333333333333, "x": "室内の長さも、ヤリスの1845ミリに対してフィットは1955ミリです。"}, {"t": 235.73333333333332, "x": "前から後ろまで11センチ長くとってあります。"}, {"t": 239.43333333333334, "x": "外の大きさがほぼ同じなのに、中はフィットのほうが広い。"}, {"t": 244.6, "x": "ここははっきりフィットの勝ちです。"}, {"t": 247.36666666666667, "x": "もう1つ、フィットには後ろの席に変わった仕掛けがあります。"}, {"t": 251.96666666666667, "x": "後ろの座席の座る面を上へはね上げられるのです。"}, {"t": 256.4, "x": "はね上げると、床から天井まで背の高いすき間ができます。"}, {"t": 261.1666666666667, "x": "背の高い鉢植えも寝かせずに立てたまま載せられます。"}, {"t": 265.26666666666665, "x": "この仕掛けはフィットならどの形にも付いています。"}, {"t": 268.93333333333334, "x": "1つめの丸は、フィットです。"}, {"t": 273.4, "x": "2つめは運転席からの前の見え方です。"}, {"t": 276.8333333333333, "x": "ここもフィットのほうに目立つ工夫があります。"}, {"t": 279.96666666666664, "x": "フロントガラスの両わきの柱を、とても細く作ってあるのです。"}, {"t": 284.8333333333333, "x": "斜め前の見え方は、前の回で5台をくらべたときにお話ししました。"}, {"t": 290.6, "x": "そのときもフィットは、柱の細さでひときわ目立っていました。"}, {"t": 295.5, "x": "今日は細かい数字は繰り返さず、結論だけにしておきます。"}, {"t": 300.1, "x": "ヤリスについては、トヨタから同じ物差しの数字が出ていません。"}, {"t": 304.8666666666667, "x": "数字がないものを、店長の目分量で比べるのはやめておきます。"}, {"t": 309.7, "x": "ただ交差点で右や左を見るとき、柱が細いのは心強いものです。"}, {"t": 315.5, "x": "横断歩道を渡る人が柱に隠れにくくなるからです。"}, {"t": 319.6, "x": "2つめの丸も、数字で確かめられたフィットに付けます。"}, {"t": 325.56666666666666, "x": "3つめは安全の装備です。"}, {"t": 327.8, "x": "まず大事なことから言うと、2台とも国が勧めるサポカーです。"}, {"t": 333.03333333333336, "x": "ヤリスは、トヨタの案内で全車がサポカーSワイドとされています。"}, {"t": 337.96666666666664, "x": "フィットも、ホンダセンシングという安全装備がどの形にも付いています。"}, {"t": 343.1, "x": "ぶつかりそうなときに自動で止まろうとするブレーキは、2台とも付いています。"}, {"t": 348.4, "x": "違いが出るのは踏み間違いへの備えです。"}, {"t": 352.1, "x": "フィットには、前へも後ろへも急に飛び出すのを抑える仕組みがあります。"}, {"t": 357.46666666666664, "x": "止まっているときにアクセルを強く踏んでも、飛び出しを抑えるものです。"}, {"t": 362.56666666666666, "x": "ホンダはこれを、踏み間違い衝突軽減システムと呼んでいます。"}, {"t": 367.2, "x": "これもホンダセンシングの中身なので、フィットはどの形にも付いています。"}, {"t": 372.3666666666667, "x": "ヤリスにも、壁などにぶつかりそうなときに止まろうとするブレーキがあります。"}, {"t": 377.53333333333336, "x": "ハイブリッド全車とガソリンのCVT車には、はじめから付いています。"}, {"t": 382.43333333333334, "x": "一方で、走っているときの急なアクセルを抑える装備は別あつかいです。"}, {"t": 387.73333333333335, "x": "ヤリスでは販売店で付ける追加の装備になっています。"}, {"t": 391.6666666666667, "x": "つまり買うときに頼まないと付いてきません。"}, {"t": 394.8, "x": "フィットの装備表にも、この種の機能には注意書きが付いています。"}, {"t": 399.53333333333336, "x": "どちらを選ぶにしても、ここは注文書で必ず確かめてください。"}, {"t": 404.5, "x": "もう1つ、停めたときのブレーキにも違いがあります。"}, {"t": 408.46666666666664, "x": "フィットは、スイッチで掛けるパーキングブレーキが全部の形に付いています。"}, {"t": 413.6333333333333, "x": "信号待ちで足を離しても止まっていてくれる機能も、全部の形です。"}, {"t": 419.5, "x": "ヤリスも今年の3月の改良で、ハイブリッド車にはこの2つが付きました。"}, {"t": 424.8666666666667, "x": "ガソリン車のほうは、販売店でどちらの形か確かめてください。"}, {"t": 429.8333333333333, "x": "全部の形に同じものがそろっている、という点で3つめの丸はフィットです。"}, {"t": 437.2, "x": "4つめは燃費です。"}, {"t": 439.1666666666667, "x": "ここからはヤリスが巻き返します。"}, {"t": 441.76666666666665, "x": "ハイブリッドのいちばん基本の形どうしで比べます。"}, {"t": 445.56666666666666, "x": "国の審査の燃費で、ヤリスは1リットルあたり36.0キロ。"}, {"t": 451.06666666666666, "x": "フィットは29.1キロです。"}, {"t": 453.96666666666664, "x": "同じ距離を走ると、フィットは2割あまり多くガソリンを使う計算です。"}, {"t": 459.43333333333334, "x": "ただし年に走る距離が短いかたほど、お金の差は小さくなります。"}, {"t": 464.56666666666666, "x": "それでも数字の差ははっきりしているので、4つめの丸はヤリスです。"}, {"t": 469.76666666666665, "x": "5つめは値段です。"}, {"t": 471.8666666666667, "x": "メーカーの希望小売価格で、ヤリスは169万7300円から288万4200円まで。"}, {"t": 480.3333333333333, "x": "フィットは180万6200円から295万5700円までです。"}, {"t": 487.1, "x": "いちばん安い形どうしで、ヤリスがおよそ11万円安く買えます。"}, {"t": 492.6333333333333, "x": "いちばん高い形どうしでも、ヤリスが7万円ほど安くなります。"}, {"t": 498.03333333333336, "x": "ただヤリスの安い形は1000ccのガソリン車です。"}, {"t": 502.3333333333333, "x": "フィットの安い形は1500ccのガソリン車です。"}, {"t": 507.2, "x": "エンジンの大きさが違うので、まったく同じ条件の比べっこではありません。"}, {"t": 512.5, "x": "それでも値段で選びやすいのはヤリスです。"}, {"t": 515.6666666666666, "x": "5つめの丸は、ヤリスに付けます。"}, {"t": 520.4333333333333, "x": "6つめは小回りです。"}, {"t": 522.6, "x": "ハンドルをいっぱいに切って回るとき、車が描く円の半径を比べます。"}, {"t": 528.2, "x": "15インチのタイヤの形どうしで、ヤリスは4.8メートル。"}, {"t": 533.3666666666667, "x": "フィットは4.9メートルです。"}, {"t": 535.8, "x": "差は10センチで、大きな差ではありません。"}, {"t": 539.3, "x": "それでも小さいほうが狭い場所で楽なのは確かです。"}, {"t": 543.2, "x": "ひとつ気をつけたいのはタイヤの大きさです。"}, {"t": 546.2333333333333, "x": "見た目のよい大きなタイヤの形を選ぶと、回る円が大きくなります。"}, {"t": 551.8, "x": "ヤリスの上の形のZでは5.1メートルになります。"}, {"t": 556.0333333333333, "x": "小回りを大事にするなら、タイヤの小さい形を選ぶのがこつです。"}, {"t": 561.3333333333334, "x": "6つめの丸はわずかにヤリスです。"}, {"t": 565.8, "x": "ではここまでの丸を数えてみましょう。"}, {"t": 568.7, "x": "中の広さは、フィット。"}, {"t": 571.1666666666666, "x": "前の見え方も、フィット。"}, {"t": 573.5666666666667, "x": "安全の装備も、全部の形にそろっている点でフィット。"}, {"t": 578.0666666666667, "x": "燃費は、ヤリス。"}, {"t": 580.1, "x": "値段も、ヤリス。"}, {"t": 582.1, "x": "小回りは、わずかにヤリス。"}, {"t": 584.6333333333333, "x": "3つと3つで、きれいに引き分けになりました。"}, {"t": 588.3666666666667, "x": "同級生だけあって、ここまで互角になるとは店長も思っていませんでした。"}, {"t": 593.9666666666667, "x": "では、どうやって一台に決めるか。"}, {"t": 597.1, "x": "店長は、70代のかたにとって重い丸と軽い丸があると考えています。"}, {"t": 603.3333333333334, "x": "燃費と値段は毎月のお財布に関わる大事な丸です。"}, {"t": 608.3666666666667, "x": "けれども走る距離が少なければ燃費の差は小さくなります。"}, {"t": 613.1666666666666, "x": "小回りの10センチも、切り返し1回でおぎなえる範囲です。"}, {"t": 617.9666666666667, "x": "一方で、中の広さはあとから買い足せません。"}, {"t": 621.9333333333333, "x": "天井の高さは、あとでどんなお金をかけても変えられないからです。"}, {"t": 626.8666666666667, "x": "踏み間違いへの備えも、全部の形にそろっているほうが選び間違いがありません。"}, {"t": 633.2333333333333, "x": "年を重ねるほど効いてくるのはこちらの丸です。"}, {"t": 637.0333333333333, "x": "ですから70代のかたには、店長はフィットを勧めます。"}, {"t": 641.3, "x": "迷ったら、フィットです。"}, {"t": 645.2, "x": "ただしヤリスのほうが合うかたもはっきりいます。"}, {"t": 648.5666666666667, "x": "ひとつめは、毎日長い距離を走るかたです。"}, {"t": 652.6333333333333, "x": "隣の町の病院や畑まで、毎日乗るなら燃費の差が効いてきます。"}, {"t": 658.2666666666667, "x": "走れば走るほど、2割の差がお金になって返ってきます。"}, {"t": 662.8333333333334, "x": "ふたつめは、とにかく値段をおさえたいかたです。"}, {"t": 666.6, "x": "1000ccのヤリスなら、170万円を切る値段から選べます。"}, {"t": 671.9333333333333, "x": "みっつめは、マニュアル車に乗り続けたいかたです。"}, {"t": 675.6666666666666, "x": "ヤリスには今もガソリンの6速マニュアル車があります。"}, {"t": 679.4333333333333, "x": "フィットの今の形はどれもオートマチックです。"}, {"t": 682.9333333333333, "x": "ただし壁にぶつかりそうなときのブレーキは、ハイブリッドとCVT車の装備です。"}, {"t": 688.7, "x": "マニュアル車を選ぶときは、販売店で付きかたを確かめてください。"}, {"t": 693.4, "x": "よっつめは、膝が悪くて乗り降りで体をひねるのがつらいかたです。"}, {"t": 698.5333333333333, "x": "ヤリスには運転席が外へ回る座席を選べる形があります。"}, {"t": 703.2, "x": "回る座席の話も前の回でくわしくお話ししたとおりです。"}, {"t": 708.0, "x": "いつつめは、車庫や家の前の道がとても狭いかたです。"}, {"t": 712.3, "x": "10センチの小回りの差が、毎日の切り返しで効いてくる場所もあります。"}, {"t": 717.8, "x": "当てはまるものが2つ以上あるなら、ヤリスを選んで後悔はしません。"}, {"t": 724.5, "x": "最後に今日のお話をまとめます。"}, {"t": 727.2333333333333, "x": "ヤリスとフィットは、幅が同じで生まれた年と月も同じ2台です。"}, {"t": 732.0666666666667, "x": "外の大きさではほとんど差がつきません。"}, {"t": 735.1, "x": "6つの比べっこは3つと3つの引き分けでした。"}, {"t": 738.9333333333333, "x": "フィットは天井までの高さと、全部の形にそろった安全の装備。"}, {"t": 744.0666666666667, "x": "ヤリスは燃費と値段と、ほんの少しの小回りです。"}, {"t": 748.3333333333334, "x": "70代のかたには、あとから変えられないほうを取ってフィットを勧めます。"}, {"t": 753.7666666666667, "x": "毎日長く走るかた、値段をおさえたいかた、マニュアル派のかたはヤリスです。"}, {"t": 760.2333333333333, "x": "試乗に行ったら、ぜひ後ろの席にも座ってみてください。"}, {"t": 764.4333333333333, "x": "そして天井に手を伸ばして、頭の上のゆとりを確かめてみてください。"}, {"t": 769.5, "x": "数字で7センチの差が、手のひらでどう感じられるかが分かります。"}, {"t": 774.6333333333333, "x": "なお装備や値段は改良のたびに変わることがあります。"}, {"t": 779.1666666666666, "x": "買う前には販売店で今の装備表を必ず確かめてください。"}, {"t": 783.8, "x": "それではまた次の動画でお会いしましょう。"}], "w": 720, "h": 405, "n_cuts": 0, "noimage": true};
+const a=document.getElementById('a');
+const now=document.getElementById('now'), nl=document.getElementById('nextline');
+const pp=document.getElementById('pp'), sk=document.getElementById('sk');
+const tm=document.getElementById('tm'), bdg=document.getElementById('bdg');
+const SMOOTH=matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth';
+document.getElementById('ttl').innerHTML=D.name+
+  '<span class="meta">'+fmt(D.dur)+'　字幕'+D.subs.length+'　（音声＋字幕だけ）</span>';
+
+function fmt(s){s=Math.max(0,s|0);return (s/60|0)+':'+String(s%60).padStart(2,'0')}
+function subIdx(t){let lo=0,hi=D.subs.length-1,r=-1;
+  while(lo<=hi){const m=(lo+hi)>>1; if(D.subs[m].t<=t){r=m;lo=m+1}else hi=m-1} return r}
+
+let cur=-2;
+function paint(t){
+  const i=subIdx(t);
+  if(i!==cur){cur=i;
+    now.textContent = i<0 ? (D.subs.length?'（ここはまだ字幕がありません）'
+                                          :'（この回に字幕はありません）')
+                         : D.subs[i].x;
+    const n=D.subs[i+1]; nl.textContent = n ? '次　'+n.x : '';
+    bdg.textContent = D.subs.length ? '字幕 '+(i+1)+' / '+D.subs.length : '字幕なし';
+    mark('subs',i);
+  }
+  tm.textContent=fmt(t)+' / '+fmt(D.dur);
+  if(!sk.dragging) sk.value=Math.round(t/D.dur*1000);
+}
+function mark(pane,i){
+  const el=document.getElementById(pane);
+  if(el.dataset.on==i) return; el.dataset.on=i;
+  el.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));
+  const t=el.children[i]; if(!t) return; t.classList.add('on');
+  if(!el.hidden){const r=t.offsetTop-el.clientHeight/2; el.scrollTo({top:r,behavior:SMOOTH})}
+}
+
+D.subs.forEach(s=>{const d=document.createElement('div');d.className='row';
+  d.innerHTML='<b></b><span></span>';
+  d.querySelector('b').textContent=fmt(s.t);
+  d.querySelector('span').textContent=s.x;
+  d.onclick=()=>go(s.t); document.getElementById('subs').appendChild(d)});
+const mk=document.getElementById('mk');
+D.subs.forEach(s=>{const i=document.createElement('i');
+  i.style.left=(s.t/D.dur*100)+'%'; mk.appendChild(i)});
+
+function go(t){a.currentTime=Math.min(Math.max(0,t)+0.01,Math.max(0.05,D.dur-0.05)); paint(a.currentTime)}
+pp.onclick=()=>a.paused?a.play():a.pause();
+const SPEEDS=[1,1.25,1.5,1.75,2,3,0.75],SPN=['等速','1.25倍','1.5倍','1.75倍','2倍','3倍','0.75倍'];
+let si=0; const sp=document.getElementById('sp');
+sp.onclick=()=>{si=(si+1)%SPEEDS.length; a.playbackRate=SPEEDS[si];
+  a.preservesPitch=a.mozPreservesPitch=a.webkitPreservesPitch=true; sp.textContent=SPN[si]};
+a.onplay=()=>pp.textContent='❚❚ 停止'; a.onpause=()=>pp.textContent='▶ 再生';
+a.ontimeupdate=()=>paint(a.currentTime);
+sk.oninput=()=>{sk.dragging=1; go(sk.value/1000*D.dur)};
+sk.onchange=()=>sk.dragging=0;
+document.getElementById('pv').onclick=()=>{const i=subIdx(a.currentTime);
+  go(i>0?D.subs[i-1].t:0)};
+document.getElementById('nx').onclick=()=>{const i=subIdx(a.currentTime);
+  if(i+1<D.subs.length) go(D.subs[i+1].t)};
+addEventListener('keydown',e=>{const k=e.key;
+  if(k===' '){e.preventDefault();pp.onclick()}
+  else if(k==='ArrowRight')go(a.currentTime+5); else if(k==='ArrowLeft')go(a.currentTime-5);
+  else if(k==='ArrowDown'){e.preventDefault();document.getElementById('nx').onclick()}
+  else if(k==='ArrowUp'){e.preventDefault();document.getElementById('pv').onclick()}
+  else if(k==='s'||k==='S')sp.onclick()});
+paint(0);
+</script>
