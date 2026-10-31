@@ -1,0 +1,133 @@
+<title>一人で近所だけの一台</title>
+<style>
+:root{--bg:#f6f4f1;--panel:#fffefc;--ink:#1c1a19;--dim:#6e6862;--line:#e2ded7;--accent:#b8422f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}}
+:root[data-theme="dark"]{--bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);margin:0;-webkit-text-size-adjust:100%;
+  font:16px/1.7 -apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic UI",sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+h1{font-size:17px;margin:4px 0 14px;font-weight:600;letter-spacing:.02em}
+.meta{color:var(--dim);font-size:13px;font-weight:400;margin-left:8px}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:12px;position:relative;
+  min-height:40vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:46px 20px 26px;box-shadow:0 2px 14px rgba(0,0,0,.10)}
+#now{margin:0;text-align:center;white-space:pre-wrap;word-break:break-word;font-weight:700;
+  font-size:clamp(23px,5.4vw,42px);line-height:1.5;letter-spacing:.01em}
+#nextline{margin:16px 0 0;text-align:center;white-space:pre-wrap;word-break:break-word;
+  color:var(--dim);font-size:clamp(13px,2.8vw,17px);line-height:1.6}
+.badge{position:absolute;left:12px;top:12px;background:rgba(127,127,127,.16);color:var(--dim);
+  font-size:12px;padding:3px 9px;border-radius:20px;line-height:1.6;letter-spacing:.04em}
+.bar{display:flex;align-items:center;gap:10px;margin:12px 0 6px;flex-wrap:wrap}
+button{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;
+  padding:9px 14px;font-size:15px;cursor:pointer;font-family:inherit}
+button:active{transform:translateY(1px)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.play{background:var(--accent);color:#fff;border-color:transparent;min-width:80px;font-weight:600}
+.time{font-variant-numeric:tabular-nums;color:var(--dim);font-size:13px;margin-left:auto}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.marks{position:relative;height:7px;margin:2px 0 14px}
+.marks i{position:absolute;top:0;width:1px;height:7px;background:var(--line)}
+.tabs{display:flex;gap:6px;margin:18px 0 10px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;
+  color:var(--ink);padding:7px 12px;font-weight:600}
+.list{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+  -webkit-overflow-scrolling:touch}
+.row{display:flex;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.row:last-child{border-bottom:0}
+.row:hover{background:rgba(127,127,127,.07)}
+.row.on{background:rgba(184,66,47,.12)}
+.row b{color:var(--dim);font-variant-numeric:tabular-nums;font-weight:500;font-size:13px;
+  min-width:48px;flex:none;padding-top:2px}
+.row span{white-space:pre-wrap;flex:1;font-size:16px;line-height:1.65}
+.tip{color:var(--dim);font-size:12.5px;margin:10px 2px 0}
+@media(max-width:620px){.wrap{padding:10px}.time{font-size:12px}
+  .bar button{padding:9px 11px;font-size:14px}.stage{padding:42px 14px 22px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+<div class="wrap">
+<h1 id="ttl"></h1>
+<div class="stage"><div class="badge" id="bdg"></div>
+  <p id="now"></p><p id="nextline"></p></div>
+<div class="bar">
+  <button class="play" id="pp">▶ 再生</button>
+  <button id="pv">◀ 前の字幕</button>
+  <button id="nx">次の字幕 ▶</button>
+  <button id="sp">等速</button>
+  <span class="time" id="tm">0:00 / 0:00</span>
+</div>
+<input type="range" id="sk" min="0" max="1000" value="0">
+<div class="marks" id="mk"></div>
+<div class="tabs"><button class="on">字幕</button></div>
+<div class="list" id="subs"></div>
+<p class="tip">スペース＝再生/停止　←→＝5秒送り　↑↓＝字幕送り。字幕をタップするとそこへ飛びます。</p>
+</div>
+<audio id="a" src="audio.mp3" preload="auto"></audio>
+<script>
+const D={"name": "一人で近所だけの一台", "file": "106_一人で近所だけの一台", "dur": 816.3, "segs": [], "subs": [{"t": 0.0, "x": "こんにちは、「となりの車屋さん」の店長です。"}, {"t": 3.066666666666667, "x": "今日は始める前に、ひとつやってみていただきたいことがあります。"}, {"t": 7.5, "x": "先月の一か月で、助手席に人が乗った回数を数えてみてください。"}, {"t": 13.033333333333333, "x": "後ろの席に人が乗った回数もいっしょに数えます。"}, {"t": 16.866666666666667, "x": "カレンダーや手帳を見ながらでかまいません。"}, {"t": 19.833333333333332, "x": "いかがでしょうか。"}, {"t": 21.3, "x": "ゼロ回か、多くても2回か3回というかたが多いと思います。"}, {"t": 26.0, "x": "お店に来られる70代のお客さまにも、同じことを聞いてみました。"}, {"t": 30.966666666666665, "x": "お一人で暮らしているかたは、ほとんどが片手で足りる回数でした。"}, {"t": 35.7, "x": "ご夫婦のお宅でも、奥さまは自分の車で出かけるというお話を聞きます。"}, {"t": 41.266666666666666, "x": "行き先を聞くと、こちらもだいたい決まっています。"}, {"t": 45.233333333333334, "x": "スーパーと病院、それから銀行と郵便局です。"}, {"t": 49.36666666666667, "x": "たまに、お友だちとお茶をしに行く喫茶店が加わるくらいです。"}, {"t": 54.46666666666667, "x": "遠くても、家から10キロほどの中に収まるというかたがほとんどです。"}, {"t": 59.666666666666664, "x": "それなのにお店で勧められるのは、背の高い大きな軽ばかりです。"}, {"t": 64.9, "x": "「一人しか乗らないのに、そんなに広い車が要るのかね」。"}, {"t": 69.6, "x": "先日あるお客さまがぽつりとこうおっしゃいました。"}, {"t": 73.1, "x": "今日はその問いに、店長がはっきりお答えします。"}, {"t": 76.93333333333334, "x": "一人で近所だけなら、広い車は要らないかたがいます。"}, {"t": 81.16666666666667, "x": "そういうかたに向けて今日は一台の名前を挙げてお話しします。"}, {"t": 87.43333333333334, "x": "まず一人で近所を走る車に何が要るかを考えます。"}, {"t": 91.63333333333334, "x": "その前に、無くても困らないものから挙げてみましょう。"}, {"t": 95.63333333333334, "x": "1つめは後ろの席の広さです。"}, {"t": 98.33333333333333, "x": "人を乗せないなら、後ろの席は買い物袋を置く場所になります。"}, {"t": 103.13333333333334, "x": "足を組めるほど広くても、その広さを使う日はまずありません。"}, {"t": 108.23333333333333, "x": "2つめは高い天井です。"}, {"t": 110.46666666666667, "x": "背の高い軽は中で小さな子どもが立てるほどの高さがあります。"}, {"t": 115.46666666666667, "x": "お子さんのいるご家庭には、これがとても役に立ちます。"}, {"t": 119.73333333333333, "x": "けれど一人で座って運転するなら、頭の上はそこまで要りません。"}, {"t": 125.0, "x": "3つめは横に滑って開く後ろのドアです。"}, {"t": 128.8, "x": "チャイルドシートや車いすを載せるには、本当に便利な仕組みです。"}, {"t": 133.73333333333332, "x": "ただ後ろのドアを開ける日が月に一度も無いなら話は別です。"}, {"t": 139.23333333333332, "x": "では反対に、一人の車に要るものは何でしょうか。"}, {"t": 143.2, "x": "店長は3つあると考えています。"}, {"t": 145.96666666666667, "x": "1つは、ぶつからないための装備がきちんと付いていること。"}, {"t": 150.36666666666667, "x": "2つめは細い道や狭い駐車場で楽に向きを変えられること。"}, {"t": 155.33333333333334, "x": "3つめは毎日の買い物に使っても懐の負担にならないことです。"}, {"t": 160.53333333333333, "x": "この3つを満たして、余分なものを持たない車を探します。"}, {"t": 165.16666666666666, "x": "そう考えると、選ぶ車はかなり絞られてきます。"}, {"t": 169.13333333333333, "x": "広さで選ぶのをやめると、見えてくる車があるのです。"}, {"t": 174.76666666666668, "x": "今日お勧めする一台はスズキのアルトです。"}, {"t": 178.46666666666667, "x": "背の低い、昔ながらの形をした軽自動車です。"}, {"t": 182.7, "x": "若いころにアルトに乗っていたというかたもいらっしゃるでしょう。"}, {"t": 186.53333333333333, "x": "今の型が売り出されたのは2021年の12月です。"}, {"t": 191.53333333333333, "x": "そして2025年の7月に手直しが入り、顔つきと装備が新しくなりました。"}, {"t": 197.9, "x": "長さと幅はほかの軽と同じで、決まりの枠いっぱいの大きさです。"}, {"t": 203.56666666666666, "x": "違うのは高さで、アルトは1525ミリです。"}, {"t": 207.96666666666667, "x": "背の高い軽の代表であるホンダのN-BOXは1790ミリです。"}, {"t": 213.56666666666666, "x": "比べると、アルトのほうが26センチあまり低いことになります。"}, {"t": 218.43333333333334, "x": "乗れるのは4人までです。"}, {"t": 220.6, "x": "後ろの席は2人ぶんで、真ん中に座る場所はありません。"}, {"t": 225.0, "x": "一人で乗るかたにとっては、それで十分すぎるほどです。"}, {"t": 229.23333333333332, "x": "では、なぜこの車を名指しするのか。"}, {"t": 232.63333333333333, "x": "理由は先ほど挙げた3つにきちんと当てはまるからです。"}, {"t": 236.63333333333333, "x": "ぶつからないための装備は、いちばん安い形にも同じものが付きます。"}, {"t": 242.0, "x": "小さく回れて、狭い駐車場でも向きを変えやすい車です。"}, {"t": 246.93333333333334, "x": "値段もガソリンの減りかたも、毎日使って負担になりにくいのです。"}, {"t": 252.06666666666666, "x": "ただし背が低いことには気をつけたい点もあります。"}, {"t": 255.8, "x": "それも隠さずに、順番にお話ししていきます。"}, {"t": 261.0, "x": "アルトのいちばんの持ち味は、車の重さが軽いことです。"}, {"t": 265.7, "x": "ハイブリッドの形で二輪駆動なら710キロです。"}, {"t": 270.6333333333333, "x": "ガソリンだけの形には690キロのものもあります。"}, {"t": 275.4, "x": "先ほどのN-BOXは、いちばん軽い形でも910キロあります。"}, {"t": 280.76666666666665, "x": "同じ軽自動車どうしで、ちょうど200キロの差です。"}, {"t": 285.0, "x": "お米の10キロ袋なら二十袋ぶんの違いになります。"}, {"t": 289.1, "x": "荷物をたくさん積んだ自転車を思い出してください。"}, {"t": 292.6, "x": "こぎ出しも重くなりますし、止まるときもブレーキに力が要ります。"}, {"t": 297.4, "x": "ずっと手で握っていると、指が疲れてくるほどです。"}, {"t": 301.6, "x": "車もこれと同じで、軽いほど動き出しと止まるときの負担が減ります。"}, {"t": 306.73333333333335, "x": "背が低いことにも良いところがあります。"}, {"t": 309.6666666666667, "x": "背の高い車ほど、強い横風を受けたときに押されやすくなります。"}, {"t": 314.7, "x": "橋の上や川沿いの開けた道を走るときに感じるあの揺れです。"}, {"t": 319.8333333333333, "x": "アルトは背が低いぶん、横からの風を受ける面が小さい形です。"}, {"t": 325.0, "x": "角を曲がるときも、体が外へ振られる感じが少なくて済みます。"}, {"t": 330.0, "x": "買い物袋は、座席の足元に置いておくとさらに安心です。"}, {"t": 334.6, "x": "小回りも利きます。"}, {"t": 336.46666666666664, "x": "ハンドルをいっぱいに切って回ったときの大きさは、4.4メートルです。"}, {"t": 341.73333333333335, "x": "軽のなかでも小さく回れる部類に入ります。"}, {"t": 345.43333333333334, "x": "軽い車は作りが弱いのではと心配されるかたもいます。"}, {"t": 349.6666666666667, "x": "スズキは骨組みの形を見直して、強さを保ちながら軽くしたと説明しています。"}, {"t": 355.96666666666664, "x": "ぶつかったときの衝撃を吸う骨組みは、どの形にも使われています。"}, {"t": 362.76666666666665, "x": "次は運転席に座ったときのお話です。"}, {"t": 366.43333333333334, "x": "アルトは背が低いぶん、座る位置も背の高い軽より下にあります。"}, {"t": 371.8666666666667, "x": "これには、良いところと気をつけたいところの両方があります。"}, {"t": 376.26666666666665, "x": "まず良いところから申し上げます。"}, {"t": 379.0, "x": "屋根が低いので、立ったままで屋根の上まで手が届きます。"}, {"t": 383.53333333333336, "x": "冬の朝、屋根に積もった雪を払うのも踏み台なしでできます。"}, {"t": 388.6666666666667, "x": "洗車のときに、屋根の真ん中まで布が届くのも助かります。"}, {"t": 393.26666666666665, "x": "背の高い軽では、ここで脚立を出すお宅も少なくありません。"}, {"t": 397.9, "x": "70代になって脚立に乗るのは、できれば避けたいものです。"}, {"t": 402.3666666666667, "x": "次に気をつけたいところです。"}, {"t": 404.8, "x": "座る位置が低いので、乗るときに腰をぐっと落とすことになります。"}, {"t": 409.8333333333333, "x": "以前の回で、背の低い車は乗り降りがつらいとお話ししました。"}, {"t": 415.0, "x": "膝や腰に痛みのあるかたには、今もそのとおりだと思っています。"}, {"t": 420.0, "x": "ですから、ここは必ずご自分の体で確かめていただきたいのです。"}, {"t": 424.6, "x": "乗るときは、先にお尻を座席に下ろしてから足を入れます。"}, {"t": 429.3666666666667, "x": "降りるときは、両足を先に外へ出してから立ち上がります。"}, {"t": 433.8666666666667, "x": "この順番なら、低い座席でも腰をひねらずに済みます。"}, {"t": 438.46666666666664, "x": "もう1つは座席の高さを変える仕組みの話です。"}, {"t": 442.1333333333333, "x": "これはハイブリッドXと、Lに装備をまとめて足した形に付きます。"}, {"t": 447.23333333333335, "x": "ハンドルの角度を変える仕組みはハイブリッドXだけです。"}, {"t": 451.5, "x": "小柄なかたは、この2つがあると座る姿勢を合わせやすくなります。"}, {"t": 456.43333333333334, "x": "お店ではふだん履いている靴のまま座ってみてください。"}, {"t": 460.4, "x": "買い物に行くときと同じ格好で確かめるのが一番です。"}, {"t": 465.96666666666664, "x": "アルトを名指しした大きな理由が、この安全の装備です。"}, {"t": 470.6, "x": "去年の夏の手直しで、ぶつからないための装備が新しくなりました。"}, {"t": 475.7, "x": "前を見張るのはカメラと電波を使った2つの目です。"}, {"t": 479.73333333333335, "x": "車と歩行者と自転車、それにバイクまで見分けてブレーキをかけます。"}, {"t": 485.3, "x": "交差点で曲がるときに横断歩道を渡る人や自転車にも反応します。"}, {"t": 490.9, "x": "ブレーキとアクセルの踏み違いで、急に飛び出すのも抑えます。"}, {"t": 495.3, "x": "これは前に進むときだけでなく後ろに下がるときにも働きます。"}, {"t": 500.1333333333333, "x": "車の前と後ろには、近くの壁や車を知らせる見張りも付いています。"}, {"t": 505.53333333333336, "x": "ぶつかりそうなら、ゆっくり動いているときでもブレーキをかけます。"}, {"t": 510.46666666666664, "x": "信号が青に変わったのに気づかないときは、音で知らせてくれます。"}, {"t": 515.6, "x": "夜は、前の車や向こうから来る車に合わせてライトを切り替えます。"}, {"t": 521.1, "x": "事故のときに膨らむ袋は、前と横と窓側に合わせて6つです。"}, {"t": 526.6666666666666, "x": "ここで大事なのは、これが4つの形すべてに付くことです。"}, {"t": 531.3, "x": "いちばん安い形を選んでも、守りの装備は削られていません。"}, {"t": 536.4, "x": "サポカー限定の免許のお話は前の回で詳しくいたしました。"}, {"t": 541.3, "x": "あのとき挙げた2つの装備も、アルトはどの形にも付いています。"}, {"t": 546.1333333333333, "x": "警察庁が出している対象の車の一覧にも、今の型のアルトが載っています。"}, {"t": 552.0333333333333, "x": "限定の免許で乗るかたは、契約の前にお店で念を押してください。"}, {"t": 557.1666666666666, "x": "ただし、どの装備にも見分けられない場面があります。"}, {"t": 561.2666666666667, "x": "スズキも装備に頼らず安全に運転するよう案内しています。"}, {"t": 566.0666666666667, "x": "見張り役が増えても、ハンドルを握るのはご自分です。"}, {"t": 570.3333333333334, "x": "雨や霧の日、夕暮れどきは、いつもより速度を落としてください。"}, {"t": 577.1, "x": "アルトには大きく分けて4つの形があります。"}, {"t": 580.6333333333333, "x": "値段は二輪駆動の税込みのメーカー希望小売価格です。"}, {"t": 585.3333333333334, "x": "いちばん安いAが114万2900円です。"}, {"t": 589.7666666666667, "x": "これは注文を受けてから作る形になります。"}, {"t": 593.2333333333333, "x": "その上のLが119万7900円です。"}, {"t": 597.9333333333333, "x": "ハイブリッドSが130万1300円です。"}, {"t": 601.6333333333333, "x": "ハイブリッドXが146万9600円です。"}, {"t": 606.0666666666667, "x": "上の2つは、小さなモーターでエンジンを手助けする仕組みです。"}, {"t": 611.0, "x": "四輪駆動にすると、形によって12万円から13万円ほど上がります。"}, {"t": 616.8666666666667, "x": "燃費はハイブリッドの二輪駆動で1リットル28.2キロです。"}, {"t": 622.4666666666667, "x": "ガソリンだけの形は25.8キロです。"}, {"t": 626.7333333333333, "x": "ただ、近所だけを走るかたには、もう1つの数字が大事です。"}, {"t": 631.9666666666667, "x": "信号や渋滞の多い街なかを想定した市街地の燃費です。"}, {"t": 637.1333333333333, "x": "アルトのハイブリッドは、この市街地で24.6キロとされています。"}, {"t": 642.2666666666667, "x": "N-BOXの二輪駆動は、同じ市街地の数字で18.9キロです。"}, {"t": 648.0, "x": "ひと月に300キロ走るとして、アルトは12リットルほどです。"}, {"t": 652.9333333333333, "x": "N-BOXなら16リットルほど使いますので、差は4リットル近くです。"}, {"t": 658.1666666666666, "x": "なお毎年の軽自動車税はどの軽でも同じ金額です。"}, {"t": 663.1333333333333, "x": "自家用の軽なら標準で年1万800円なので、ここは差になりません。"}, {"t": 669.0, "x": "形を選ぶなら、店長はハイブリッドXを第一に挙げます。"}, {"t": 673.8, "x": "座席の高さとハンドルの角度をご自分の体に合わせられるからです。"}, {"t": 679.2, "x": "体に合うと分かれば、ハイブリッドSでも十分です。"}, {"t": 683.5, "x": "どちらも運転席の座面を温める仕組みが付いていて、冬の朝に助かります。"}, {"t": 691.1, "x": "ここまでお勧めしてきましたが、合わないかたもいらっしゃいます。"}, {"t": 695.2, "x": "1つめは、膝や腰に痛みがあって深く座るのがつらいかたです。"}, {"t": 700.1666666666666, "x": "この場合は座る位置の高い軽のほうが体にやさしいです。"}, {"t": 704.5333333333333, "x": "以前の回でお話ししたムーヴやデイズを候補にしてください。"}, {"t": 708.9666666666667, "x": "2つめは決まって人を乗せる用事があるかたです。"}, {"t": 712.5666666666667, "x": "奥さまの通院の送り迎えが毎週あるというお宅です。"}, {"t": 717.1333333333333, "x": "アルトの後ろの席は、大人が毎週乗るには広いとは言えません。"}, {"t": 722.0666666666667, "x": "乗せる人のことを考えるなら、もう一回り広い車が向いています。"}, {"t": 727.2, "x": "3つめは遠出の多いかたです。"}, {"t": 729.9666666666667, "x": "月に何度も高速道路で遠くへ行くなら、別の車を考えます。"}, {"t": 735.4, "x": "この話は前の回でいたしましたので、今日は一言にとどめます。"}, {"t": 740.1666666666666, "x": "4つめは雪の深い土地にお住まいのかたです。"}, {"t": 743.5333333333333, "x": "アルトにも四輪駆動の形はありますが、車の底は地面から13センチです。"}, {"t": 749.5666666666667, "x": "深い雪のわだちでは底をこすりやすくなります。"}, {"t": 753.3, "x": "雪の多い土地なら、底の高い軽と比べて選んでください。"}, {"t": 758.0666666666667, "x": "逆に言えば、この4つに当てはまらないかたにはぴったりです。"}, {"t": 764.3666666666667, "x": "最後に今日のお話を3つにまとめます。"}, {"t": 767.7666666666667, "x": "一人で近所だけなら、背の高い広い軽でなくてもかまいません。"}, {"t": 772.7, "x": "アルトは軽くて背が低く、守りの装備はどの形にも同じものが付きます。"}, {"t": 778.4, "x": "ただ低い座席なので、乗り降りはご自分の体で確かめてください。"}, {"t": 783.4333333333333, "x": "今日の値段と数字は、スズキの公式の案内と諸元表から拾いました。"}, {"t": 789.0333333333333, "x": "改良で変わることもあるので、お見積もりのときに合わせてください。"}, {"t": 793.6666666666666, "x": "さて、冒頭で数えていただいた回数を思い出してください。"}, {"t": 798.1, "x": "助手席に人が乗ったのは先月何回だったでしょうか。"}, {"t": 802.1333333333333, "x": "来月は、人を乗せた日だけカレンダーに丸を付けてみてください。"}, {"t": 807.0, "x": "丸が少ないほど、アルトはあなたの暮らしに合っている車です。"}, {"t": 811.5666666666667, "x": "それでは、どうぞお気をつけていってらっしゃいませ。"}], "w": 720, "h": 405, "n_cuts": 0, "noimage": true};
+const a=document.getElementById('a');
+const now=document.getElementById('now'), nl=document.getElementById('nextline');
+const pp=document.getElementById('pp'), sk=document.getElementById('sk');
+const tm=document.getElementById('tm'), bdg=document.getElementById('bdg');
+const SMOOTH=matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth';
+document.getElementById('ttl').innerHTML=D.name+
+  '<span class="meta">'+fmt(D.dur)+'　字幕'+D.subs.length+'　（音声＋字幕だけ）</span>';
+
+function fmt(s){s=Math.max(0,s|0);return (s/60|0)+':'+String(s%60).padStart(2,'0')}
+function subIdx(t){let lo=0,hi=D.subs.length-1,r=-1;
+  while(lo<=hi){const m=(lo+hi)>>1; if(D.subs[m].t<=t){r=m;lo=m+1}else hi=m-1} return r}
+
+let cur=-2;
+function paint(t){
+  const i=subIdx(t);
+  if(i!==cur){cur=i;
+    now.textContent = i<0 ? (D.subs.length?'（ここはまだ字幕がありません）'
+                                          :'（この回に字幕はありません）')
+                         : D.subs[i].x;
+    const n=D.subs[i+1]; nl.textContent = n ? '次　'+n.x : '';
+    bdg.textContent = D.subs.length ? '字幕 '+(i+1)+' / '+D.subs.length : '字幕なし';
+    mark('subs',i);
+  }
+  tm.textContent=fmt(t)+' / '+fmt(D.dur);
+  if(!sk.dragging) sk.value=Math.round(t/D.dur*1000);
+}
+function mark(pane,i){
+  const el=document.getElementById(pane);
+  if(el.dataset.on==i) return; el.dataset.on=i;
+  el.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));
+  const t=el.children[i]; if(!t) return; t.classList.add('on');
+  if(!el.hidden){const r=t.offsetTop-el.clientHeight/2; el.scrollTo({top:r,behavior:SMOOTH})}
+}
+
+D.subs.forEach(s=>{const d=document.createElement('div');d.className='row';
+  d.innerHTML='<b></b><span></span>';
+  d.querySelector('b').textContent=fmt(s.t);
+  d.querySelector('span').textContent=s.x;
+  d.onclick=()=>go(s.t); document.getElementById('subs').appendChild(d)});
+const mk=document.getElementById('mk');
+D.subs.forEach(s=>{const i=document.createElement('i');
+  i.style.left=(s.t/D.dur*100)+'%'; mk.appendChild(i)});
+
+function go(t){a.currentTime=Math.min(Math.max(0,t)+0.01,Math.max(0.05,D.dur-0.05)); paint(a.currentTime)}
+pp.onclick=()=>a.paused?a.play():a.pause();
+const SPEEDS=[1,1.25,1.5,1.75,2,3,0.75],SPN=['等速','1.25倍','1.5倍','1.75倍','2倍','3倍','0.75倍'];
+let si=0; const sp=document.getElementById('sp');
+sp.onclick=()=>{si=(si+1)%SPEEDS.length; a.playbackRate=SPEEDS[si];
+  a.preservesPitch=a.mozPreservesPitch=a.webkitPreservesPitch=true; sp.textContent=SPN[si]};
+a.onplay=()=>pp.textContent='❚❚ 停止'; a.onpause=()=>pp.textContent='▶ 再生';
+a.ontimeupdate=()=>paint(a.currentTime);
+sk.oninput=()=>{sk.dragging=1; go(sk.value/1000*D.dur)};
+sk.onchange=()=>sk.dragging=0;
+document.getElementById('pv').onclick=()=>{const i=subIdx(a.currentTime);
+  go(i>0?D.subs[i-1].t:0)};
+document.getElementById('nx').onclick=()=>{const i=subIdx(a.currentTime);
+  if(i+1<D.subs.length) go(D.subs[i+1].t)};
+addEventListener('keydown',e=>{const k=e.key;
+  if(k===' '){e.preventDefault();pp.onclick()}
+  else if(k==='ArrowRight')go(a.currentTime+5); else if(k==='ArrowLeft')go(a.currentTime-5);
+  else if(k==='ArrowDown'){e.preventDefault();document.getElementById('nx').onclick()}
+  else if(k==='ArrowUp'){e.preventDefault();document.getElementById('pv').onclick()}
+  else if(k==='s'||k==='S')sp.onclick()});
+paint(0);
+</script>
