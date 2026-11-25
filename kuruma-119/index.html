@@ -1,0 +1,133 @@
+<title>スイフトとヤリスどっち</title>
+<style>
+:root{--bg:#f6f4f1;--panel:#fffefc;--ink:#1c1a19;--dim:#6e6862;--line:#e2ded7;--accent:#b8422f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}}
+:root[data-theme="dark"]{--bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);margin:0;-webkit-text-size-adjust:100%;
+  font:16px/1.7 -apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic UI",sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+h1{font-size:17px;margin:4px 0 14px;font-weight:600;letter-spacing:.02em}
+.meta{color:var(--dim);font-size:13px;font-weight:400;margin-left:8px}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:12px;position:relative;
+  min-height:40vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:46px 20px 26px;box-shadow:0 2px 14px rgba(0,0,0,.10)}
+#now{margin:0;text-align:center;white-space:pre-wrap;word-break:break-word;font-weight:700;
+  font-size:clamp(23px,5.4vw,42px);line-height:1.5;letter-spacing:.01em}
+#nextline{margin:16px 0 0;text-align:center;white-space:pre-wrap;word-break:break-word;
+  color:var(--dim);font-size:clamp(13px,2.8vw,17px);line-height:1.6}
+.badge{position:absolute;left:12px;top:12px;background:rgba(127,127,127,.16);color:var(--dim);
+  font-size:12px;padding:3px 9px;border-radius:20px;line-height:1.6;letter-spacing:.04em}
+.bar{display:flex;align-items:center;gap:10px;margin:12px 0 6px;flex-wrap:wrap}
+button{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;
+  padding:9px 14px;font-size:15px;cursor:pointer;font-family:inherit}
+button:active{transform:translateY(1px)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.play{background:var(--accent);color:#fff;border-color:transparent;min-width:80px;font-weight:600}
+.time{font-variant-numeric:tabular-nums;color:var(--dim);font-size:13px;margin-left:auto}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.marks{position:relative;height:7px;margin:2px 0 14px}
+.marks i{position:absolute;top:0;width:1px;height:7px;background:var(--line)}
+.tabs{display:flex;gap:6px;margin:18px 0 10px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;
+  color:var(--ink);padding:7px 12px;font-weight:600}
+.list{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+  -webkit-overflow-scrolling:touch}
+.row{display:flex;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.row:last-child{border-bottom:0}
+.row:hover{background:rgba(127,127,127,.07)}
+.row.on{background:rgba(184,66,47,.12)}
+.row b{color:var(--dim);font-variant-numeric:tabular-nums;font-weight:500;font-size:13px;
+  min-width:48px;flex:none;padding-top:2px}
+.row span{white-space:pre-wrap;flex:1;font-size:16px;line-height:1.65}
+.tip{color:var(--dim);font-size:12.5px;margin:10px 2px 0}
+@media(max-width:620px){.wrap{padding:10px}.time{font-size:12px}
+  .bar button{padding:9px 11px;font-size:14px}.stage{padding:42px 14px 22px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+<div class="wrap">
+<h1 id="ttl"></h1>
+<div class="stage"><div class="badge" id="bdg"></div>
+  <p id="now"></p><p id="nextline"></p></div>
+<div class="bar">
+  <button class="play" id="pp">▶ 再生</button>
+  <button id="pv">◀ 前の字幕</button>
+  <button id="nx">次の字幕 ▶</button>
+  <button id="sp">等速</button>
+  <span class="time" id="tm">0:00 / 0:00</span>
+</div>
+<input type="range" id="sk" min="0" max="1000" value="0">
+<div class="marks" id="mk"></div>
+<div class="tabs"><button class="on">字幕</button></div>
+<div class="list" id="subs"></div>
+<p class="tip">スペース＝再生/停止　←→＝5秒送り　↑↓＝字幕送り。字幕をタップするとそこへ飛びます。</p>
+</div>
+<audio id="a" src="audio.mp3" preload="auto"></audio>
+<script>
+const D={"name": "スイフトとヤリスどっち", "file": "119_スイフトとヤリスどっち", "dur": 779.5, "segs": [], "subs": [{"t": 0.0, "x": "こんにちは、「となりの車屋さん」の店長です。"}, {"t": 3.2333333333333334, "x": "先に答えを言うと、70代のかたに店長が勧めるのはスイフトです。"}, {"t": 8.833333333333334, "x": "今日はヤリスとくらべて、その理由を数字でお話しします。"}, {"t": 13.4, "x": "2台とも5人乗りの小さな普通車です。"}, {"t": 16.666666666666668, "x": "どちらにもハイブリッドと名前の付いた形があります。"}, {"t": 20.5, "x": "ところが同じハイブリッドでも、中身はまるで違います。"}, {"t": 24.7, "x": "今日はこのハイブリッドどうしでくらべます。"}, {"t": 27.733333333333334, "x": "スイフトはハイブリッドMXの前のタイヤを回す形で、192万2800円です。"}, {"t": 34.766666666666666, "x": "相手のヤリスは、同じく前のタイヤを回すハイブリッドXで224万9500円です。"}, {"t": 42.666666666666664, "x": "どちらもメーカーが出している希望の値段で、色によっては高くなります。"}, {"t": 48.266666666666666, "x": "差は32万6700円で、スイフトのほうが安くなります。"}, {"t": 53.3, "x": "いちばん安い形どうしだと、話は逆になります。"}, {"t": 57.5, "x": "スイフトのXGは172万7000円です。"}, {"t": 61.93333333333333, "x": "ヤリスの1リットルのエンジンのXは、169万7300円です。"}, {"t": 67.56666666666666, "x": "こちらはヤリスのほうが2万9700円安い計算です。"}, {"t": 72.4, "x": "ハイブリッドどうしの差がなぜここまで開くのかを、順に見ていきましょう。"}, {"t": 79.3, "x": "まずは車を外からながめた時の大きさです。"}, {"t": 82.86666666666666, "x": "車の長さは、スイフトが3860ミリでヤリスが3950ミリです。"}, {"t": 89.46666666666667, "x": "ヤリスのほうが9センチ長い車です。"}, {"t": 92.33333333333333, "x": "横の幅は、2台とも1695ミリでそろっています。"}, {"t": 96.96666666666667, "x": "幅が1.7メートルより狭いので、2台とも5ナンバーの小型の車になります。"}, {"t": 103.4, "x": "屋根までの高さはスイフトの1500ミリに対し、ヤリスは1495ミリです。"}, {"t": 110.1, "x": "ここはほとんど同じと考えてよいでしょう。"}, {"t": 113.2, "x": "前と後ろのタイヤの間は、スイフトが2450ミリでヤリスが2550ミリです。"}, {"t": 121.2, "x": "この長さはヤリスが10センチ上回ります。"}, {"t": 124.83333333333333, "x": "ところが、車の中の長さは逆になります。"}, {"t": 128.7, "x": "車の中を前から後ろまで測ると、スイフトは1905ミリあります。"}, {"t": 134.5, "x": "ヤリスの中は1845ミリです。"}, {"t": 137.76666666666668, "x": "外が短いスイフトのほうが、中は6センチ長く取ってあります。"}, {"t": 142.7, "x": "天井までの高さも、スイフトの1225ミリがヤリスの1190ミリを上回ります。"}, {"t": 150.2, "x": "頭の上はスイフトのほうが3.5センチ高い計算です。"}, {"t": 154.63333333333333, "x": "中の幅だけはヤリスが1430ミリで、スイフトより5ミリ広い作りです。"}, {"t": 161.1, "x": "どちらの中の寸法も、メーカーが自分で測った数字です。"}, {"t": 165.93333333333334, "x": "今の車庫にヤリスが入るなら、スイフトもまず入ると考えてよいでしょう。"}, {"t": 173.5, "x": "2台の値段の差の正体は、この章にあります。"}, {"t": 177.5, "x": "スイフトのハイブリッドは、エンジンを小さなモーターが手伝う形です。"}, {"t": 182.4, "x": "装備表での名前は、マイルドハイブリッドです。"}, {"t": 186.0, "x": "モーターの力の数字は3.1馬力です。"}, {"t": 190.1, "x": "ヤリスのハイブリッドは、大きなモーターを積んだ形です。"}, {"t": 194.33333333333334, "x": "こちらのモーターは80馬力の力を出します。"}, {"t": 198.16666666666666, "x": "ヤリスの装備表には、モーターで走るためのEVドライブモードのスイッチも載っています。"}, {"t": 204.23333333333332, "x": "ヤリスは走り出しの遅い速さならモーターだけで進む場面もあります。"}, {"t": 209.53333333333333, "x": "エンジンだけの力なら、ヤリスの91馬力に対してスイフトは82馬力です。"}, {"t": 216.2, "x": "エンジンどうしなら、2台の差は9馬力しかありません。"}, {"t": 220.43333333333334, "x": "同じハイブリッドと呼んでも、モーターの大きさはけた違いです。"}, {"t": 224.96666666666667, "x": "モーターと電池が大きいほど、車の値段は上がりやすくなります。"}, {"t": 229.5, "x": "この違いが値段の差と、このあとの燃費の差になって表れます。"}, {"t": 235.73333333333332, "x": "お財布に毎月ひびく、ガソリンの話に入ります。"}, {"t": 239.56666666666666, "x": "国の決まった測りかたで、スイフトは1リットルで24.5キロ走ります。"}, {"t": 245.3, "x": "ヤリスのハイブリッドXは36キロ走ります。"}, {"t": 249.5, "x": "差は11.5キロで、ここはヤリスが大きく勝っています。"}, {"t": 254.4, "x": "信号の多い町の中の数字だと、差はもっと開きます。"}, {"t": 259.1333333333333, "x": "スイフトが20.8キロで、ヤリスは37.1キロです。"}, {"t": 264.3333333333333, "x": "町の中ではヤリスがスイフトの倍近く走る計算です。"}, {"t": 268.96666666666664, "x": "止まったり動いたりする町の中ほど、ヤリスのモーターが生きてきます。"}, {"t": 274.56666666666666, "x": "町の中だけを1年に3000キロ走ったとして、ガソリンの量を出してみます。"}, {"t": 280.56666666666666, "x": "スイフトは約144.2リットルで、ヤリスは約80.9リットルです。"}, {"t": 287.46666666666664, "x": "差は1年で約63.3リットルになります。"}, {"t": 291.6333333333333, "x": "燃料タンクは、37リットルのスイフトが36リットルのヤリスより少し大きい作りです。"}, {"t": 299.3, "x": "1回の満タンで行ける距離を試験の数字でかけ算すると、ヤリスが先を行きます。"}, {"t": 305.8333333333333, "x": "ヤリスなら約1296キロ、スイフトでも約906キロ走れる計算です。"}, {"t": 312.7, "x": "給油に行く回数が減るのは、ヤリスのうれしいところです。"}, {"t": 317.3333333333333, "x": "どの燃費も試験での値で、冬に暖房を使えば実際はもっと落ちます。"}, {"t": 324.6333333333333, "x": "では、32万6700円の差をガソリン代で取り戻せるでしょうか。"}, {"t": 330.6, "x": "1年で3000キロなら、ガソリンの差は約63.3リットルでした。"}, {"t": 336.7, "x": "この差だけで値段の差を埋めるには、ガソリンが1リットル約5161円でないと届きません。"}, {"t": 344.06666666666666, "x": "10年乗るとしても、1リットル約516円の計算です。"}, {"t": 348.9, "x": "近所の買い物や病院が中心のかたには、取り戻すのは難しい数字です。"}, {"t": 354.6333333333333, "x": "一方で、たくさん走るかたなら話が変わります。"}, {"t": 358.46666666666664, "x": "年に1万キロを町の中で走ると、ガソリンの差は約211.3リットルです。"}, {"t": 365.1666666666667, "x": "10年乗るなら、1リットル約155円で値段の差が埋まる計算になります。"}, {"t": 371.3333333333333, "x": "走る距離が長いほど、ヤリスの燃費が効いてくるわけです。"}, {"t": 375.8, "x": "ご自分が1年に何キロ走っているかは、車検の記録を見るとおおよそ分かります。"}, {"t": 381.6333333333333, "x": "前の車検の時のメーターの数字と今の数字を、くらべてみてください。"}, {"t": 388.8, "x": "次は運転してみた時の扱いやすさに関わる数字です。"}, {"t": 392.96666666666664, "x": "重さを量ると、ヤリスはスイフトより110キロ重い1050キロです。"}, {"t": 398.93333333333334, "x": "スイフトは940キロで、この差は大きなモーターと電池の分が大きいと考えられます。"}, {"t": 405.43333333333334, "x": "小回りの数字は2台そろって4.8メートルです。"}, {"t": 409.4, "x": "ぐるっと一回りする時の外のタイヤの輪の大きさを、半径で表した数字です。"}, {"t": 415.46666666666664, "x": "狭い道で向きを変える時の扱いやすさは、2台で変わりません。"}, {"t": 420.43333333333334, "x": "地面から車の底までは、スイフトが120ミリでヤリスが145ミリです。"}, {"t": 426.93333333333334, "x": "座面の高さを自分に合わせて変えられるのは、2台とも同じです。"}, {"t": 432.0, "x": "ハンドルの角度と前後の位置を変える仕組みも、2台そろって付いています。"}, {"t": 437.26666666666665, "x": "ヤリスには、座ったまま運転席が外へ回るターンチルトシートの注文品があります。"}, {"t": 443.8, "x": "ハイブリッドどうしではGにだけ付けられて、8万8000円かかります。"}, {"t": 449.3333333333333, "x": "乗り降りでひざや腰が心配なかたは、お店で一度この座席に座ってみてください。"}, {"t": 456.93333333333334, "x": "ここからは事故を防ぐための装備をくらべます。"}, {"t": 460.2, "x": "前の車や歩く人が近づきすぎた時に、車が自分で止まろうとする仕組みは2台にあります。"}, {"t": 467.0, "x": "スイフトの名前は、デュアルセンサーブレーキサポート2です。"}, {"t": 471.43333333333334, "x": "トヨタはトヨタセーフティセンスとまとめて呼んでいます。"}, {"t": 475.3, "x": "ペダルを踏み違えた時に車を止めようとする仕組みも、2台そろっています。"}, {"t": 480.73333333333335, "x": "スイフトのオートマの形は、前に進む時と後ろに下がる時の両方で働きます。"}, {"t": 487.03333333333336, "x": "ヤリスはパーキングサポートブレーキという名前で、前と後ろの壁などに反応します。"}, {"t": 492.9, "x": "障害物が無い所でアクセルを強く踏みすぎた時の仕組みは、ヤリスでは販売店で付ける品です。"}, {"t": 500.76666666666665, "x": "トヨタはこれをプラスサポートと呼んでいます。"}, {"t": 503.9, "x": "白線の内側を走るようにハンドルを支える仕組みも、どちらにもあります。"}, {"t": 509.73333333333335, "x": "ぶつかった時にふくらむ袋は、2台とも前と横と窓の上に付いています。"}, {"t": 517.1333333333333, "x": "ここで2台の大きな違いが出てきます。"}, {"t": 520.0666666666667, "x": "斜め後ろから来る車を知らせる仕組みです。"}, {"t": 523.6333333333333, "x": "スイフトのハイブリッドMXには、これが初めから付いています。"}, {"t": 528.2333333333333, "x": "名前はブラインドスポットモニターで、ドアミラーの見えにくい所を見張ります。"}, {"t": 533.5666666666667, "x": "車線を変える時に知らせてくれるので、うっかりを減らせます。"}, {"t": 537.8333333333334, "x": "後ろ向きに駐車場から出る時、左右から来る車を教える仕組みも付きます。"}, {"t": 543.7666666666667, "x": "ヤリスのハイブリッドXには、この2つを注文で付ける道がありません。"}, {"t": 549.0333333333333, "x": "ヤリスの斜め後ろの見張りは、ZとGに注文で付ける品です。"}, {"t": 554.4, "x": "首を大きくひねって後ろを見るのがつらいかたには、心強い装備です。"}, {"t": 559.8, "x": "座面を温めるシートヒーターも、スイフトのMXには運転席と助手席にあります。"}, {"t": 566.0, "x": "ヤリスでこれが付くのは、いちばん上のZだけです。"}, {"t": 570.2666666666667, "x": "冬の朝に腰や背中が冷えるかたには、うれしい違いでしょう。"}, {"t": 576.6333333333333, "x": "今度はヤリスが勝っている所を見ます。"}, {"t": 579.5666666666667, "x": "高速道路で前の車との間をあけて走る仕組みは、どちらも持っています。"}, {"t": 585.1666666666666, "x": "スイフトのMXのオートマは、止まるところまで前の車についていきます。"}, {"t": 590.5666666666667, "x": "ヤリスはそこから先、止まった状態を保つところまで受け持ちます。"}, {"t": 595.1333333333333, "x": "高速道路の渋滞でブレーキを踏み直す手間は、ヤリスのほうが少なくて済みます。"}, {"t": 601.0333333333333, "x": "駐車の時にかけるブレーキにも、差があります。"}, {"t": 604.5333333333333, "x": "ヤリスのハイブリッドは、スイッチでかける電気のブレーキです。"}, {"t": 609.2, "x": "信号待ちで止まったままでいられるブレーキホールドも、ヤリスには付いています。"}, {"t": 614.9333333333333, "x": "この2つは、今年3月の改良でヤリスのハイブリッドに加わりました。"}, {"t": 620.3, "x": "スイフトでこの2つが付くのは、上の形のハイブリッドMZだけです。"}, {"t": 625.8, "x": "もう1つ、ヤリスにはドライバー異常時対応システムがあります。"}, {"t": 630.7, "x": "車線を保つ手助けが働いている時に運転の操作が無いままだと、音と表示で知らせます。"}, {"t": 637.7333333333333, "x": "さらに車をゆるやかに減速させて、運転する人に操作をうながします。"}, {"t": 643.3666666666667, "x": "スイフトのほうは、どの形を選んでもこの仕組みがありません。"}, {"t": 647.6333333333333, "x": "長い距離を一人で走るかたほど、この差は効いてきます。"}, {"t": 653.8666666666667, "x": "ここまでの勝ち負けをまとめておきましょう。"}, {"t": 656.6666666666666, "x": "スイフトが勝つのは、値段と斜め後ろの見張りとシートヒーターです。"}, {"t": 661.9666666666667, "x": "車の中の長さと高さも、スイフトのほうが少し広く取ってあります。"}, {"t": 667.3333333333334, "x": "ヤリスが勝つのは、燃費と満タンで走れる距離です。"}, {"t": 671.4333333333333, "x": "電気のブレーキとブレーキホールドも、ヤリスの持ち味です。"}, {"t": 675.9, "x": "止まったあとも前の車についていく働きも、ヤリスが上でした。"}, {"t": 680.9333333333333, "x": "小回りと横の幅は2台で同じです。"}, {"t": 684.1333333333333, "x": "勝ち負けの数だけで見れば2台はほぼ引き分けです。"}, {"t": 688.3333333333334, "x": "つまり、どれくらい走るかで答えが分かれる2台です。"}, {"t": 694.2333333333333, "x": "ここで、最初にお伝えした店長の答えをもう一度まとめます。"}, {"t": 699.2, "x": "店長は、スイフトのハイブリッドMXのオートマをお勧めします。"}, {"t": 704.1333333333333, "x": "いちばんの理由は、ヤリスのハイブリッドXより32万6700円安いことです。"}, {"t": 711.3, "x": "近所が中心の走りかたなら、この差を燃費で取り戻すのは難しいからです。"}, {"t": 717.0333333333333, "x": "2つ目は、斜め後ろとバックで出る時の見張りが初めから付いていることです。"}, {"t": 722.9333333333333, "x": "3つ目は、運転席と助手席のシートヒーターが付いていることです。"}, {"t": 728.2666666666667, "x": "スイフトを選ぶなら、踏み間違いの仕組みが付くオートマの形にしてください。"}, {"t": 733.8333333333334, "x": "5速の手で変える形には、この仕組みが付きません。"}, {"t": 737.9, "x": "一方で、ヤリスのハイブリッドが向いているかたもいます。"}, {"t": 741.6666666666666, "x": "年に1万キロ近く走るかたや、高速道路で遠出をするかたです。"}, {"t": 746.9, "x": "信号待ちで右足を休めたいかたにも、ヤリスのブレーキホールドは心強いはずです。"}, {"t": 753.2333333333333, "x": "迷ったら2台とも試しに乗って、斜め後ろの見えかたをくらべてみてください。"}, {"t": 758.7, "x": "今日の数字は、11月にスズキとトヨタが出している表で1つずつ確かめたものです。"}, {"t": 765.0333333333333, "x": "車は改良のたびに値段も装備も変わります。"}, {"t": 768.7, "x": "契約をする前に、お店でいちばん新しい表を見せてもらいましょう。"}, {"t": 773.7, "x": "今日のお話はここまでです。またお店の前でお待ちしています。"}], "w": 720, "h": 405, "n_cuts": 0, "noimage": true};
+const a=document.getElementById('a');
+const now=document.getElementById('now'), nl=document.getElementById('nextline');
+const pp=document.getElementById('pp'), sk=document.getElementById('sk');
+const tm=document.getElementById('tm'), bdg=document.getElementById('bdg');
+const SMOOTH=matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth';
+document.getElementById('ttl').innerHTML=D.name+
+  '<span class="meta">'+fmt(D.dur)+'　字幕'+D.subs.length+'　（音声＋字幕だけ）</span>';
+
+function fmt(s){s=Math.max(0,s|0);return (s/60|0)+':'+String(s%60).padStart(2,'0')}
+function subIdx(t){let lo=0,hi=D.subs.length-1,r=-1;
+  while(lo<=hi){const m=(lo+hi)>>1; if(D.subs[m].t<=t){r=m;lo=m+1}else hi=m-1} return r}
+
+let cur=-2;
+function paint(t){
+  const i=subIdx(t);
+  if(i!==cur){cur=i;
+    now.textContent = i<0 ? (D.subs.length?'（ここはまだ字幕がありません）'
+                                          :'（この回に字幕はありません）')
+                         : D.subs[i].x;
+    const n=D.subs[i+1]; nl.textContent = n ? '次　'+n.x : '';
+    bdg.textContent = D.subs.length ? '字幕 '+(i+1)+' / '+D.subs.length : '字幕なし';
+    mark('subs',i);
+  }
+  tm.textContent=fmt(t)+' / '+fmt(D.dur);
+  if(!sk.dragging) sk.value=Math.round(t/D.dur*1000);
+}
+function mark(pane,i){
+  const el=document.getElementById(pane);
+  if(el.dataset.on==i) return; el.dataset.on=i;
+  el.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));
+  const t=el.children[i]; if(!t) return; t.classList.add('on');
+  if(!el.hidden){const r=t.offsetTop-el.clientHeight/2; el.scrollTo({top:r,behavior:SMOOTH})}
+}
+
+D.subs.forEach(s=>{const d=document.createElement('div');d.className='row';
+  d.innerHTML='<b></b><span></span>';
+  d.querySelector('b').textContent=fmt(s.t);
+  d.querySelector('span').textContent=s.x;
+  d.onclick=()=>go(s.t); document.getElementById('subs').appendChild(d)});
+const mk=document.getElementById('mk');
+D.subs.forEach(s=>{const i=document.createElement('i');
+  i.style.left=(s.t/D.dur*100)+'%'; mk.appendChild(i)});
+
+function go(t){a.currentTime=Math.min(Math.max(0,t)+0.01,Math.max(0.05,D.dur-0.05)); paint(a.currentTime)}
+pp.onclick=()=>a.paused?a.play():a.pause();
+const SPEEDS=[1,1.25,1.5,1.75,2,3,0.75],SPN=['等速','1.25倍','1.5倍','1.75倍','2倍','3倍','0.75倍'];
+let si=0; const sp=document.getElementById('sp');
+sp.onclick=()=>{si=(si+1)%SPEEDS.length; a.playbackRate=SPEEDS[si];
+  a.preservesPitch=a.mozPreservesPitch=a.webkitPreservesPitch=true; sp.textContent=SPN[si]};
+a.onplay=()=>pp.textContent='❚❚ 停止'; a.onpause=()=>pp.textContent='▶ 再生';
+a.ontimeupdate=()=>paint(a.currentTime);
+sk.oninput=()=>{sk.dragging=1; go(sk.value/1000*D.dur)};
+sk.onchange=()=>sk.dragging=0;
+document.getElementById('pv').onclick=()=>{const i=subIdx(a.currentTime);
+  go(i>0?D.subs[i-1].t:0)};
+document.getElementById('nx').onclick=()=>{const i=subIdx(a.currentTime);
+  if(i+1<D.subs.length) go(D.subs[i+1].t)};
+addEventListener('keydown',e=>{const k=e.key;
+  if(k===' '){e.preventDefault();pp.onclick()}
+  else if(k==='ArrowRight')go(a.currentTime+5); else if(k==='ArrowLeft')go(a.currentTime-5);
+  else if(k==='ArrowDown'){e.preventDefault();document.getElementById('nx').onclick()}
+  else if(k==='ArrowUp'){e.preventDefault();document.getElementById('pv').onclick()}
+  else if(k==='s'||k==='S')sp.onclick()});
+paint(0);
+</script>
