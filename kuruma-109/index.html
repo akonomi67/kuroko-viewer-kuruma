@@ -1,0 +1,133 @@
+<title>ヤリスクロスとヴェゼルどっち</title>
+<style>
+:root{--bg:#f6f4f1;--panel:#fffefc;--ink:#1c1a19;--dim:#6e6862;--line:#e2ded7;--accent:#b8422f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}}
+:root[data-theme="dark"]{--bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);margin:0;-webkit-text-size-adjust:100%;
+  font:16px/1.7 -apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic UI",sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+h1{font-size:17px;margin:4px 0 14px;font-weight:600;letter-spacing:.02em}
+.meta{color:var(--dim);font-size:13px;font-weight:400;margin-left:8px}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:12px;position:relative;
+  min-height:40vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:46px 20px 26px;box-shadow:0 2px 14px rgba(0,0,0,.10)}
+#now{margin:0;text-align:center;white-space:pre-wrap;word-break:break-word;font-weight:700;
+  font-size:clamp(23px,5.4vw,42px);line-height:1.5;letter-spacing:.01em}
+#nextline{margin:16px 0 0;text-align:center;white-space:pre-wrap;word-break:break-word;
+  color:var(--dim);font-size:clamp(13px,2.8vw,17px);line-height:1.6}
+.badge{position:absolute;left:12px;top:12px;background:rgba(127,127,127,.16);color:var(--dim);
+  font-size:12px;padding:3px 9px;border-radius:20px;line-height:1.6;letter-spacing:.04em}
+.bar{display:flex;align-items:center;gap:10px;margin:12px 0 6px;flex-wrap:wrap}
+button{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;
+  padding:9px 14px;font-size:15px;cursor:pointer;font-family:inherit}
+button:active{transform:translateY(1px)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.play{background:var(--accent);color:#fff;border-color:transparent;min-width:80px;font-weight:600}
+.time{font-variant-numeric:tabular-nums;color:var(--dim);font-size:13px;margin-left:auto}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.marks{position:relative;height:7px;margin:2px 0 14px}
+.marks i{position:absolute;top:0;width:1px;height:7px;background:var(--line)}
+.tabs{display:flex;gap:6px;margin:18px 0 10px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;
+  color:var(--ink);padding:7px 12px;font-weight:600}
+.list{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+  -webkit-overflow-scrolling:touch}
+.row{display:flex;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.row:last-child{border-bottom:0}
+.row:hover{background:rgba(127,127,127,.07)}
+.row.on{background:rgba(184,66,47,.12)}
+.row b{color:var(--dim);font-variant-numeric:tabular-nums;font-weight:500;font-size:13px;
+  min-width:48px;flex:none;padding-top:2px}
+.row span{white-space:pre-wrap;flex:1;font-size:16px;line-height:1.65}
+.tip{color:var(--dim);font-size:12.5px;margin:10px 2px 0}
+@media(max-width:620px){.wrap{padding:10px}.time{font-size:12px}
+  .bar button{padding:9px 11px;font-size:14px}.stage{padding:42px 14px 22px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+<div class="wrap">
+<h1 id="ttl"></h1>
+<div class="stage"><div class="badge" id="bdg"></div>
+  <p id="now"></p><p id="nextline"></p></div>
+<div class="bar">
+  <button class="play" id="pp">▶ 再生</button>
+  <button id="pv">◀ 前の字幕</button>
+  <button id="nx">次の字幕 ▶</button>
+  <button id="sp">等速</button>
+  <span class="time" id="tm">0:00 / 0:00</span>
+</div>
+<input type="range" id="sk" min="0" max="1000" value="0">
+<div class="marks" id="mk"></div>
+<div class="tabs"><button class="on">字幕</button></div>
+<div class="list" id="subs"></div>
+<p class="tip">スペース＝再生/停止　←→＝5秒送り　↑↓＝字幕送り。字幕をタップするとそこへ飛びます。</p>
+</div>
+<audio id="a" src="audio.mp3" preload="auto"></audio>
+<script>
+const D={"name": "ヤリスクロスとヴェゼルどっち", "file": "109_ヤリスクロスとヴェゼルどっち", "dur": 730.1333125, "segs": [], "subs": [{"t": 0.0, "x": "こんにちは、「となりの車屋さん」の店長です。"}, {"t": 2.966666666666667, "x": "今日は小さめのSUVの、どちらを選ぶかというお話です。"}, {"t": 7.6, "x": "トヨタのヤリスクロスと、ホンダのヴェゼルです。"}, {"t": 10.9, "x": "お店でもこの2台を並べて見比べるかたが、このところ増えてきました。"}, {"t": 16.0, "x": "どちらも背が少し高く、乗り降りのしやすさで人気の車です。"}, {"t": 21.033333333333335, "x": "今日は先に答えを言ってしまいます。"}, {"t": 23.766666666666666, "x": "70代のかたに店長が勧めるのは、ヤリスクロスです。"}, {"t": 28.266666666666666, "x": "決め手はハイブリッドのいちばん安い形どうしで53万円近い値段の差です。"}, {"t": 34.733333333333334, "x": "しかも、小回りの数字は2台ともまったく同じなのです。"}, {"t": 39.166666666666664, "x": "ここだけ聞くと、ヴェゼルを選ぶ理由が無いように思えるかもしれません。"}, {"t": 44.1, "x": "けれどもヴェゼルには、ヤリスクロスがかなわない広さがあります。"}, {"t": 48.7, "x": "その広さに53万円を払う値打ちがあるのかを、今日は一緒に確かめます。"}, {"t": 54.63333333333333, "x": "先日のことです。"}, {"t": 56.4, "x": "店長のお店に娘さんからこんなお電話をいただきました。"}, {"t": 60.43333333333333, "x": "「父が車を替えたいと言っていて、この2台で迷っているんです」。"}, {"t": 64.93333333333334, "x": "お父さまは70代の後半で、お母さまと2人暮らしだそうです。"}, {"t": 70.13333333333334, "x": "今の車は古いセダンで、低い座席の乗り降りがつらくなってきたとのことでした。"}, {"t": 75.9, "x": "今日はこのご相談にお答えするつもりで順に数字を並べていきます。"}, {"t": 82.06666666666666, "x": "まずは今日比べる形を、はっきりさせておきます。"}, {"t": 86.03333333333333, "x": "ヤリスクロスは、ハイブリッドのXという形の2WDです。"}, {"t": 91.06666666666666, "x": "ヴェゼルも、ハイブリッドのいちばん安い形で、前のタイヤを回す形です。"}, {"t": 96.8, "x": "2台とも外から充電する必要はなく、ガソリンを入れるだけで走れます。"}, {"t": 102.06666666666666, "x": "スイッチで掛けるパーキングブレーキは、2台ともどの形にも付いています。"}, {"t": 107.36666666666666, "x": "信号で止まったときにブレーキから足を離せる機能も2台そろっています。"}, {"t": 112.86666666666666, "x": "長い信号待ちで右足を休められるので、遠くへ出かける日にも疲れにくくなります。"}, {"t": 119.23333333333333, "x": "雪の多い土地のための四輪駆動も、2台とも選べます。"}, {"t": 124.63333333333334, "x": "四輪駆動にするとヤリスクロスは24万7500円高くなります。"}, {"t": 130.3, "x": "ヴェゼルの四輪駆動は、22万円高くなります。"}, {"t": 134.53333333333333, "x": "幅はヤリスクロスが1765ミリで、ヴェゼルが1790ミリです。"}, {"t": 141.23333333333332, "x": "2台とも1700ミリを超えるので、どちらも3ナンバーの車です。"}, {"t": 146.36666666666667, "x": "幅の差は2.5センチで、ここは毎日の運転で気になる差ではありません。"}, {"t": 151.93333333333334, "x": "ここまでは、どちらを選んでもほぼ同じと思ってください。"}, {"t": 156.23333333333332, "x": "違いが出るのは、長さと値段と燃費と、車の中の広さです。"}, {"t": 163.3, "x": "最初に、今日いちばん意外な数字をお見せします。"}, {"t": 167.23333333333332, "x": "小回りの目安になる最小回転半径という数字です。"}, {"t": 171.86666666666667, "x": "ハンドルをいっぱいに切ったとき車が描く円の半径で、小さいほど小回りが利きます。"}, {"t": 178.23333333333332, "x": "ヤリスクロスは5.3メートルです。"}, {"t": 181.0, "x": "ヴェゼルのこの形も同じ5.3メートルです。"}, {"t": 184.53333333333333, "x": "車の長さはヴェゼルのほうが16センチも長いのに、回る円は同じなのです。"}, {"t": 190.26666666666668, "x": "ただし、ここには1つ大事な落とし穴があります。"}, {"t": 194.2, "x": "ヴェゼルの上のZという形は、5.5メートルになります。"}, {"t": 198.73333333333332, "x": "大きな18インチのタイヤを履いているためです。"}, {"t": 202.23333333333332, "x": "半径の20センチの差は、狭い駐車場で切り返しの回数に表れることがあります。"}, {"t": 208.6, "x": "ヴェゼルのZは見た目が立派なので、写真で選ぶとこちらに目が行きがちです。"}, {"t": 214.53333333333333, "x": "ですから、もしヴェゼルを選ぶなら、小回りのためにXの形をお勧めします。"}, {"t": 220.76666666666668, "x": "一方のヤリスクロスは、どの形を選んでも5.3メートルで変わりません。"}, {"t": 226.2, "x": "形選びで迷わなくていいのは、ヤリスクロスの気楽なところです。"}, {"t": 230.86666666666667, "x": "小回りは引き分けですがヴェゼルは形選びに気をつけてください。"}, {"t": 237.13333333333333, "x": "では小回りが同じなら、大きさの差はどこに出るのでしょうか。"}, {"t": 242.1, "x": "外から見た長さは、ヤリスクロスが4180ミリです。"}, {"t": 246.96666666666667, "x": "ヴェゼルは4340ミリで、差は16センチになります。"}, {"t": 252.26666666666668, "x": "車庫に入れたとき、前と後ろに残るすき間はそのぶん狭くなります。"}, {"t": 257.8, "x": "古い家の車庫は今の車の大きさを考えずに作られていることがあります。"}, {"t": 263.3666666666667, "x": "スーパーの駐車場でも、枠の前の通路が狭い所では長さの差が気になります。"}, {"t": 269.6, "x": "奥行きがぎりぎりだと、後ろの扉を開けるすき間が足りなくなることもあります。"}, {"t": 275.3333333333333, "x": "屋根の高さは、ヤリスクロスが1590ミリで、ヴェゼルが1580ミリです。"}, {"t": 282.0, "x": "ここはヤリスクロスのほうが1センチだけ背の高い車です。"}, {"t": 286.43333333333334, "x": "地面から車の底までの高さは、ヴェゼルが185ミリで、ヤリスクロスが170ミリです。"}, {"t": 293.73333333333335, "x": "雪道や段差の多い道では、ヴェゼルの1.5センチのゆとりが助けになります。"}, {"t": 299.6333333333333, "x": "車の重さは、ヤリスクロスが1160キロで、ヴェゼルが1350キロです。"}, {"t": 306.53333333333336, "x": "ヴェゼルのほうが190キロ重く、そのぶんどっしりした車です。"}, {"t": 311.6666666666667, "x": "車庫に収めやすいのは、ヤリスクロスの勝ちです。"}, {"t": 317.0, "x": "次は、いちばん大きな差の値段です。"}, {"t": 320.2, "x": "ヤリスクロスのハイブリッドXは、251万200円です。"}, {"t": 325.1333333333333, "x": "ヴェゼルのハイブリッドのいちばん安い形は、303万9300円です。"}, {"t": 331.03333333333336, "x": "その差は52万9100円になります。"}, {"t": 334.6666666666667, "x": "ちなみにヴェゼルのZは、328万7900円です。"}, {"t": 339.73333333333335, "x": "この差があれば、カーナビやドライブレコーダーを付けてもまだお金が残ります。"}, {"t": 345.3666666666667, "x": "年金で暮らすご夫婦にとって50万円を超える差は小さくありません。"}, {"t": 351.1, "x": "車検や保険やタイヤの交換など、車を持つと出ていくお金はほかにもあります。"}, {"t": 357.2, "x": "続いて燃費です。"}, {"t": 359.0, "x": "国の審査の燃費は、ヤリスクロスが1リットルあたり30.8キロです。"}, {"t": 365.23333333333335, "x": "ヴェゼルは26.0キロです。"}, {"t": 368.06666666666666, "x": "1リットルで走る距離は、ヤリスクロスのほうが4.8キロ長いのです。"}, {"t": 373.4, "x": "年に5000キロ走るかたなら、ヤリスクロスで使うガソリンはおよそ162リットルです。"}, {"t": 379.96666666666664, "x": "ヴェゼルではおよそ192リットルで、差は30リットルほどになります。"}, {"t": 385.3666666666667, "x": "年に1万キロ走るかたなら、差は倍のおよそ60リットルになります。"}, {"t": 390.96666666666664, "x": "ヤリスクロスのタンクは36リットルなので、年にほぼタンク一杯ぶんの違いです。"}, {"t": 397.3333333333333, "x": "ただし国の審査の燃費は、決まった試験のやりかたで測った数字です。"}, {"t": 402.6333333333333, "x": "冬の暖房や近所の短い距離ばかりだと、どちらの車も数字より悪くなります。"}, {"t": 409.26666666666665, "x": "値段も燃費もヤリスクロスの勝ちです。"}, {"t": 413.9, "x": "ここからは、ヴェゼルのいいところです。"}, {"t": 416.8333333333333, "x": "メーカーが測った車の中の長さは、ヤリスクロスが1845ミリです。"}, {"t": 423.03333333333336, "x": "ヴェゼルは2020ミリあり、差は17.5センチになります。"}, {"t": 428.06666666666666, "x": "この差は後ろの席に座るかたのゆとりに表れます。"}, {"t": 431.93333333333334, "x": "後ろに座るかたが足を組み替えたり体の向きを変えたりするときに、この差が効きます。"}, {"t": 438.73333333333335, "x": "車の中の天井までの高さも、ヴェゼルが1225ミリで2センチ高くなっています。"}, {"t": 445.93333333333334, "x": "外の屋根はヤリスクロスのほうが高いのに、中はヴェゼルのほうが高いのです。"}, {"t": 451.6333333333333, "x": "さらにヴェゼルの後ろの席は、座面を跳ね上げることができます。"}, {"t": 456.3, "x": "背の高い鉢植えのような荷物を、立てたまま後ろに置ける作りです。"}, {"t": 461.23333333333335, "x": "ヴェゼルにはどの形にも後ろの席に風が出る吹き出し口が付いています。"}, {"t": 466.96666666666664, "x": "夏の暑い日に、後ろに座るかたまで涼しい風が届きます。"}, {"t": 471.93333333333334, "x": "後ろの席で使える充電の差し込み口も、2つ付いています。"}, {"t": 476.6666666666667, "x": "後ろに人を乗せることが多いかたには、この作りは大きな魅力です。"}, {"t": 481.96666666666664, "x": "広さと後ろの席の作りは、ヴェゼルの勝ちです。"}, {"t": 487.46666666666664, "x": "次は安全の装備です。"}, {"t": 489.8666666666667, "x": "ヤリスクロスにはトヨタセーフティセンスという装備がどの形にも付きます。"}, {"t": 495.73333333333335, "x": "ヴェゼルにも、ホンダセンシングという装備がどの形にも付きます。"}, {"t": 500.6333333333333, "x": "どちらも、前の車や歩く人にぶつかりそうなときに止めようとする自動ブレーキです。"}, {"t": 506.9, "x": "駐車場で前や後ろの壁にぶつかりそうなときに、止めようとする機能も2台そろっています。"}, {"t": 513.4, "x": "気をつけたいのは、走っている途中の急なアクセルを抑える機能です。"}, {"t": 518.5, "x": "ヤリスクロスでは、販売店で付ける追加の装備になっています。"}, {"t": 523.2333333333333, "x": "ヴェゼルは機能そのものは付いていますが、工場から出るときは切ってあります。"}, {"t": 528.5333333333333, "x": "使うには販売店で設定してもらう必要があり、その費用は別にかかります。"}, {"t": 534.5333333333333, "x": "つまりどちらの車も注文のときに頼まないとこの機能は効きません。"}, {"t": 539.9333333333333, "x": "注文書を書く前に、この機能が入っているかを必ず確かめてください。"}, {"t": 545.2666666666667, "x": "もう1つ、斜め後ろの車を知らせる仕組みは今日比べる形にはどちらも付きません。"}, {"t": 551.9333333333333, "x": "車線を変えるときは、これまでどおり首を回して目で確かめる習慣を続けてください。"}, {"t": 558.1666666666666, "x": "安全の装備は互角です。"}, {"t": 562.0333333333333, "x": "ここまでをまとめます。"}, {"t": 563.8333333333334, "x": "小回りと安全の装備は、引き分けでした。"}, {"t": 567.2, "x": "車庫への収めやすさと値段と燃費は、ヤリスクロスです。"}, {"t": 571.5666666666667, "x": "中の広さと後ろの席の作りと地面からの高さは、ヴェゼルです。"}, {"t": 577.1666666666666, "x": "どちらにも勝ちがあるので店長は「誰が後ろの席に座るか」で決めました。"}, {"t": 582.7666666666667, "x": "70代のご夫婦の2人暮らしなら、後ろの席に人が乗る日はそう多くありません。"}, {"t": 588.9, "x": "後ろの席の広さに53万円近くを払うより、そのお金を手元に残すほうが安心です。"}, {"t": 595.6, "x": "ですから70代のかたには店長はヤリスクロスを勧めます。"}, {"t": 600.2666666666667, "x": "浮いたお金で急なアクセルを抑える装備を付けても、まだ十分に手元に残ります。"}, {"t": 606.6333333333333, "x": "冒頭の娘さんにも同じようにお答えしました。"}, {"t": 610.1, "x": "お父さまはお母さまと2人で乗ることがほとんどだそうです。"}, {"t": 614.5, "x": "後日、ヤリスクロスに決めましたとお電話をいただきました。"}, {"t": 618.7666666666667, "x": "座席の高さがちょうどよくて乗り降りがずいぶん楽になったそうです。"}, {"t": 625.0, "x": "もちろんヴェゼルを選んだほうがいいかたもいます。"}, {"t": 628.3333333333334, "x": "ひとつめはお孫さんや友だちを後ろに乗せることが多いかたです。"}, {"t": 632.8333333333334, "x": "17.5センチ長い車の中と、後ろの吹き出し口がそのまま役に立ちます。"}, {"t": 639.5333333333333, "x": "ふたつめは雪の多い土地で地面からの高さがほしいかたです。"}, {"t": 644.9333333333333, "x": "四輪駆動どうしで比べると、値段の差は50万1600円に少し縮まります。"}, {"t": 651.6333333333333, "x": "みっつめは背の高い荷物を積むことが多いかたです。"}, {"t": 655.4666666666667, "x": "後ろの座面を跳ね上げられるのは、ヴェゼルならではの作りです。"}, {"t": 660.5, "x": "よっつめは点検に通いやすいホンダのお店が近くにあるかたです。"}, {"t": 665.1666666666666, "x": "ただしヴェゼルを選ぶなら小回りのためにXの形にしてください。"}, {"t": 670.1, "x": "当てはまるものが2つ以上あればヴェゼルを選んで後悔することはないはずです。"}, {"t": 677.5, "x": "最後に店長から2つお願いがあります。"}, {"t": 680.6333333333333, "x": "ひとつはお家の車庫の奥行きを測ってから販売店へ行くことです。"}, {"t": 685.6666666666666, "x": "16センチの差が車庫で効くかどうかは、メジャーで測ればすぐに分かります。"}, {"t": 691.4, "x": "もうひとつは試乗のときに後ろの席にも座ってみることです。"}, {"t": 696.2, "x": "ご家族のどなたかに後ろに座ってもらい、感想を聞いてみてください。"}, {"t": 701.0, "x": "「これで狭くない」と言われたら、ヤリスクロスで十分です。"}, {"t": 705.4333333333333, "x": "今日のお話を短く言うと、小回りは同じで、値段と燃費はヤリスクロスでした。"}, {"t": 711.8333333333334, "x": "広さと後ろの席の作りはヴェゼルでした。"}, {"t": 715.4, "x": "そして70代のかたにはヤリスクロスを勧めます。"}, {"t": 719.6666666666666, "x": "値段や装備はメーカーの改良で変わるので、買う前に販売店で見積もりを確かめてください。"}, {"t": 726.1, "x": "それではまた次の動画でお会いしましょう。"}], "w": 720, "h": 405, "n_cuts": 0, "noimage": true};
+const a=document.getElementById('a');
+const now=document.getElementById('now'), nl=document.getElementById('nextline');
+const pp=document.getElementById('pp'), sk=document.getElementById('sk');
+const tm=document.getElementById('tm'), bdg=document.getElementById('bdg');
+const SMOOTH=matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth';
+document.getElementById('ttl').innerHTML=D.name+
+  '<span class="meta">'+fmt(D.dur)+'　字幕'+D.subs.length+'　（音声＋字幕だけ）</span>';
+
+function fmt(s){s=Math.max(0,s|0);return (s/60|0)+':'+String(s%60).padStart(2,'0')}
+function subIdx(t){let lo=0,hi=D.subs.length-1,r=-1;
+  while(lo<=hi){const m=(lo+hi)>>1; if(D.subs[m].t<=t){r=m;lo=m+1}else hi=m-1} return r}
+
+let cur=-2;
+function paint(t){
+  const i=subIdx(t);
+  if(i!==cur){cur=i;
+    now.textContent = i<0 ? (D.subs.length?'（ここはまだ字幕がありません）'
+                                          :'（この回に字幕はありません）')
+                         : D.subs[i].x;
+    const n=D.subs[i+1]; nl.textContent = n ? '次　'+n.x : '';
+    bdg.textContent = D.subs.length ? '字幕 '+(i+1)+' / '+D.subs.length : '字幕なし';
+    mark('subs',i);
+  }
+  tm.textContent=fmt(t)+' / '+fmt(D.dur);
+  if(!sk.dragging) sk.value=Math.round(t/D.dur*1000);
+}
+function mark(pane,i){
+  const el=document.getElementById(pane);
+  if(el.dataset.on==i) return; el.dataset.on=i;
+  el.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));
+  const t=el.children[i]; if(!t) return; t.classList.add('on');
+  if(!el.hidden){const r=t.offsetTop-el.clientHeight/2; el.scrollTo({top:r,behavior:SMOOTH})}
+}
+
+D.subs.forEach(s=>{const d=document.createElement('div');d.className='row';
+  d.innerHTML='<b></b><span></span>';
+  d.querySelector('b').textContent=fmt(s.t);
+  d.querySelector('span').textContent=s.x;
+  d.onclick=()=>go(s.t); document.getElementById('subs').appendChild(d)});
+const mk=document.getElementById('mk');
+D.subs.forEach(s=>{const i=document.createElement('i');
+  i.style.left=(s.t/D.dur*100)+'%'; mk.appendChild(i)});
+
+function go(t){a.currentTime=Math.min(Math.max(0,t)+0.01,Math.max(0.05,D.dur-0.05)); paint(a.currentTime)}
+pp.onclick=()=>a.paused?a.play():a.pause();
+const SPEEDS=[1,1.25,1.5,1.75,2,3,0.75],SPN=['等速','1.25倍','1.5倍','1.75倍','2倍','3倍','0.75倍'];
+let si=0; const sp=document.getElementById('sp');
+sp.onclick=()=>{si=(si+1)%SPEEDS.length; a.playbackRate=SPEEDS[si];
+  a.preservesPitch=a.mozPreservesPitch=a.webkitPreservesPitch=true; sp.textContent=SPN[si]};
+a.onplay=()=>pp.textContent='❚❚ 停止'; a.onpause=()=>pp.textContent='▶ 再生';
+a.ontimeupdate=()=>paint(a.currentTime);
+sk.oninput=()=>{sk.dragging=1; go(sk.value/1000*D.dur)};
+sk.onchange=()=>sk.dragging=0;
+document.getElementById('pv').onclick=()=>{const i=subIdx(a.currentTime);
+  go(i>0?D.subs[i-1].t:0)};
+document.getElementById('nx').onclick=()=>{const i=subIdx(a.currentTime);
+  if(i+1<D.subs.length) go(D.subs[i+1].t)};
+addEventListener('keydown',e=>{const k=e.key;
+  if(k===' '){e.preventDefault();pp.onclick()}
+  else if(k==='ArrowRight')go(a.currentTime+5); else if(k==='ArrowLeft')go(a.currentTime-5);
+  else if(k==='ArrowDown'){e.preventDefault();document.getElementById('nx').onclick()}
+  else if(k==='ArrowUp'){e.preventDefault();document.getElementById('pv').onclick()}
+  else if(k==='s'||k==='S')sp.onclick()});
+paint(0);
+</script>
