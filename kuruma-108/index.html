@@ -1,0 +1,133 @@
+<title>アクアとノートどっち</title>
+<style>
+:root{--bg:#f6f4f1;--panel:#fffefc;--ink:#1c1a19;--dim:#6e6862;--line:#e2ded7;--accent:#b8422f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}}
+:root[data-theme="dark"]{--bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);margin:0;-webkit-text-size-adjust:100%;
+  font:16px/1.7 -apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic UI",sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+h1{font-size:17px;margin:4px 0 14px;font-weight:600;letter-spacing:.02em}
+.meta{color:var(--dim);font-size:13px;font-weight:400;margin-left:8px}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:12px;position:relative;
+  min-height:40vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:46px 20px 26px;box-shadow:0 2px 14px rgba(0,0,0,.10)}
+#now{margin:0;text-align:center;white-space:pre-wrap;word-break:break-word;font-weight:700;
+  font-size:clamp(23px,5.4vw,42px);line-height:1.5;letter-spacing:.01em}
+#nextline{margin:16px 0 0;text-align:center;white-space:pre-wrap;word-break:break-word;
+  color:var(--dim);font-size:clamp(13px,2.8vw,17px);line-height:1.6}
+.badge{position:absolute;left:12px;top:12px;background:rgba(127,127,127,.16);color:var(--dim);
+  font-size:12px;padding:3px 9px;border-radius:20px;line-height:1.6;letter-spacing:.04em}
+.bar{display:flex;align-items:center;gap:10px;margin:12px 0 6px;flex-wrap:wrap}
+button{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;
+  padding:9px 14px;font-size:15px;cursor:pointer;font-family:inherit}
+button:active{transform:translateY(1px)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.play{background:var(--accent);color:#fff;border-color:transparent;min-width:80px;font-weight:600}
+.time{font-variant-numeric:tabular-nums;color:var(--dim);font-size:13px;margin-left:auto}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.marks{position:relative;height:7px;margin:2px 0 14px}
+.marks i{position:absolute;top:0;width:1px;height:7px;background:var(--line)}
+.tabs{display:flex;gap:6px;margin:18px 0 10px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;
+  color:var(--ink);padding:7px 12px;font-weight:600}
+.list{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+  -webkit-overflow-scrolling:touch}
+.row{display:flex;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.row:last-child{border-bottom:0}
+.row:hover{background:rgba(127,127,127,.07)}
+.row.on{background:rgba(184,66,47,.12)}
+.row b{color:var(--dim);font-variant-numeric:tabular-nums;font-weight:500;font-size:13px;
+  min-width:48px;flex:none;padding-top:2px}
+.row span{white-space:pre-wrap;flex:1;font-size:16px;line-height:1.65}
+.tip{color:var(--dim);font-size:12.5px;margin:10px 2px 0}
+@media(max-width:620px){.wrap{padding:10px}.time{font-size:12px}
+  .bar button{padding:9px 11px;font-size:14px}.stage{padding:42px 14px 22px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+<div class="wrap">
+<h1 id="ttl"></h1>
+<div class="stage"><div class="badge" id="bdg"></div>
+  <p id="now"></p><p id="nextline"></p></div>
+<div class="bar">
+  <button class="play" id="pp">▶ 再生</button>
+  <button id="pv">◀ 前の字幕</button>
+  <button id="nx">次の字幕 ▶</button>
+  <button id="sp">等速</button>
+  <span class="time" id="tm">0:00 / 0:00</span>
+</div>
+<input type="range" id="sk" min="0" max="1000" value="0">
+<div class="marks" id="mk"></div>
+<div class="tabs"><button class="on">字幕</button></div>
+<div class="list" id="subs"></div>
+<p class="tip">スペース＝再生/停止　←→＝5秒送り　↑↓＝字幕送り。字幕をタップするとそこへ飛びます。</p>
+</div>
+<audio id="a" src="audio.mp3" preload="auto"></audio>
+<script>
+const D={"name": "アクアとノートどっち", "file": "108_アクアとノートどっち", "dur": 763.66665625, "segs": [], "subs": [{"t": 0.0, "x": "こんにちは、「となりの車屋さん」の店長です。"}, {"t": 3.1, "x": "今日は少し不思議な数字のお話から始めます。"}, {"t": 6.833333333333333, "x": "トヨタのアクアと日産のノートです。"}, {"t": 9.966666666666667, "x": "どちらもガソリンで走りながら、電気の力も使う小さな車です。"}, {"t": 15.566666666666666, "x": "国の審査の燃費は、アクアのいちばん安い形で1リットルあたり34.3キロ。"}, {"t": 22.733333333333334, "x": "ノートは28.4キロです。"}, {"t": 25.4, "x": "燃費だけを見れば、アクアの勝ちがはっきりしています。"}, {"t": 29.533333333333335, "x": "ところがいちばん安い形の値段を並べると、順番が逆になります。"}, {"t": 34.9, "x": "アクアは249万7000円で、ノートは239万9100円です。"}, {"t": 41.2, "x": "燃費のいいアクアのほうが、10万円近く高いのです。"}, {"t": 45.36666666666667, "x": "お店でこの2台を並べると、たいていのかたがここで首をかしげます。"}, {"t": 50.4, "x": "先週も、70代のご夫婦がこの2台のカタログを手に来られました。"}, {"t": 56.0, "x": "「燃費がいいなら高くても元が取れるんでしょう？」。"}, {"t": 59.266666666666666, "x": "ご主人はアクアに傾いていて、奥さまはノートの値段が気になっていました。"}, {"t": 64.6, "x": "今日はこのご夫婦の問いに、数字でお答えします。"}, {"t": 68.6, "x": "そのうえで、70代のかたにはどちらか一台に決めてお勧めします。"}, {"t": 73.86666666666666, "x": "先に言っておくと、決め手は燃費でも値段でもありません。"}, {"t": 78.2, "x": "ハンドルをいっぱいに切ったときの、30センチの差です。"}, {"t": 84.16666666666667, "x": "まずは2台の同じところから確かめておきます。"}, {"t": 87.8, "x": "ひとつめは幅で、2台とも1695ミリでぴったり同じです。"}, {"t": 93.03333333333333, "x": "小型車の枠は1700ミリまでで、どちらも5ミリを残して収まっています。"}, {"t": 99.03333333333333, "x": "車庫の幅で困るかどうかは、2台のあいだで差が出ません。"}, {"t": 103.43333333333334, "x": "ふたつめは、外から充電しなくていいことです。"}, {"t": 107.33333333333333, "x": "どちらもガソリンスタンドで給油するだけで走れます。"}, {"t": 111.06666666666666, "x": "家にコンセントを用意する必要はありません。"}, {"t": 114.3, "x": "みっつめは、停めたときのブレーキの仕組みです。"}, {"t": 117.93333333333334, "x": "スイッチで掛けるパーキングブレーキが、2台ともどの形にも付いています。"}, {"t": 123.4, "x": "信号待ちでブレーキから足を離しても止まっていてくれる機能も同じです。"}, {"t": 128.53333333333333, "x": "アクアではブレーキホールドと呼び、ノートではオートブレーキホールドと呼んでいます。"}, {"t": 134.53333333333333, "x": "長い信号待ちで右足を休められるのは、年を重ねるほどありがたいものです。"}, {"t": 140.76666666666668, "x": "よっつめは、雪の多い土地のための四輪駆動が選べることです。"}, {"t": 146.03333333333333, "x": "アクアにはE-Fourという形があり、ノートにはFOURという形があります。"}, {"t": 151.63333333333333, "x": "アクアの四輪駆動は2WDより21万4500円高くなります。"}, {"t": 157.73333333333332, "x": "雪の少ない土地のかたは、2WDで十分です。"}, {"t": 162.1, "x": "ここまでは、どちらを選んでも同じです。"}, {"t": 165.46666666666667, "x": "この4つはどちらの車でも安心して任せられる部分です。"}, {"t": 170.16666666666666, "x": "違いが出るのは、走りの仕組みと燃費と小回りと車の中の広さです。"}, {"t": 177.46666666666667, "x": "まずは2台の走りの仕組みの違いです。"}, {"t": 180.66666666666666, "x": "ノートは、エンジンを電気をつくるためだけに使います。"}, {"t": 184.96666666666667, "x": "タイヤを回すのは、いつもモーターです。"}, {"t": 188.33333333333334, "x": "日産はこれを、100パーセントモーターで走る仕組みと説明しています。"}, {"t": 193.26666666666668, "x": "アクセルを踏んだ瞬間から、すっと押し出されるように動きだします。"}, {"t": 198.16666666666666, "x": "日産は静かさについても、1つ上の大きさの車に負けないと案内しています。"}, {"t": 204.0, "x": "アクアは、エンジンとモーターを場面ごとに使い分けて走ります。"}, {"t": 208.73333333333332, "x": "ゆっくり走るときはモーターだけで進み、力が要るときはエンジンも加わります。"}, {"t": 215.06666666666666, "x": "トヨタが長く磨いてきたハイブリッドの仕組みで、燃費のよさの源です。"}, {"t": 220.33333333333334, "x": "どちらが上というより、乗ったときの感じが違うのです。"}, {"t": 224.63333333333333, "x": "ノートは電気の車に近い感じで、アクアは燃費を一番に考えた感じです。"}, {"t": 230.7, "x": "この違いは、試乗で十分ほど乗ればすぐに分かります。"}, {"t": 235.1, "x": "好みが分かれるところなので、ここは勝ち負けを付けずにおきます。"}, {"t": 239.73333333333332, "x": "ここから先は、数字で比べられるところを順に見ていきます。"}, {"t": 245.9, "x": "では最初の問いに戻ります。"}, {"t": 248.2, "x": "燃費のいいアクアは、高い値段のぶんを取り返せるのでしょうか。"}, {"t": 253.13333333333333, "x": "年に5000キロ走るかたで、ざっと計算してみます。"}, {"t": 257.46666666666664, "x": "アクアなら、使うガソリンはおよそ146リットルです。"}, {"t": 262.1333333333333, "x": "ノートならおよそ176リットルです。"}, {"t": 265.26666666666665, "x": "1年で違うのは、30リットルほどになります。"}, {"t": 269.3, "x": "アクアのガソリンタンクは36リットルです。"}, {"t": 272.76666666666665, "x": "つまり差は、1年でタンク一杯に少し足りないくらいです。"}, {"t": 277.43333333333334, "x": "年に1万キロ走るかたなら、差は倍のおよそ61リットルになります。"}, {"t": 283.43333333333334, "x": "こう並べると、燃費の差がお金に効いてくるのは長く走るかたです。"}, {"t": 289.06666666666666, "x": "近所の買い物と病院が中心なら、差はそれほど大きくなりません。"}, {"t": 294.2, "x": "最初の値段の10万円近い差を取り返すには、長い年月がかかります。"}, {"t": 299.93333333333334, "x": "ガソリンの値段は時期によって変わるので、店長は年数を決めつけません。"}, {"t": 305.3666666666667, "x": "もうひとつ、国の審査の燃費は決まった試験のやりかたで測った数字です。"}, {"t": 310.6333333333333, "x": "冬の暖房や短い距離のくり返しでは、どちらの車も数字より悪くなります。"}, {"t": 317.03333333333336, "x": "ですから差の大きさも、だいたいの目安として聞いてください。"}, {"t": 321.53333333333336, "x": "走る距離が短いかたほど、燃費の勝ちは小さくなります。"}, {"t": 326.06666666666666, "x": "燃費はアクアの勝ちですが、効きかたは走る距離しだいです。"}, {"t": 332.3666666666667, "x": "ここからが今日いちばんお伝えしたいところです。"}, {"t": 335.6, "x": "ハンドルをいっぱいに切って回るとき、車が描く円の半径を比べます。"}, {"t": 341.23333333333335, "x": "アクアは5.2メートルです。"}, {"t": 343.6666666666667, "x": "大きめのタイヤを選ぶと、5.3メートルになります。"}, {"t": 347.76666666666665, "x": "ノートは4.9メートルで、四輪駆動の形も同じです。"}, {"t": 352.8333333333333, "x": "その差は30センチです。"}, {"t": 355.1333333333333, "x": "たった30センチですが、回る円の直径でいえば60センチの違いになります。"}, {"t": 361.6666666666667, "x": "30センチといえば、ものさし一本ぶんです。"}, {"t": 365.4, "x": "数字だけ聞くと、わずかに思えるかもしれません。"}, {"t": 369.1666666666667, "x": "けれどもこの差は、毎日の運転で何度も効いてきます。"}, {"t": 373.6333333333333, "x": "スーパーの駐車場で一度で枠に入るのか、切り返しが要るのか。"}, {"t": 378.76666666666665, "x": "細い路地の角を1回で曲がれるのか。"}, {"t": 382.1, "x": "家の前の道で向きを変えるときに何回ハンドルを回すのか。"}, {"t": 386.8, "x": "切り返しの回数が減ると、そのぶん前後を確かめる回数も減ります。"}, {"t": 392.1666666666667, "x": "年を重ねると、首を回して後ろを見るのがおっくうになりがちです。"}, {"t": 397.26666666666665, "x": "小回りの差は、その手間をまるごと減らしてくれます。"}, {"t": 401.43333333333334, "x": "駐車場の白い線の中で車をまっすぐに直す手間も減ります。"}, {"t": 406.23333333333335, "x": "ノートの小回りについては、坂の町の回でも少し触れました。"}, {"t": 411.1666666666667, "x": "今日はアクアと並べたことで、その強みがはっきりしました。"}, {"t": 415.46666666666664, "x": "小回りはノートの勝ちです。"}, {"t": 419.4, "x": "次は車の中の広さです。"}, {"t": 422.7, "x": "外から見た長さは、アクアが4080ミリでノートが4045ミリです。"}, {"t": 429.56666666666666, "x": "ノートのほうが3.5センチ短い車です。"}, {"t": 433.2, "x": "ところが、メーカーが測った車の中の長さは逆になります。"}, {"t": 437.8, "x": "アクアは1830ミリで、ノートは2030ミリあります。"}, {"t": 443.1666666666667, "x": "外は短いのに、中は20センチも長いのです。"}, {"t": 447.46666666666664, "x": "車の中の天井までの高さも、アクアの1190ミリに対してノートは1240ミリです。"}, {"t": 455.1333333333333, "x": "頭の上に5センチのゆとりがあります。"}, {"t": 458.26666666666665, "x": "帽子をかぶったまま乗り込むかたには、うれしい差です。"}, {"t": 462.5, "x": "外から見た屋根の高さもノートのほうが3.5センチ高くなっています。"}, {"t": 467.8333333333333, "x": "乗り込むときに、頭を下げる量がそのぶん少なくてすみます。"}, {"t": 472.5, "x": "後ろの席に家族や友だちを乗せる日にも、この広さは効いてきます。"}, {"t": 477.6, "x": "ひとつ付け加えると、車の重さはアクアのほうが軽い車です。"}, {"t": 482.8333333333333, "x": "いちばん安い形どうしで、アクアは1120キロでノートは1230キロです。"}, {"t": 489.6, "x": "それでも乗る人にとってのゆとりは、はっきりノートが上です。"}, {"t": 494.06666666666666, "x": "車の中の広さはノートの勝ちです。"}, {"t": 498.8, "x": "次は安全の装備です。"}, {"t": 501.06666666666666, "x": "ここは2台とも、とてもよくそろっています。"}, {"t": 504.6666666666667, "x": "アクアは、トヨタの案内で全車が国の勧めるサポカーSワイドとされています。"}, {"t": 510.53333333333336, "x": "交差点を曲がるときに渡ってくる歩行者や自転車にも気づく自動ブレーキです。"}, {"t": 516.4666666666667, "x": "停めるときに前後の壁にぶつかりそうなら止めようとする仕組みも全車に付きます。"}, {"t": 522.0, "x": "ノートも踏み間違いでぶつかるのを防ぐ手助けの装備がどの形にも付いています。"}, {"t": 528.0, "x": "そのうえで、アクアには1つうれしいものがあります。"}, {"t": 532.1, "x": "前と後ろを録画するドライブレコーダーが、どの形にも最初から付いているのです。"}, {"t": 538.2666666666667, "x": "もしもの事故のときの記録を、買ったその日から残せます。"}, {"t": 542.5666666666667, "x": "アクアの上の2つの形には、もう1つ付いているものがあります。"}, {"t": 547.6, "x": "車のドアを開けるときに、後ろから来る自転車を知らせる仕組みです。"}, {"t": 552.7, "x": "一方で、走っているときの急なアクセルを抑える装備は別あつかいです。"}, {"t": 558.2666666666667, "x": "アクアでは、販売店で付ける追加の装備になっています。"}, {"t": 562.5, "x": "買うときに頼まないと付いてこないので、注文書で必ず確かめてください。"}, {"t": 568.1666666666666, "x": "安全の装備はほぼ互角です。"}, {"t": 570.8, "x": "ドライブレコーダーのぶん、ここはアクアに花を持たせます。"}, {"t": 576.7666666666667, "x": "ここまでをまとめてみましょう。"}, {"t": 579.0333333333333, "x": "燃費と安全の装備はアクアです。"}, {"t": 581.9333333333333, "x": "小回りと車の中の広さと最初の値段は、ノートです。"}, {"t": 586.5333333333333, "x": "数だけでいえば、ノートが1つ多い勝ちです。"}, {"t": 590.4666666666667, "x": "けれども店長が決め手にしたのは勝った数ではありません。"}, {"t": 594.5666666666667, "x": "あとから直せるかどうかです。"}, {"t": 596.9, "x": "ドライブレコーダーは、あとからでも販売店で付けられます。"}, {"t": 601.2, "x": "燃費の差も、走る距離が短ければ小さくなります。"}, {"t": 605.5333333333333, "x": "ところがハンドルを切ったときの円の大きさは、あとから変えられません。"}, {"t": 610.4333333333333, "x": "車の中の天井の高さも、どんなにお金をかけても変わりません。"}, {"t": 615.2333333333333, "x": "70代のかたが毎日の運転で助かるのはこちらのほうです。"}, {"t": 620.1666666666666, "x": "ですから70代のかたには、店長はノートを勧めます。"}, {"t": 624.6, "x": "迷ったらノートです。"}, {"t": 626.5666666666667, "x": "ちなみに、冒頭のご夫婦も最後は奥さまの言うとおりノートに決められました。"}, {"t": 632.5666666666667, "x": "決め手はやはり、お店の駐車場での小回りでした。"}, {"t": 637.9333333333333, "x": "ただしアクアのほうが合うかたもはっきりいます。"}, {"t": 641.7333333333333, "x": "ひとつめは、毎日長い距離を走るかたです。"}, {"t": 645.2333333333333, "x": "隣の町の病院や畑まで毎日乗るなら、燃費の差が積み重なります。"}, {"t": 651.3333333333334, "x": "年に1万キロを超えるなら、アクアの燃費はしっかり効いてきます。"}, {"t": 656.2666666666667, "x": "ふたつめは、ドライブレコーダーを最初から付けておきたいかたです。"}, {"t": 660.8333333333334, "x": "あとから付ける手間と費用を考えなくてすみます。"}, {"t": 664.4666666666667, "x": "みっつめは、膝が悪くて乗り降りで体をひねるのがつらいかたです。"}, {"t": 669.5666666666667, "x": "アクアには運転席が外へ回るターンチルトシートを選べる形があります。"}, {"t": 675.2666666666667, "x": "ただし、この座席を付けると燃費は少し下がります。"}, {"t": 679.4333333333333, "x": "よっつめは家の近くにトヨタのお店があって、長く付き合っているかたです。"}, {"t": 684.8333333333334, "x": "点検や修理のたびに通うお店が近いのは、それだけで大きな安心です。"}, {"t": 690.6666666666666, "x": "当てはまるものが2つ以上あるなら、アクアを選んで後悔はしません。"}, {"t": 697.3, "x": "最後に店長からお願いがあります。"}, {"t": 700.0333333333333, "x": "この2台を見比べに行くときは、カタログより先に駐車場で一周してみてください。"}, {"t": 705.9666666666667, "x": "試乗のときに、ハンドルをいっぱいに切って回ってよいかお店の人に聞いてみてください。"}, {"t": 712.4, "x": "同じ場所で2台を回すと、30センチの差は目で見てはっきり分かります。"}, {"t": 718.3, "x": "もうひとつは、ふだん停める駐車場と同じくらいの枠に入れてみることです。"}, {"t": 723.5666666666667, "x": "切り返しが1回で済むか2回要るかで、毎日の気楽さが変わります。"}, {"t": 729.0333333333333, "x": "燃費は紙の上の数字ですが、小回りは体で覚える数字です。"}, {"t": 734.1333333333333, "x": "体で覚えた楽さは毎日の運転にずっと残ります。"}, {"t": 738.7666666666667, "x": "今日のお話を短く言うと、燃費はアクアで、小回りと広さと値段はノートでした。"}, {"t": 745.6666666666666, "x": "そして70代のかたにはノートを勧めます。"}, {"t": 749.5333333333333, "x": "なお装備や値段は、改良のたびに変わることがあります。"}, {"t": 753.9666666666667, "x": "買う前には、販売店で今の装備表と見積もりを必ず確かめてください。"}, {"t": 759.7333333333333, "x": "それではまた次の動画でお会いしましょう。"}], "w": 720, "h": 405, "n_cuts": 0, "noimage": true};
+const a=document.getElementById('a');
+const now=document.getElementById('now'), nl=document.getElementById('nextline');
+const pp=document.getElementById('pp'), sk=document.getElementById('sk');
+const tm=document.getElementById('tm'), bdg=document.getElementById('bdg');
+const SMOOTH=matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth';
+document.getElementById('ttl').innerHTML=D.name+
+  '<span class="meta">'+fmt(D.dur)+'　字幕'+D.subs.length+'　（音声＋字幕だけ）</span>';
+
+function fmt(s){s=Math.max(0,s|0);return (s/60|0)+':'+String(s%60).padStart(2,'0')}
+function subIdx(t){let lo=0,hi=D.subs.length-1,r=-1;
+  while(lo<=hi){const m=(lo+hi)>>1; if(D.subs[m].t<=t){r=m;lo=m+1}else hi=m-1} return r}
+
+let cur=-2;
+function paint(t){
+  const i=subIdx(t);
+  if(i!==cur){cur=i;
+    now.textContent = i<0 ? (D.subs.length?'（ここはまだ字幕がありません）'
+                                          :'（この回に字幕はありません）')
+                         : D.subs[i].x;
+    const n=D.subs[i+1]; nl.textContent = n ? '次　'+n.x : '';
+    bdg.textContent = D.subs.length ? '字幕 '+(i+1)+' / '+D.subs.length : '字幕なし';
+    mark('subs',i);
+  }
+  tm.textContent=fmt(t)+' / '+fmt(D.dur);
+  if(!sk.dragging) sk.value=Math.round(t/D.dur*1000);
+}
+function mark(pane,i){
+  const el=document.getElementById(pane);
+  if(el.dataset.on==i) return; el.dataset.on=i;
+  el.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));
+  const t=el.children[i]; if(!t) return; t.classList.add('on');
+  if(!el.hidden){const r=t.offsetTop-el.clientHeight/2; el.scrollTo({top:r,behavior:SMOOTH})}
+}
+
+D.subs.forEach(s=>{const d=document.createElement('div');d.className='row';
+  d.innerHTML='<b></b><span></span>';
+  d.querySelector('b').textContent=fmt(s.t);
+  d.querySelector('span').textContent=s.x;
+  d.onclick=()=>go(s.t); document.getElementById('subs').appendChild(d)});
+const mk=document.getElementById('mk');
+D.subs.forEach(s=>{const i=document.createElement('i');
+  i.style.left=(s.t/D.dur*100)+'%'; mk.appendChild(i)});
+
+function go(t){a.currentTime=Math.min(Math.max(0,t)+0.01,Math.max(0.05,D.dur-0.05)); paint(a.currentTime)}
+pp.onclick=()=>a.paused?a.play():a.pause();
+const SPEEDS=[1,1.25,1.5,1.75,2,3,0.75],SPN=['等速','1.25倍','1.5倍','1.75倍','2倍','3倍','0.75倍'];
+let si=0; const sp=document.getElementById('sp');
+sp.onclick=()=>{si=(si+1)%SPEEDS.length; a.playbackRate=SPEEDS[si];
+  a.preservesPitch=a.mozPreservesPitch=a.webkitPreservesPitch=true; sp.textContent=SPN[si]};
+a.onplay=()=>pp.textContent='❚❚ 停止'; a.onpause=()=>pp.textContent='▶ 再生';
+a.ontimeupdate=()=>paint(a.currentTime);
+sk.oninput=()=>{sk.dragging=1; go(sk.value/1000*D.dur)};
+sk.onchange=()=>sk.dragging=0;
+document.getElementById('pv').onclick=()=>{const i=subIdx(a.currentTime);
+  go(i>0?D.subs[i-1].t:0)};
+document.getElementById('nx').onclick=()=>{const i=subIdx(a.currentTime);
+  if(i+1<D.subs.length) go(D.subs[i+1].t)};
+addEventListener('keydown',e=>{const k=e.key;
+  if(k===' '){e.preventDefault();pp.onclick()}
+  else if(k==='ArrowRight')go(a.currentTime+5); else if(k==='ArrowLeft')go(a.currentTime-5);
+  else if(k==='ArrowDown'){e.preventDefault();document.getElementById('nx').onclick()}
+  else if(k==='ArrowUp'){e.preventDefault();document.getElementById('pv').onclick()}
+  else if(k==='s'||k==='S')sp.onclick()});
+paint(0);
+</script>
