@@ -1,0 +1,133 @@
+<title>タントとN-BOXどっち</title>
+<style>
+:root{--bg:#f6f4f1;--panel:#fffefc;--ink:#1c1a19;--dim:#6e6862;--line:#e2ded7;--accent:#b8422f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}}
+:root[data-theme="dark"]{--bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);margin:0;-webkit-text-size-adjust:100%;
+  font:16px/1.7 -apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic UI",sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+h1{font-size:17px;margin:4px 0 14px;font-weight:600;letter-spacing:.02em}
+.meta{color:var(--dim);font-size:13px;font-weight:400;margin-left:8px}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:12px;position:relative;
+  min-height:40vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:46px 20px 26px;box-shadow:0 2px 14px rgba(0,0,0,.10)}
+#now{margin:0;text-align:center;white-space:pre-wrap;word-break:break-word;font-weight:700;
+  font-size:clamp(23px,5.4vw,42px);line-height:1.5;letter-spacing:.01em}
+#nextline{margin:16px 0 0;text-align:center;white-space:pre-wrap;word-break:break-word;
+  color:var(--dim);font-size:clamp(13px,2.8vw,17px);line-height:1.6}
+.badge{position:absolute;left:12px;top:12px;background:rgba(127,127,127,.16);color:var(--dim);
+  font-size:12px;padding:3px 9px;border-radius:20px;line-height:1.6;letter-spacing:.04em}
+.bar{display:flex;align-items:center;gap:10px;margin:12px 0 6px;flex-wrap:wrap}
+button{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;
+  padding:9px 14px;font-size:15px;cursor:pointer;font-family:inherit}
+button:active{transform:translateY(1px)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.play{background:var(--accent);color:#fff;border-color:transparent;min-width:80px;font-weight:600}
+.time{font-variant-numeric:tabular-nums;color:var(--dim);font-size:13px;margin-left:auto}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.marks{position:relative;height:7px;margin:2px 0 14px}
+.marks i{position:absolute;top:0;width:1px;height:7px;background:var(--line)}
+.tabs{display:flex;gap:6px;margin:18px 0 10px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;
+  color:var(--ink);padding:7px 12px;font-weight:600}
+.list{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+  -webkit-overflow-scrolling:touch}
+.row{display:flex;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.row:last-child{border-bottom:0}
+.row:hover{background:rgba(127,127,127,.07)}
+.row.on{background:rgba(184,66,47,.12)}
+.row b{color:var(--dim);font-variant-numeric:tabular-nums;font-weight:500;font-size:13px;
+  min-width:48px;flex:none;padding-top:2px}
+.row span{white-space:pre-wrap;flex:1;font-size:16px;line-height:1.65}
+.tip{color:var(--dim);font-size:12.5px;margin:10px 2px 0}
+@media(max-width:620px){.wrap{padding:10px}.time{font-size:12px}
+  .bar button{padding:9px 11px;font-size:14px}.stage{padding:42px 14px 22px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+<div class="wrap">
+<h1 id="ttl"></h1>
+<div class="stage"><div class="badge" id="bdg"></div>
+  <p id="now"></p><p id="nextline"></p></div>
+<div class="bar">
+  <button class="play" id="pp">▶ 再生</button>
+  <button id="pv">◀ 前の字幕</button>
+  <button id="nx">次の字幕 ▶</button>
+  <button id="sp">等速</button>
+  <span class="time" id="tm">0:00 / 0:00</span>
+</div>
+<input type="range" id="sk" min="0" max="1000" value="0">
+<div class="marks" id="mk"></div>
+<div class="tabs"><button class="on">字幕</button></div>
+<div class="list" id="subs"></div>
+<p class="tip">スペース＝再生/停止　←→＝5秒送り　↑↓＝字幕送り。字幕をタップするとそこへ飛びます。</p>
+</div>
+<audio id="a" src="audio.mp3" preload="auto"></audio>
+<script>
+const D={"name": "タントとN-BOXどっち", "file": "112_タントとN-BOXどっち", "dur": 789.0333125, "segs": [], "subs": [{"t": 0.0, "x": "こんにちは、「となりの車屋さん」の店長です。"}, {"t": 2.8333333333333335, "x": "今日は軽自動車の売れ行きの数字から始めます。"}, {"t": 6.466666666666667, "x": "この10月にいちばん売れた軽は、ホンダのN-BOXで1万4832台でした。"}, {"t": 13.5, "x": "三番目はダイハツのタントで1万2361台です。"}, {"t": 19.366666666666667, "x": "どちらも背が高くて後ろのドアが横に滑って開く軽です。"}, {"t": 24.266666666666666, "x": "この2台の値段の差は、いちばん手ごろな形どうしで14万800円です。"}, {"t": 30.133333333333333, "x": "ところがある装備をそろえて比べると、この差は8万円台まで縮みます。"}, {"t": 35.833333333333336, "x": "その装備が何なのかは第8章で数字を並べてお見せします。"}, {"t": 40.86666666666667, "x": "店長のお店にも、この2台で迷っているご夫婦がお見えになりました。"}, {"t": 46.13333333333333, "x": "ご主人は70代の半ばで、奥さまは少し年下だそうです。"}, {"t": 51.06666666666667, "x": "「家内が膝を悪くしてから、乗り降りがつらそうなんです」。"}, {"t": 55.3, "x": "「運転するのは私だけで、行くのは買い物と病院くらいです」。"}, {"t": 61.1, "x": "「でも年に何回かは、高速道路で娘の家まで行きます」。"}, {"t": 65.83333333333333, "x": "ご主人はいちばん売れているN-BOXなら間違いないと考えていました。"}, {"t": 70.63333333333334, "x": "一方の奥さまは、柱のないタントのドアが気になっているそうです。"}, {"t": 75.5, "x": "今日はこの2台をご夫婦の暮らしに当てはめて比べます。"}, {"t": 79.63333333333334, "x": "答えは第9章でお伝えしますので、最後までお付き合いください。"}, {"t": 86.13333333333334, "x": "まずは今日比べる形をはっきりさせておきます。"}, {"t": 89.76666666666667, "x": "N-BOXは名前に何も付かない「N-BOX」という形にします。"}, {"t": 94.9, "x": "前のタイヤを回すFFで、値段は176万8800円です。"}, {"t": 100.93333333333334, "x": "これがN-BOXの中でいちばん手ごろな形です。"}, {"t": 104.6, "x": "タントは、Xという形の前のタイヤを回す2WDにします。"}, {"t": 110.03333333333333, "x": "値段は162万8000円で、いちばん手ごろなLの1つ上の形です。"}, {"t": 116.36666666666666, "x": "Lにしなかったのにはわけがあります。"}, {"t": 119.23333333333333, "x": "Lには後ろのドアを電気で開け閉めする仕組みが付かないからです。"}, {"t": 124.16666666666667, "x": "Xなら左側の後ろのドアを電気で開け閉めできます。"}, {"t": 128.53333333333333, "x": "N-BOXもいちばん手ごろな形で左側が電気で開きます。"}, {"t": 133.66666666666666, "x": "これで左のドアの条件がそろいました。"}, {"t": 136.7, "x": "どちらもターボの付かない、ふつうのエンジンの形です。"}, {"t": 141.0, "x": "乗れる人数は軽自動車なのでどちらも4人です。"}, {"t": 144.93333333333334, "x": "N-BOXは、この7月に改良されて今の形になりました。"}, {"t": 149.53333333333333, "x": "タントもこの8月の終わりに改良されています。"}, {"t": 153.03333333333333, "x": "今日の数字はどちらも新しい装備表と諸元表で確かめました。"}, {"t": 157.83333333333334, "x": "値段はどちらも税込みのメーカー希望小売価格です。"}, {"t": 163.9, "x": "次は外から見た大きさです。"}, {"t": 166.46666666666667, "x": "長さはどちらも3395ミリで、幅はどちらも1475ミリです。"}, {"t": 173.8, "x": "軽自動車の決まりの大きさいっぱいなので、ここは同じになります。"}, {"t": 178.73333333333332, "x": "違うのは高さで、N-BOXが1790ミリ、タントが1755ミリです。"}, {"t": 185.46666666666667, "x": "N-BOXのほうが、3.5センチ高いことになります。"}, {"t": 189.73333333333332, "x": "立体の駐車場を使うかたは、入れる高さを先に確かめておきましょう。"}, {"t": 195.16666666666666, "x": "小回りのしやすさは最小回転半径という数字で比べます。"}, {"t": 200.1, "x": "これはハンドルをいっぱいに切って回ったときの円の大きさです。"}, {"t": 204.9, "x": "N-BOXが4.5メートルで、タントが4.4メートルです。"}, {"t": 210.0, "x": "差は10センチなので、ここはほとんど引き分けと言えます。"}, {"t": 214.53333333333333, "x": "前と後ろのタイヤの間の長さは、N-BOXのほうが6センチ長くなっています。"}, {"t": 220.3, "x": "地面から車の底までの高さは、N-BOXが145ミリ、タントが150ミリです。"}, {"t": 227.03333333333333, "x": "外の大きさは高さを除けば双子のような2台です。"}, {"t": 231.33333333333334, "x": "ですから決め手は外ではなく中とドアにあります。"}, {"t": 236.66666666666666, "x": "いよいよ奥さまが気にしているドアの話です。"}, {"t": 240.16666666666666, "x": "タントの左側は、前のドアと後ろのドアの間に柱がありません。"}, {"t": 245.56666666666666, "x": "ダイハツはこれを「ミラクルオープンドア」と呼んでいます。"}, {"t": 250.16666666666666, "x": "この柱のないドアは、いちばん手ごろなLも含めて全部の形に付いています。"}, {"t": 256.5, "x": "前と後ろのドアを両方開けると、大きな1つの入り口になります。"}, {"t": 261.76666666666665, "x": "仕組みのくわしい話は前のタントの回でお話ししました。"}, {"t": 266.56666666666666, "x": "今日はN-BOXと比べたときの違いに絞ります。"}, {"t": 270.4, "x": "N-BOXにはこの柱のないドアはありません。"}, {"t": 273.76666666666665, "x": "そのかわりN-BOXには、前のドアを三段階で止められる仕組みがあります。"}, {"t": 279.3666666666667, "x": "全部の形に付いていてドアを少しだけ開けた所で止められます。"}, {"t": 284.73333333333335, "x": "狭い駐車場で、となりの車にドアを当てにくくなる仕組みです。"}, {"t": 289.6, "x": "後ろの電気のドアにもそれぞれ工夫があります。"}, {"t": 293.43333333333334, "x": "タントの電気のドアは鍵を持って近づくと開くように予約できます。"}, {"t": 298.6, "x": "N-BOXの電気のドアには、物のはさみ込みを防ぐ仕組みが付いています。"}, {"t": 304.06666666666666, "x": "ドアを最後まで閉めきってくれる仕組みは2台とも左右に付いています。"}, {"t": 309.0, "x": "右側のドアも電気にしたいときは、タントのXなら5万5000円です。"}, {"t": 314.53333333333336, "x": "N-BOXの右側はほかの装備と組になったセットで付けることになります。"}, {"t": 319.8, "x": "奥さまのように助手席に乗るかたには、左のドアがいちばん大事です。"}, {"t": 325.06666666666666, "x": "ダイハツは、柱が無いぶんドアが大きく開くと説明しています。"}, {"t": 331.46666666666664, "x": "次は車の中の広さです。"}, {"t": 334.0, "x": "車の中の長さはどちらも2125ミリで、幅もどちらも1350ミリです。"}, {"t": 340.73333333333335, "x": "ここでも2台は数字の上ではそっくりです。"}, {"t": 344.1, "x": "違いはやはり高さで、N-BOXが1400ミリ、タントが1370ミリです。"}, {"t": 350.76666666666665, "x": "N-BOXの中は、タントより3センチ高いことになります。"}, {"t": 354.96666666666664, "x": "一方で席の動かしかたはタントに強みがあります。"}, {"t": 359.1666666666667, "x": "タントの助手席は、前と後ろに38センチも動かせます。"}, {"t": 363.93333333333334, "x": "これはLも含めて全部の形に付いている仕組みです。"}, {"t": 368.03333333333336, "x": "助手席を前に出すと、後ろの席の足元が大きく空きます。"}, {"t": 372.7, "x": "運転席を54センチ動かせる仕組みも、3万3000円で付けられます。"}, {"t": 378.6333333333333, "x": "ただしこの仕組みは、シフトがPのときにしか使えません。"}, {"t": 382.56666666666666, "x": "タントの後ろの席は、左右別々に24センチ前と後ろに動きます。"}, {"t": 388.3333333333333, "x": "N-BOXの後ろの席も、前と後ろに動かせる席です。"}, {"t": 392.8333333333333, "x": "さらに座面をはね上げて、背の高い荷物を床に立てて積めます。"}, {"t": 398.1666666666667, "x": "運転席の高さを変える仕組みは、2台とも付いています。"}, {"t": 402.6666666666667, "x": "N-BOXは、その幅が5センチだと装備表に書かれています。"}, {"t": 407.4, "x": "タントの装備表には、高さを変える幅の数字は載っていませんでした。"}, {"t": 412.4, "x": "ハンドルの角度を上下に変える仕組みも、2台とも付いています。"}, {"t": 418.5, "x": "ここからは安全と運転を助ける装備です。"}, {"t": 422.2, "x": "ぶつかりそうなときに止まるブレーキは、2台ともどの形にも付いています。"}, {"t": 427.6333333333333, "x": "踏み間違えたときの飛び出しを抑える仕組みも、前と後ろの両方にあります。"}, {"t": 433.5, "x": "大きな違いは前の車について走る仕組みです。"}, {"t": 437.7, "x": "アクセルを踏まなくても、前の車との間を保って走ってくれる仕組みです。"}, {"t": 443.1666666666667, "x": "N-BOXは、いちばん手ごろな形にも最初からこれが付いています。"}, {"t": 448.6666666666667, "x": "車線からはみ出しにくくする仕組みも、一緒に付いています。"}, {"t": 453.03333333333336, "x": "タントのXでは、この2つは5万5000円のセットで付けることになります。"}, {"t": 458.26666666666665, "x": "年に何回か高速道路を走るご主人には、ここが大事な違いです。"}, {"t": 464.03333333333336, "x": "長い道のりでは、右足でアクセルを踏み続けずに済むからです。"}, {"t": 468.96666666666664, "x": "駐車のときに物との近さを知らせるセンサーは、2台とも付いています。"}, {"t": 474.06666666666666, "x": "タントのXは、前に2個、後ろに4個のセンサーです。"}, {"t": 478.96666666666664, "x": "信号待ちでブレーキを踏み続けなくてよい仕組みも、2台とも付いています。"}, {"t": 484.3666666666667, "x": "パーキングブレーキは、どちらもスイッチで掛ける電気の仕組みです。"}, {"t": 489.2, "x": "ただしタントでも、いちばん手ごろなLだけは足で踏むブレーキになります。"}, {"t": 494.53333333333336, "x": "ここも今日Xを選んだわけの1つです。"}, {"t": 499.06666666666666, "x": "次はお財布にかかわる燃費です。"}, {"t": 501.8666666666667, "x": "国の決まった測りかたで、タントは1リットルあたり22.6キロ走ります。"}, {"t": 507.6333333333333, "x": "N-BOXは21.6キロなので、1キロの差でタントが上です。"}, {"t": 513.1, "x": "1000キロ走るのに要るガソリンの量で比べてみます。"}, {"t": 517.2, "x": "タントは約44.2リットルで、N-BOXは約46.3リットルです。"}, {"t": 523.5333333333333, "x": "差は約2.1リットルになります。"}, {"t": 526.4333333333333, "x": "走る距離が短いかたほど、この差はお財布に小さく響きます。"}, {"t": 531.7, "x": "車の重さは、タントが880キロでN-BOXが910キロです。"}, {"t": 537.6666666666666, "x": "タントのほうが30キロ軽くなっています。"}, {"t": 540.7, "x": "燃費の勝ちはタントですが、差は大きくないと言ってよいでしょう。"}, {"t": 546.7, "x": "いよいよ第1章でお約束した値段の話です。"}, {"t": 550.5333333333333, "x": "いちばん手ごろな形どうしの差は、14万800円でした。"}, {"t": 555.6666666666666, "x": "ここで、さきほどの前の車について走る仕組みを思い出してください。"}, {"t": 560.7, "x": "N-BOXには最初から付いていて、タントのXでは5万5000円のセットでした。"}, {"t": 566.4666666666667, "x": "このセットをタントに足すと、タントは168万3000円になります。"}, {"t": 572.1, "x": "するとN-BOXとの差は、8万5800円まで縮まります。"}, {"t": 577.2666666666667, "x": "これが第1章でお話しした8万円台の中身です。"}, {"t": 581.7, "x": "この8万5800円の差で、N-BOXは中の高さの3センチが手に入ります。"}, {"t": 588.1, "x": "前のドアを三段階で止められる仕組みも、N-BOXの側に付いてきます。"}, {"t": 593.7666666666667, "x": "逆にタントは、8万5800円安いうえに柱のないドアが付いてきます。"}, {"t": 599.9666666666667, "x": "38センチ動く助手席と、1キロ良い燃費もタントの側です。"}, {"t": 605.4666666666667, "x": "なお、どちらも色によって値段が上がるものがあります。"}, {"t": 609.2333333333333, "x": "お店では、付けたい装備を全部入れた見積もりどうしで比べてください。"}, {"t": 616.0, "x": "それではご夫婦への店長の答えです。"}, {"t": 619.1333333333333, "x": "店長は、このご夫婦にはタントのXをお勧めしました。"}, {"t": 623.5666666666667, "x": "いちばんの理由は奥さまの膝です。"}, {"t": 626.4666666666667, "x": "柱のないドアなら、入り口が広いぶん足の運びに余裕が出ます。"}, {"t": 631.7333333333333, "x": "助手席を後ろに下げれば、膝を曲げすぎずに座ることもできます。"}, {"t": 638.3, "x": "そして、前の車について走るセットの5万5000円は付けていただきました。"}, {"t": 644.0666666666667, "x": "高速道路で娘さんの家へ行くご主人の、右足の疲れを減らすためです。"}, {"t": 650.2666666666667, "x": "それでも、N-BOXより8万5800円安く収まります。"}, {"t": 655.4, "x": "奥さまはお店でタントの助手席に座ってみて、「これなら楽ね」と笑っておられました。"}, {"t": 661.7666666666667, "x": "ご主人も、「家内が楽なら、それがいちばんだ」と決めてくださいました。"}, {"t": 667.1333333333333, "x": "売れている順番と、ご夫婦に合う順番は、同じとは限らないのです。"}, {"t": 674.1666666666666, "x": "では、N-BOXを選んだほうがいいのはどんなかたでしょうか。"}, {"t": 678.4666666666667, "x": "店長は3つの条件を挙げます。"}, {"t": 681.1, "x": "1つ目は高速道路を月に何回も走るかたです。"}, {"t": 685.1, "x": "前の車について走る仕組みが、追加のお金なしで付いてきます。"}, {"t": 690.0333333333333, "x": "タントにセットを足すより、最初から付いているほうが選ぶ手間もありません。"}, {"t": 695.6666666666666, "x": "2つ目は狭い駐車場に止めることが多いかたです。"}, {"t": 699.6, "x": "前のドアを三段階で止められるので、となりの車に気をつかう場面が減ります。"}, {"t": 705.5666666666667, "x": "3つ目は車の中の高さを少しでも欲しいかたです。"}, {"t": 710.0, "x": "背の高いかたには、天井までの3センチの差が効いてきます。"}, {"t": 714.8, "x": "どれか1つでも当てはまれば、N-BOXの値段の差には意味があります。"}, {"t": 719.8666666666667, "x": "反対に、助手席に乗るかたの足腰が心配なら、タントから見てください。"}, {"t": 727.3333333333334, "x": "最後に店長から2つお願いがあります。"}, {"t": 730.2666666666667, "x": "ひとつは、助手席に乗るかたが2台とも乗り降りしてみることです。"}, {"t": 735.2666666666667, "x": "柱のないドアの広さは、ご自分の足で確かめるのがいちばんです。"}, {"t": 740.4333333333333, "x": "もうひとつは、運転するかたが2台とも試しに走らせてみることです。"}, {"t": 745.7, "x": "前の車について走る仕組みも、お店で使いかたを聞いておきましょう。"}, {"t": 750.9666666666667, "x": "今日のお話を短く言うと、長さと幅は外も中もまったく同じでした。"}, {"t": 757.4666666666667, "x": "高さと運転を助ける装備では、N-BOXが上でした。"}, {"t": 761.7333333333333, "x": "ドアと助手席の動きと燃費と値段では、タントが上でした。"}, {"t": 766.1666666666666, "x": "そして70代のご夫婦で助手席の乗り降りが心配なら、タントのXを勧めます。"}, {"t": 772.5333333333333, "x": "今日の値段と装備は、11月にホンダとダイハツの公式の資料で確かめたものです。"}, {"t": 778.7666666666667, "x": "値段や装備はメーカーの改良で変わるので、買う前に販売店で見積もりを確かめてください。"}, {"t": 785.0333333333333, "x": "それではまた次の動画でお会いしましょう。"}], "w": 720, "h": 405, "n_cuts": 0, "noimage": true};
+const a=document.getElementById('a');
+const now=document.getElementById('now'), nl=document.getElementById('nextline');
+const pp=document.getElementById('pp'), sk=document.getElementById('sk');
+const tm=document.getElementById('tm'), bdg=document.getElementById('bdg');
+const SMOOTH=matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth';
+document.getElementById('ttl').innerHTML=D.name+
+  '<span class="meta">'+fmt(D.dur)+'　字幕'+D.subs.length+'　（音声＋字幕だけ）</span>';
+
+function fmt(s){s=Math.max(0,s|0);return (s/60|0)+':'+String(s%60).padStart(2,'0')}
+function subIdx(t){let lo=0,hi=D.subs.length-1,r=-1;
+  while(lo<=hi){const m=(lo+hi)>>1; if(D.subs[m].t<=t){r=m;lo=m+1}else hi=m-1} return r}
+
+let cur=-2;
+function paint(t){
+  const i=subIdx(t);
+  if(i!==cur){cur=i;
+    now.textContent = i<0 ? (D.subs.length?'（ここはまだ字幕がありません）'
+                                          :'（この回に字幕はありません）')
+                         : D.subs[i].x;
+    const n=D.subs[i+1]; nl.textContent = n ? '次　'+n.x : '';
+    bdg.textContent = D.subs.length ? '字幕 '+(i+1)+' / '+D.subs.length : '字幕なし';
+    mark('subs',i);
+  }
+  tm.textContent=fmt(t)+' / '+fmt(D.dur);
+  if(!sk.dragging) sk.value=Math.round(t/D.dur*1000);
+}
+function mark(pane,i){
+  const el=document.getElementById(pane);
+  if(el.dataset.on==i) return; el.dataset.on=i;
+  el.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));
+  const t=el.children[i]; if(!t) return; t.classList.add('on');
+  if(!el.hidden){const r=t.offsetTop-el.clientHeight/2; el.scrollTo({top:r,behavior:SMOOTH})}
+}
+
+D.subs.forEach(s=>{const d=document.createElement('div');d.className='row';
+  d.innerHTML='<b></b><span></span>';
+  d.querySelector('b').textContent=fmt(s.t);
+  d.querySelector('span').textContent=s.x;
+  d.onclick=()=>go(s.t); document.getElementById('subs').appendChild(d)});
+const mk=document.getElementById('mk');
+D.subs.forEach(s=>{const i=document.createElement('i');
+  i.style.left=(s.t/D.dur*100)+'%'; mk.appendChild(i)});
+
+function go(t){a.currentTime=Math.min(Math.max(0,t)+0.01,Math.max(0.05,D.dur-0.05)); paint(a.currentTime)}
+pp.onclick=()=>a.paused?a.play():a.pause();
+const SPEEDS=[1,1.25,1.5,1.75,2,3,0.75],SPN=['等速','1.25倍','1.5倍','1.75倍','2倍','3倍','0.75倍'];
+let si=0; const sp=document.getElementById('sp');
+sp.onclick=()=>{si=(si+1)%SPEEDS.length; a.playbackRate=SPEEDS[si];
+  a.preservesPitch=a.mozPreservesPitch=a.webkitPreservesPitch=true; sp.textContent=SPN[si]};
+a.onplay=()=>pp.textContent='❚❚ 停止'; a.onpause=()=>pp.textContent='▶ 再生';
+a.ontimeupdate=()=>paint(a.currentTime);
+sk.oninput=()=>{sk.dragging=1; go(sk.value/1000*D.dur)};
+sk.onchange=()=>sk.dragging=0;
+document.getElementById('pv').onclick=()=>{const i=subIdx(a.currentTime);
+  go(i>0?D.subs[i-1].t:0)};
+document.getElementById('nx').onclick=()=>{const i=subIdx(a.currentTime);
+  if(i+1<D.subs.length) go(D.subs[i+1].t)};
+addEventListener('keydown',e=>{const k=e.key;
+  if(k===' '){e.preventDefault();pp.onclick()}
+  else if(k==='ArrowRight')go(a.currentTime+5); else if(k==='ArrowLeft')go(a.currentTime-5);
+  else if(k==='ArrowDown'){e.preventDefault();document.getElementById('nx').onclick()}
+  else if(k==='ArrowUp'){e.preventDefault();document.getElementById('pv').onclick()}
+  else if(k==='s'||k==='S')sp.onclick()});
+paint(0);
+</script>
