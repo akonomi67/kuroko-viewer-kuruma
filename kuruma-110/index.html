@@ -1,0 +1,133 @@
+<title>ムーヴとワゴンRスマイルどっち</title>
+<style>
+:root{--bg:#f6f4f1;--panel:#fffefc;--ink:#1c1a19;--dim:#6e6862;--line:#e2ded7;--accent:#b8422f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}}
+:root[data-theme="dark"]{--bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);margin:0;-webkit-text-size-adjust:100%;
+  font:16px/1.7 -apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic UI",sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+h1{font-size:17px;margin:4px 0 14px;font-weight:600;letter-spacing:.02em}
+.meta{color:var(--dim);font-size:13px;font-weight:400;margin-left:8px}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:12px;position:relative;
+  min-height:40vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:46px 20px 26px;box-shadow:0 2px 14px rgba(0,0,0,.10)}
+#now{margin:0;text-align:center;white-space:pre-wrap;word-break:break-word;font-weight:700;
+  font-size:clamp(23px,5.4vw,42px);line-height:1.5;letter-spacing:.01em}
+#nextline{margin:16px 0 0;text-align:center;white-space:pre-wrap;word-break:break-word;
+  color:var(--dim);font-size:clamp(13px,2.8vw,17px);line-height:1.6}
+.badge{position:absolute;left:12px;top:12px;background:rgba(127,127,127,.16);color:var(--dim);
+  font-size:12px;padding:3px 9px;border-radius:20px;line-height:1.6;letter-spacing:.04em}
+.bar{display:flex;align-items:center;gap:10px;margin:12px 0 6px;flex-wrap:wrap}
+button{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;
+  padding:9px 14px;font-size:15px;cursor:pointer;font-family:inherit}
+button:active{transform:translateY(1px)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.play{background:var(--accent);color:#fff;border-color:transparent;min-width:80px;font-weight:600}
+.time{font-variant-numeric:tabular-nums;color:var(--dim);font-size:13px;margin-left:auto}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.marks{position:relative;height:7px;margin:2px 0 14px}
+.marks i{position:absolute;top:0;width:1px;height:7px;background:var(--line)}
+.tabs{display:flex;gap:6px;margin:18px 0 10px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;
+  color:var(--ink);padding:7px 12px;font-weight:600}
+.list{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+  -webkit-overflow-scrolling:touch}
+.row{display:flex;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.row:last-child{border-bottom:0}
+.row:hover{background:rgba(127,127,127,.07)}
+.row.on{background:rgba(184,66,47,.12)}
+.row b{color:var(--dim);font-variant-numeric:tabular-nums;font-weight:500;font-size:13px;
+  min-width:48px;flex:none;padding-top:2px}
+.row span{white-space:pre-wrap;flex:1;font-size:16px;line-height:1.65}
+.tip{color:var(--dim);font-size:12.5px;margin:10px 2px 0}
+@media(max-width:620px){.wrap{padding:10px}.time{font-size:12px}
+  .bar button{padding:9px 11px;font-size:14px}.stage{padding:42px 14px 22px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+<div class="wrap">
+<h1 id="ttl"></h1>
+<div class="stage"><div class="badge" id="bdg"></div>
+  <p id="now"></p><p id="nextline"></p></div>
+<div class="bar">
+  <button class="play" id="pp">▶ 再生</button>
+  <button id="pv">◀ 前の字幕</button>
+  <button id="nx">次の字幕 ▶</button>
+  <button id="sp">等速</button>
+  <span class="time" id="tm">0:00 / 0:00</span>
+</div>
+<input type="range" id="sk" min="0" max="1000" value="0">
+<div class="marks" id="mk"></div>
+<div class="tabs"><button class="on">字幕</button></div>
+<div class="list" id="subs"></div>
+<p class="tip">スペース＝再生/停止　←→＝5秒送り　↑↓＝字幕送り。字幕をタップするとそこへ飛びます。</p>
+</div>
+<audio id="a" src="audio.mp3" preload="auto"></audio>
+<script>
+const D={"name": "ムーヴとワゴンRスマイルどっち", "file": "110_ムーヴとワゴンRスマイルどっち", "dur": 799.36665625, "segs": [], "subs": [{"t": 0.0, "x": "こんにちは、「となりの車屋さん」の店長です。"}, {"t": 2.8333333333333335, "x": "今日は後ろがスライドドアの軽の、どちらを選ぶかというお話です。"}, {"t": 7.933333333333334, "x": "ダイハツのムーヴと、スズキのワゴンRスマイルです。"}, {"t": 12.066666666666666, "x": "どちらも背の高すぎない軽に、後ろのスライドドアを付けた車です。"}, {"t": 17.466666666666665, "x": "狭い駐車場でも、隣の車にドアをぶつける心配が少ない作りです。"}, {"t": 22.933333333333334, "x": "今日も先に答えを言ってしまいます。"}, {"t": 25.766666666666666, "x": "70代のかたに店長が勧めるのはワゴンRスマイルです。"}, {"t": 30.566666666666666, "x": "決め手は5万円近く安い値段と、燃費のよさです。"}, {"t": 35.0, "x": "しかも、小回りの数字は2台ともまったく同じなのです。"}, {"t": 39.53333333333333, "x": "ここだけ聞くと、ムーヴを選ぶ理由が無いように思えるかもしれません。"}, {"t": 44.6, "x": "けれどもムーヴには、夜の運転で頼りになる装備があります。"}, {"t": 49.333333333333336, "x": "その装備にどれだけの値打ちがあるのかを、今日は一緒に確かめます。"}, {"t": 54.3, "x": "先日のことです。"}, {"t": 55.9, "x": "店長のお店にご夫婦でお見えになったかたがいました。"}, {"t": 59.733333333333334, "x": "「今の軽が古くなったので、この2台のどちらかにしたいんです」。"}, {"t": 64.46666666666667, "x": "ご主人は70代の半ばで、運転するのはほとんどご主人だそうです。"}, {"t": 70.06666666666666, "x": "奥さまはひざが少し痛くて、重いドアの開け閉めがつらいとのことでした。"}, {"t": 75.53333333333333, "x": "今日はこのご相談にお答えするつもりで順に数字を並べていきます。"}, {"t": 82.2, "x": "まずは今日比べる形をはっきりさせておきます。"}, {"t": 85.7, "x": "ムーヴはGという形の、前のタイヤを回す2WDです。"}, {"t": 90.73333333333333, "x": "ワゴンRスマイルはハイブリッドSという形の2WDです。"}, {"t": 96.1, "x": "どちらもスイッチで掛けるパーキングブレーキが付くいちばん安い形です。"}, {"t": 101.26666666666667, "x": "信号で止まったときにブレーキから足を離せる機能も2台そろっています。"}, {"t": 106.63333333333334, "x": "長い信号待ちで右足を休められるので、遠くへ出かける日も疲れにくくなります。"}, {"t": 113.2, "x": "左側のスライドドアは2台ともボタン1つで開け閉めできる電動です。"}, {"t": 118.76666666666667, "x": "エアバッグは2台とも6個で、横からぶつかられたときの備えもあります。"}, {"t": 124.03333333333333, "x": "長さは2台とも3395ミリで、幅も2台とも1475ミリです。"}, {"t": 131.06666666666666, "x": "軽自動車の決まりいっぱいの大きさで、ここに差はありません。"}, {"t": 135.86666666666667, "x": "地面から車の底までの高さも2台とも150ミリです。"}, {"t": 140.66666666666666, "x": "車の重さはムーヴが860キロで、ワゴンRスマイルが870キロです。"}, {"t": 147.43333333333334, "x": "雪の多い土地のための四輪駆動も、2台とも選べます。"}, {"t": 152.03333333333333, "x": "軽自動車なので、毎年の税金も2台で同じです。"}, {"t": 156.3, "x": "車線をはみ出しそうになると知らせる仕組みは、2台とも付いています。"}, {"t": 161.7, "x": "道路の標識を読み取って、制限速度などを画面に出す仕組みも同じです。"}, {"t": 167.13333333333333, "x": "運転がふらついたときに気づかせてくれる仕組みも、2台そろっています。"}, {"t": 172.23333333333332, "x": "ここまではどちらを選んでもほぼ同じと思ってください。"}, {"t": 176.1, "x": "違いが出るのは、背の高さと値段と燃費と、装備の中身です。"}, {"t": 182.76666666666668, "x": "最初に小回りの目安になる最小回転半径という数字です。"}, {"t": 187.83333333333334, "x": "ハンドルをいっぱいに切ったとき車が描く円の半径で、小さいほど小回りが利きます。"}, {"t": 194.63333333333333, "x": "ムーヴのこの形は4.4メートルです。"}, {"t": 197.96666666666667, "x": "ワゴンRスマイルも同じ4.4メートルです。"}, {"t": 201.56666666666666, "x": "前の回のヤリスクロスは5.3メートルでしたから、ずいぶん小さな円です。"}, {"t": 207.56666666666666, "x": "ただしムーヴには1つ気をつけたい形があります。"}, {"t": 211.2, "x": "いちばん上のRSという形は、4.7メートルになります。"}, {"t": 216.26666666666668, "x": "RSは15インチのタイヤを履いていて、回る円の半径が30センチ大きいのです。"}, {"t": 222.53333333333333, "x": "この差は、狭い駐車場で切り返しの回数に表れることがあります。"}, {"t": 227.73333333333332, "x": "ワゴンRスマイルはどの形を選んでも4.4メートルで変わりません。"}, {"t": 232.86666666666667, "x": "小回りは引き分けですが、ムーヴを選ぶなら小回りのためにGをお勧めします。"}, {"t": 240.2, "x": "では2台の形の違いはどこにあるのでしょうか。"}, {"t": 243.86666666666667, "x": "屋根の高さはムーヴが1655ミリです。"}, {"t": 247.73333333333332, "x": "ワゴンRスマイルは1695ミリで、4センチ高くなっています。"}, {"t": 254.06666666666666, "x": "車の中の天井までの高さはムーヴが1270ミリです。"}, {"t": 259.3333333333333, "x": "ワゴンRスマイルは1330ミリで、こちらは6センチの差になります。"}, {"t": 265.1333333333333, "x": "乗り込むときの頭の上のゆとりが、そのぶん大きくなります。"}, {"t": 270.26666666666665, "x": "車の中の長さも、ムーヴの2140ミリに対して、ワゴンRスマイルは2185ミリです。"}, {"t": 278.76666666666665, "x": "後ろの座席は、2台とも左右別々に前後へずらせます。"}, {"t": 283.56666666666666, "x": "ムーヴはずらせる幅が240ミリあり、足元と荷物の広さを分け合えます。"}, {"t": 289.5, "x": "中の広さは、ワゴンRスマイルが少し上です。"}, {"t": 293.96666666666664, "x": "なお高さ1550ミリまでの立体駐車場には、2台とも入りません。"}, {"t": 299.6333333333333, "x": "マンションの駐車場を使うかたは、高さの決まりを先に確かめてください。"}, {"t": 304.9, "x": "中の広さは、ワゴンRスマイルの勝ちです。"}, {"t": 310.3333333333333, "x": "次は値段です。"}, {"t": 312.1, "x": "ムーヴのGは176万5500円です。"}, {"t": 316.4, "x": "ワゴンRスマイルのハイブリッドSは171万7100円です。"}, {"t": 321.8666666666667, "x": "その差は4万8400円で、ワゴンRスマイルのほうが安いのです。"}, {"t": 327.56666666666666, "x": "ただし、ワゴンRスマイルは色によって値段が少し上がります。"}, {"t": 332.46666666666664, "x": "真珠のような白は174万4600円です。"}, {"t": 337.3666666666667, "x": "屋根の色が違う二色の形は、176万6600円になります。"}, {"t": 343.93333333333334, "x": "二色の形を選ぶと、ムーヴのGとほとんど同じ値段です。"}, {"t": 349.23333333333335, "x": "ムーヴにも、別にお金のかかる色があります。"}, {"t": 352.93333333333334, "x": "ここでは、いちばん安い色どうしで比べています。"}, {"t": 356.7, "x": "四輪駆動にすると、ムーヴのGは12万6500円高くなります。"}, {"t": 362.6666666666667, "x": "ワゴンRスマイルのハイブリッドSは12万3200円高くなります。"}, {"t": 367.93333333333334, "x": "四輪駆動どうしでも、ワゴンRスマイルのほうが5万1700円安いのです。"}, {"t": 374.8333333333333, "x": "値段はワゴンRスマイルの勝ちです。"}, {"t": 379.1666666666667, "x": "続いて燃費です。"}, {"t": 381.06666666666666, "x": "ワゴンRスマイルのハイブリッドSには、小さなモーターが付いています。"}, {"t": 386.2, "x": "このモーターが、エンジンの力を手伝う仕組みです。"}, {"t": 390.23333333333335, "x": "国の審査の燃費は、ムーヴのGが1リットルあたり22.6キロです。"}, {"t": 396.26666666666665, "x": "ワゴンRスマイルのハイブリッドSは25.1キロです。"}, {"t": 400.5, "x": "1リットルで走る距離はワゴンRスマイルのほうが2.5キロ長いのです。"}, {"t": 406.23333333333335, "x": "年に5000キロ走るかたなら、ムーヴで使うガソリンはおよそ221リットルです。"}, {"t": 412.8333333333333, "x": "ワゴンRスマイルではおよそ199リットルで、差は22リットルほどになります。"}, {"t": 419.5, "x": "年に1万キロ走るかたなら、差は倍のおよそ44リットルになります。"}, {"t": 425.6333333333333, "x": "ガソリンのタンクはムーヴが30リットルで、ワゴンRスマイルが27リットルです。"}, {"t": 432.5, "x": "満タンで走れる距離は計算の上では2台ともおよそ680キロです。"}, {"t": 438.06666666666666, "x": "給油に行く回数は、2台であまり変わらないということです。"}, {"t": 442.56666666666666, "x": "ただし国の審査の燃費は、決まった試験のやりかたで測った数字です。"}, {"t": 447.8666666666667, "x": "冬の暖房や近所の短い距離ばかりだと、どちらの車も数字より悪くなります。"}, {"t": 454.1, "x": "燃費はワゴンRスマイルの勝ちです。"}, {"t": 458.6, "x": "ここからはムーヴのいいところです。"}, {"t": 461.26666666666665, "x": "ムーヴのGには、ハイビームの光を細かく分けて照らすライトが付いています。"}, {"t": 466.8666666666667, "x": "前の車や向こうから来る車の所だけ、光を消す仕組みです。"}, {"t": 472.26666666666665, "x": "相手をまぶしくさせずに、遠くまで照らし続けられます。"}, {"t": 476.6, "x": "ワゴンRスマイルのこの形は、ハイビームとロービームを自動で切り替える仕組みです。"}, {"t": 482.56666666666666, "x": "こちらは向こうから車が来ると、前全体がロービームに戻ります。"}, {"t": 487.8666666666667, "x": "ムーヴのGには、曲がるときに曲がる方向の足元を照らす明かりも付いています。"}, {"t": 493.8666666666667, "x": "寒い朝にうれしい装備も、ムーヴのGにはあります。"}, {"t": 498.5, "x": "運転席と助手席の両方に、座るところを温めるヒーターが付いています。"}, {"t": 504.46666666666664, "x": "ワゴンRスマイルのハイブリッドSの2WDでは、温まるのは運転席だけです。"}, {"t": 510.73333333333335, "x": "助手席に座ることの多い奥さまには、ここはムーヴの見どころです。"}, {"t": 515.7666666666667, "x": "さらにムーヴのGは、降りるときにスイッチで予約しておくことができます。"}, {"t": 521.0, "x": "次に鍵を持って近づくだけで、左のスライドドアが自動で開きます。"}, {"t": 526.3, "x": "両手に買い物袋を持っていても、ドアの取っ手を探さずに済みます。"}, {"t": 531.2, "x": "ワゴンRスマイルは、ドアのスイッチを一度押すと鍵が開いてドアも開きます。"}, {"t": 536.8666666666667, "x": "夜の田舎道を走ることが多いかたには、ムーヴの装備は心強い味方です。"}, {"t": 543.1333333333333, "x": "もう1つムーヴは急なアクセルを抑える仕組みを選べます。"}, {"t": 547.1, "x": "販売店で付ける追加の装備で、費用は別にかかります。"}, {"t": 551.5333333333333, "x": "ワゴンRスマイルで同じような装備を付けられるかは、販売店で尋ねてください。"}, {"t": 557.7, "x": "夜道のライトは、ムーヴの勝ちです。"}, {"t": 562.5666666666667, "x": "もう1つ比べておきたいのが右側のスライドドアです。"}, {"t": 566.7666666666667, "x": "今日比べる形は2台とも右側のスライドドアは手で開け閉めします。"}, {"t": 571.9, "x": "ムーヴのGは5万5000円の追加で右側も電動にできます。"}, {"t": 577.2, "x": "すると値段は182万500円になります。"}, {"t": 580.8, "x": "ワゴンRスマイルはハイブリッドXという上の形で両側が電動になります。"}, {"t": 587.4, "x": "こちらは181万5000円で、ムーヴより5500円安いのです。"}, {"t": 593.9333333333333, "x": "次は高速道路で前の車について走る仕組みです。"}, {"t": 598.1, "x": "ワゴンRスマイルのハイブリッドSには、この仕組みが初めから付いています。"}, {"t": 603.6333333333333, "x": "ムーヴのGでは、4万4000円の追加の装備になります。"}, {"t": 608.3, "x": "ワゴンRスマイルは、前の車について走るあいだハンドルも手伝います。"}, {"t": 613.8666666666667, "x": "車線の真ん中を保つように、ハンドルをそっと支えてくれる仕組みです。"}, {"t": 618.8333333333334, "x": "ムーヴのGでは、これも追加で付ける装備になります。"}, {"t": 622.8333333333334, "x": "ぶつかりそうなときに止めようとする自動ブレーキは、2台ともどの形にも付いています。"}, {"t": 629.0666666666667, "x": "駐車場で前や後ろの壁が近いと知らせる仕組みも、2台そろっています。"}, {"t": 634.7666666666667, "x": "車を真上から見たような画面で駐車を助ける仕組みは、2台とも追加の装備です。"}, {"t": 641.0, "x": "乗り降りのしやすさでは、ワゴンRスマイルの工夫も見ておきます。"}, {"t": 646.0333333333333, "x": "後ろの座席の両側に、乗り降りのときにつかまる取っ手が付いています。"}, {"t": 651.3, "x": "後ろのドアの足を掛けるところは、地面から345ミリの高さです。"}, {"t": 657.0333333333333, "x": "ハイブリッドSは、座席とハンドルの位置を体格に合わせて動かせます。"}, {"t": 662.4666666666667, "x": "ひざの痛いかたは、取っ手と足を掛ける高さを販売店で試してください。"}, {"t": 667.9333333333333, "x": "装備の数でいえば、ワゴンRスマイルが一歩上です。"}, {"t": 673.8666666666667, "x": "ここまでをまとめます。"}, {"t": 675.6, "x": "大きさと小回りは引き分けでした。"}, {"t": 678.3, "x": "中の広さと値段と燃費と装備の数は、ワゴンRスマイルです。"}, {"t": 683.9333333333333, "x": "夜道のライトは、ムーヴです。"}, {"t": 686.8, "x": "助手席まで温まる座席も、ムーヴです。"}, {"t": 690.2666666666667, "x": "ですから70代のかたには店長はワゴンRスマイルを勧めます。"}, {"t": 695.5, "x": "浮いたお金は、ドライブレコーダーを付ける足しにできます。"}, {"t": 699.6666666666666, "x": "冒頭のご夫婦にも同じようにお答えしました。"}, {"t": 703.3666666666667, "x": "奥さまのために、両側が電動になるハイブリッドXを選ばれました。"}, {"t": 708.8666666666667, "x": "どちら側に車を止めても、奥さまがボタン1つで乗り込めます。"}, {"t": 713.8, "x": "後ろの取っ手につかまって乗り込めるのも、奥さまには助かったそうです。"}, {"t": 718.8333333333334, "x": "後日、ドアの開け閉めがずいぶん楽になったとお電話をいただきました。"}, {"t": 725.7666666666667, "x": "もちろんムーヴを選んだほうがいいかたもいます。"}, {"t": 728.9666666666667, "x": "ひとつめは、夜の暗い道を走ることが多いかたです。"}, {"t": 733.2333333333333, "x": "ふたつめは、雪の多い土地で四輪駆動を選ぶかたです。"}, {"t": 737.9, "x": "寒い土地で、助手席にも座席のヒーターが欲しいかたもムーヴが合います。"}, {"t": 743.2666666666667, "x": "ムーヴの四輪駆動は地面からの高さが165ミリになります。"}, {"t": 748.6666666666666, "x": "みっつめは、点検に通いやすいダイハツのお店が近くにあるかたです。"}, {"t": 753.6666666666666, "x": "最後に店長から2つお願いがあります。"}, {"t": 756.7333333333333, "x": "ひとつは、助手席や後ろに乗るかたも一緒に販売店へ行くことです。"}, {"t": 761.8, "x": "スライドドアの開け閉めや乗り込みを、乗るかた自身で試してください。"}, {"t": 766.9, "x": "もうひとつは、見積もりで色の値段まで確かめることです。"}, {"t": 771.2333333333333, "x": "今日のお話を短く言うと、大きさと小回りは同じでした。"}, {"t": 776.0333333333333, "x": "値段と燃費と装備の数は、ワゴンRスマイルでした。"}, {"t": 780.6, "x": "夜道のライトは、ムーヴでした。"}, {"t": 783.6333333333333, "x": "そして70代のかたにはワゴンRスマイルを勧めます。"}, {"t": 788.2, "x": "値段や装備はメーカーの改良で変わるので、買う前に販売店で見積もりを確かめてください。"}, {"t": 795.1333333333333, "x": "それではまた次の動画でお会いしましょう。"}], "w": 720, "h": 405, "n_cuts": 0, "noimage": true};
+const a=document.getElementById('a');
+const now=document.getElementById('now'), nl=document.getElementById('nextline');
+const pp=document.getElementById('pp'), sk=document.getElementById('sk');
+const tm=document.getElementById('tm'), bdg=document.getElementById('bdg');
+const SMOOTH=matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth';
+document.getElementById('ttl').innerHTML=D.name+
+  '<span class="meta">'+fmt(D.dur)+'　字幕'+D.subs.length+'　（音声＋字幕だけ）</span>';
+
+function fmt(s){s=Math.max(0,s|0);return (s/60|0)+':'+String(s%60).padStart(2,'0')}
+function subIdx(t){let lo=0,hi=D.subs.length-1,r=-1;
+  while(lo<=hi){const m=(lo+hi)>>1; if(D.subs[m].t<=t){r=m;lo=m+1}else hi=m-1} return r}
+
+let cur=-2;
+function paint(t){
+  const i=subIdx(t);
+  if(i!==cur){cur=i;
+    now.textContent = i<0 ? (D.subs.length?'（ここはまだ字幕がありません）'
+                                          :'（この回に字幕はありません）')
+                         : D.subs[i].x;
+    const n=D.subs[i+1]; nl.textContent = n ? '次　'+n.x : '';
+    bdg.textContent = D.subs.length ? '字幕 '+(i+1)+' / '+D.subs.length : '字幕なし';
+    mark('subs',i);
+  }
+  tm.textContent=fmt(t)+' / '+fmt(D.dur);
+  if(!sk.dragging) sk.value=Math.round(t/D.dur*1000);
+}
+function mark(pane,i){
+  const el=document.getElementById(pane);
+  if(el.dataset.on==i) return; el.dataset.on=i;
+  el.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));
+  const t=el.children[i]; if(!t) return; t.classList.add('on');
+  if(!el.hidden){const r=t.offsetTop-el.clientHeight/2; el.scrollTo({top:r,behavior:SMOOTH})}
+}
+
+D.subs.forEach(s=>{const d=document.createElement('div');d.className='row';
+  d.innerHTML='<b></b><span></span>';
+  d.querySelector('b').textContent=fmt(s.t);
+  d.querySelector('span').textContent=s.x;
+  d.onclick=()=>go(s.t); document.getElementById('subs').appendChild(d)});
+const mk=document.getElementById('mk');
+D.subs.forEach(s=>{const i=document.createElement('i');
+  i.style.left=(s.t/D.dur*100)+'%'; mk.appendChild(i)});
+
+function go(t){a.currentTime=Math.min(Math.max(0,t)+0.01,Math.max(0.05,D.dur-0.05)); paint(a.currentTime)}
+pp.onclick=()=>a.paused?a.play():a.pause();
+const SPEEDS=[1,1.25,1.5,1.75,2,3,0.75],SPN=['等速','1.25倍','1.5倍','1.75倍','2倍','3倍','0.75倍'];
+let si=0; const sp=document.getElementById('sp');
+sp.onclick=()=>{si=(si+1)%SPEEDS.length; a.playbackRate=SPEEDS[si];
+  a.preservesPitch=a.mozPreservesPitch=a.webkitPreservesPitch=true; sp.textContent=SPN[si]};
+a.onplay=()=>pp.textContent='❚❚ 停止'; a.onpause=()=>pp.textContent='▶ 再生';
+a.ontimeupdate=()=>paint(a.currentTime);
+sk.oninput=()=>{sk.dragging=1; go(sk.value/1000*D.dur)};
+sk.onchange=()=>sk.dragging=0;
+document.getElementById('pv').onclick=()=>{const i=subIdx(a.currentTime);
+  go(i>0?D.subs[i-1].t:0)};
+document.getElementById('nx').onclick=()=>{const i=subIdx(a.currentTime);
+  if(i+1<D.subs.length) go(D.subs[i+1].t)};
+addEventListener('keydown',e=>{const k=e.key;
+  if(k===' '){e.preventDefault();pp.onclick()}
+  else if(k==='ArrowRight')go(a.currentTime+5); else if(k==='ArrowLeft')go(a.currentTime-5);
+  else if(k==='ArrowDown'){e.preventDefault();document.getElementById('nx').onclick()}
+  else if(k==='ArrowUp'){e.preventDefault();document.getElementById('pv').onclick()}
+  else if(k==='s'||k==='S')sp.onclick()});
+paint(0);
+</script>
