@@ -1,0 +1,133 @@
+<title>アルトとミライースどっち</title>
+<style>
+:root{--bg:#f6f4f1;--panel:#fffefc;--ink:#1c1a19;--dim:#6e6862;--line:#e2ded7;--accent:#b8422f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}}
+:root[data-theme="dark"]{--bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);margin:0;-webkit-text-size-adjust:100%;
+  font:16px/1.7 -apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic UI",sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+h1{font-size:17px;margin:4px 0 14px;font-weight:600;letter-spacing:.02em}
+.meta{color:var(--dim);font-size:13px;font-weight:400;margin-left:8px}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:12px;position:relative;
+  min-height:40vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:46px 20px 26px;box-shadow:0 2px 14px rgba(0,0,0,.10)}
+#now{margin:0;text-align:center;white-space:pre-wrap;word-break:break-word;font-weight:700;
+  font-size:clamp(23px,5.4vw,42px);line-height:1.5;letter-spacing:.01em}
+#nextline{margin:16px 0 0;text-align:center;white-space:pre-wrap;word-break:break-word;
+  color:var(--dim);font-size:clamp(13px,2.8vw,17px);line-height:1.6}
+.badge{position:absolute;left:12px;top:12px;background:rgba(127,127,127,.16);color:var(--dim);
+  font-size:12px;padding:3px 9px;border-radius:20px;line-height:1.6;letter-spacing:.04em}
+.bar{display:flex;align-items:center;gap:10px;margin:12px 0 6px;flex-wrap:wrap}
+button{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;
+  padding:9px 14px;font-size:15px;cursor:pointer;font-family:inherit}
+button:active{transform:translateY(1px)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.play{background:var(--accent);color:#fff;border-color:transparent;min-width:80px;font-weight:600}
+.time{font-variant-numeric:tabular-nums;color:var(--dim);font-size:13px;margin-left:auto}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.marks{position:relative;height:7px;margin:2px 0 14px}
+.marks i{position:absolute;top:0;width:1px;height:7px;background:var(--line)}
+.tabs{display:flex;gap:6px;margin:18px 0 10px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;
+  color:var(--ink);padding:7px 12px;font-weight:600}
+.list{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+  -webkit-overflow-scrolling:touch}
+.row{display:flex;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.row:last-child{border-bottom:0}
+.row:hover{background:rgba(127,127,127,.07)}
+.row.on{background:rgba(184,66,47,.12)}
+.row b{color:var(--dim);font-variant-numeric:tabular-nums;font-weight:500;font-size:13px;
+  min-width:48px;flex:none;padding-top:2px}
+.row span{white-space:pre-wrap;flex:1;font-size:16px;line-height:1.65}
+.tip{color:var(--dim);font-size:12.5px;margin:10px 2px 0}
+@media(max-width:620px){.wrap{padding:10px}.time{font-size:12px}
+  .bar button{padding:9px 11px;font-size:14px}.stage{padding:42px 14px 22px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+<div class="wrap">
+<h1 id="ttl"></h1>
+<div class="stage"><div class="badge" id="bdg"></div>
+  <p id="now"></p><p id="nextline"></p></div>
+<div class="bar">
+  <button class="play" id="pp">▶ 再生</button>
+  <button id="pv">◀ 前の字幕</button>
+  <button id="nx">次の字幕 ▶</button>
+  <button id="sp">等速</button>
+  <span class="time" id="tm">0:00 / 0:00</span>
+</div>
+<input type="range" id="sk" min="0" max="1000" value="0">
+<div class="marks" id="mk"></div>
+<div class="tabs"><button class="on">字幕</button></div>
+<div class="list" id="subs"></div>
+<p class="tip">スペース＝再生/停止　←→＝5秒送り　↑↓＝字幕送り。字幕をタップするとそこへ飛びます。</p>
+</div>
+<audio id="a" src="audio.mp3" preload="auto"></audio>
+<script>
+const D={"name": "アルトとミライースどっち", "file": "115_アルトとミライースどっち", "dur": 780.7, "segs": [], "subs": [{"t": 0.0, "x": "こんにちは、「となりの車屋さん」の店長です。"}, {"t": 2.9, "x": "お店をやっていると、よく言われる一言があります。"}, {"t": 6.633333333333334, "x": "「いちばん安い軽でいいから」という一言です。"}, {"t": 10.566666666666666, "x": "買い物と病院に行ければ、それで十分だというご注文です。"}, {"t": 15.6, "x": "そう言われた時に、店長がまず並べる2台があります。"}, {"t": 19.966666666666665, "x": "スズキのアルトと、ダイハツのミライースです。"}, {"t": 23.6, "x": "どちらも屋根の低い、昔ながらの形の軽自動車です。"}, {"t": 28.3, "x": "背の高い軽にくらべると、値段も重さもぐっと控えめな2台です。"}, {"t": 33.43333333333333, "x": "ミライースのいちばん安い形は109万6700円です。"}, {"t": 38.666666666666664, "x": "アルトのいちばん安い形は114万2900円です。"}, {"t": 43.7, "x": "ただしアルトのこの形は、注文を受けてから作る形です。"}, {"t": 48.5, "x": "後ろのドアの窓ガラスも、開かない作りになっています。"}, {"t": 52.8, "x": "そこで今日は、お店にふつうに並ぶ形どうしでくらべます。"}, {"t": 57.43333333333333, "x": "その2つの値段の差はおよそ10万円です。"}, {"t": 61.4, "x": "その10万円で何が変わるのかを、順番に見ていきます。"}, {"t": 67.26666666666667, "x": "まず外の大きさからです。"}, {"t": 69.6, "x": "長さはどちらも3395ミリです。"}, {"t": 73.4, "x": "幅もどちらも1475ミリで、ここまでは2台とも同じ数字です。"}, {"t": 80.03333333333333, "x": "国の決まりで、軽自動車は長さ3.4メートルと幅1.48メートルまでです。"}, {"t": 87.4, "x": "2台とも、その枠にほとんどいっぱいの大きさです。"}, {"t": 91.4, "x": "小回りの数字も、2台とも4.4メートルでそろっています。"}, {"t": 96.1, "x": "ハンドルをいっぱいに切って回った時の、円の大きさの数字です。"}, {"t": 100.86666666666666, "x": "せまい駐車場での回りやすさは、2台に差がありません。"}, {"t": 105.23333333333333, "x": "違いが出るのは高さと重さです。"}, {"t": 108.03333333333333, "x": "屋根の高さはアルトが1525ミリで、ミライースが1500ミリです。"}, {"t": 113.73333333333333, "x": "アルトが2.5センチ高く、中の天井もアルトが2センチ高くなっています。"}, {"t": 119.46666666666667, "x": "重さは今日くらべる形で、アルトが690キロでミライースが660キロです。"}, {"t": 126.2, "x": "ミライースのほうが、30キロ軽い車です。"}, {"t": 130.23333333333332, "x": "地面から車の底までの高さは、ミライースが155ミリです。"}, {"t": 135.66666666666666, "x": "アルトは130ミリなので、ここはミライースが2.5センチ高くなります。"}, {"t": 141.06666666666666, "x": "段差の多い道や少し雪の積もった朝には、このゆとりが効いてきます。"}, {"t": 147.23333333333332, "x": "中の長さも見ておきます。"}, {"t": 149.7, "x": "今日くらべる形では、アルトが1960ミリでミライースが1935ミリです。"}, {"t": 156.53333333333333, "x": "ここはアルトが2.5センチ長く、天井と合わせて中はアルトが少し広めです。"}, {"t": 164.3, "x": "ここで今日くらべる形を決めておきます。"}, {"t": 167.36666666666667, "x": "ミライースはLという形で、前のタイヤを回す形です。"}, {"t": 172.0, "x": "値段は109万6700円です。"}, {"t": 175.3, "x": "アルトもLという形で、こちらも前のタイヤを回す形です。"}, {"t": 180.06666666666666, "x": "値段は119万7900円です。"}, {"t": 183.73333333333332, "x": "差は10万1200円で、ミライースのほうが安くなります。"}, {"t": 188.23333333333332, "x": "どちらもメーカーの公式の、メーカー希望小売価格です。"}, {"t": 192.6, "x": "同じLという名前ですが、たまたまそろっただけで中身は別の車です。"}, {"t": 198.0, "x": "毎年の軽自動車税は、自家用ならどちらも標準で1万800円です。"}, {"t": 204.43333333333334, "x": "税金では差がつかないので、今日は車の中身だけを見ていきます。"}, {"t": 209.46666666666667, "x": "使うガソリンはどちらもレギュラーです。"}, {"t": 212.33333333333334, "x": "ガソリンを入れるタンクはアルトが27リットルで、ミライースが28リットルです。"}, {"t": 220.53333333333333, "x": "次は燃費です。"}, {"t": 222.2, "x": "国の決まった測りかたで、ミライースは1リットルあたり27.0キロ走ります。"}, {"t": 228.3, "x": "アルトのLは25.8キロなので、ここはミライースが1.2キロ上です。"}, {"t": 234.7, "x": "ところが、この数字にはもう1つの見かたがあります。"}, {"t": 238.56666666666666, "x": "信号や渋滞の多い町の中を考えた、市街地モードという数字です。"}, {"t": 244.4, "x": "こちらはミライースが22.9キロで、アルトのLが23.0キロです。"}, {"t": 250.3, "x": "差は0.1キロで、今度はアルトのほうが少しだけ上になりました。"}, {"t": 255.53333333333333, "x": "近所の買い物と病院が中心なら、ほとんど同じと考えてよい差です。"}, {"t": 261.1, "x": "年に3000キロを、町の中だけで走るとして計算してみます。"}, {"t": 266.2, "x": "ミライースは約131.0リットルで、アルトは約130.4リットルです。"}, {"t": 273.0, "x": "差は0.6リットルほどで、ガソリンの量はほとんど変わりません。"}, {"t": 278.03333333333336, "x": "反対に、信号の少ない郊外の道は郊外モードという数字で見ます。"}, {"t": 283.6333333333333, "x": "こちらはミライースが29.1キロで、アルトのLは27.1キロです。"}, {"t": 289.73333333333335, "x": "広い道を長く走るかたほど、ミライースの燃費の良さが出てきます。"}, {"t": 295.03333333333336, "x": "ちなみにアルトには、小さなモーターが手助けするハイブリッドの形もあります。"}, {"t": 300.4, "x": "いちばん安いハイブリッドのSなら燃費は28.2キロです。"}, {"t": 305.6, "x": "ただし値段は130万1300円で、ミライースのLより20万4600円高くなります。"}, {"t": 313.1, "x": "どの数字も試験の条件で測ったもので、冬の暖房などで悪くなります。"}, {"t": 320.2, "x": "ここからは安全の装備です。"}, {"t": 322.73333333333335, "x": "まず、ぶつかりそうな時に自動で止まるブレーキは2台とも付いています。"}, {"t": 328.0, "x": "車だけでなく、歩いている人や自転車にも反応する仕組みです。"}, {"t": 333.03333333333336, "x": "ミライースは、横断中の歩行者や自転車も見分けるとダイハツは説明しています。"}, {"t": 339.06666666666666, "x": "アルトは、車と歩行者と自転車に加えて、バイクにも反応するとスズキは説明しています。"}, {"t": 346.1, "x": "前を見る道具は2台で違います。"}, {"t": 348.96666666666664, "x": "ミライースは、2つの目を持つカメラで前の様子を見ています。"}, {"t": 353.9, "x": "アルトは、カメラと電波を組み合わせて前の様子を見ています。"}, {"t": 358.5, "x": "踏み間違いで急に動き出すのをおさえる仕組みも、2台ともあります。"}, {"t": 363.53333333333336, "x": "これも、前に進む時と後ろに下がる時の両方に付いています。"}, {"t": 368.43333333333334, "x": "車の前と後ろが物に近づくと、音で知らせるセンサーも2台ともあります。"}, {"t": 374.4, "x": "前の車が動き出したのを知らせる仕組みも、2台とも同じように付いています。"}, {"t": 380.1333333333333, "x": "そして2台とも、サポートカー限定免許で運転できる車に入っています。"}, {"t": 386.1333333333333, "x": "ミライースはダイハツの案内に、アルトは警察庁の一覧にそう書かれています。"}, {"t": 392.06666666666666, "x": "車線からはみ出しそうな時に知らせる仕組みも、2台ともあります。"}, {"t": 397.03333333333336, "x": "アルトは、車線の内側に戻すようにハンドルの手助けもします。"}, {"t": 402.2, "x": "ミライースには、道の端へはみ出しそうな時の知らせが付いています。"}, {"t": 407.23333333333335, "x": "ただし、アルトのものは時速50キロくらいから働く仕組みです。"}, {"t": 412.1333333333333, "x": "ミライースの道の端の知らせも、時速60キロくらいから働きます。"}, {"t": 417.6, "x": "近所の細い道では出番が少ないので、ここは大きな差にはなりません。"}, {"t": 424.6666666666667, "x": "ここが今日いちばん大事な話です。"}, {"t": 427.4, "x": "ぶつかってしまった時に体を守る、エアバッグの数が違います。"}, {"t": 432.1333333333333, "x": "アルトはどの形にもエアバッグが6つ付いています。"}, {"t": 435.96666666666664, "x": "運転席と助手席の前に2つ、座席の横に2つ、窓の側に2つです。"}, {"t": 442.6, "x": "窓の側のものはカーテンエアバッグといって、横からの衝撃から頭を守ります。"}, {"t": 448.73333333333335, "x": "横の袋はぶつかった側だけがふくらむと、スズキは説明しています。"}, {"t": 454.03333333333336, "x": "ミライースも前の2つと座席の横の2つは、どの形にも付いています。"}, {"t": 459.8333333333333, "x": "ただ、ミライースの装備一覧表には、カーテンエアバッグの欄がありませんでした。"}, {"t": 465.7, "x": "いちばん上の形を選んでも、ミライースは4つのままです。"}, {"t": 470.5, "x": "つまりミライースは4つで、アルトは6つという違いになります。"}, {"t": 475.4, "x": "近所の道でも、交差点や駐車場の出入り口では横から車が来ます。"}, {"t": 481.06666666666666, "x": "その時に、頭の横を守る袋があるかどうかは小さくない違いです。"}, {"t": 486.3333333333333, "x": "店長は10万円の差の多くがここにあると考えています。"}, {"t": 492.23333333333335, "x": "2つ目の違いは座席を温める仕組みです。"}, {"t": 496.03333333333336, "x": "アルトのLには、運転席の座面を温める仕組みが最初から付いています。"}, {"t": 502.06666666666666, "x": "アルトで4つのタイヤを回す形にすると、助手席も温まります。"}, {"t": 507.0, "x": "ミライースのLには、座席を温める仕組みが付いていません。"}, {"t": 511.56666666666666, "x": "ミライースで欲しい時は、いちばん上の形を選ぶことになります。"}, {"t": 516.1666666666666, "x": "こちらは運転席と助手席の両方が温まります。"}, {"t": 520.2, "x": "ただし値段は138万500円で、アルトのLより18万2600円高くなります。"}, {"t": 527.6, "x": "腰や膝が冷えやすいかたには、冬の朝がずいぶん楽になる装備です。"}, {"t": 533.0333333333333, "x": "車の暖房が効いてくるまでの間も、座面から先に温まってくれます。"}, {"t": 539.7666666666667, "x": "ここまでアルトの良いところが続きましたが、ミライースにも強みがあります。"}, {"t": 544.9, "x": "1つ目はやはり買う時の値段です。"}, {"t": 547.6, "x": "10万1200円安いぶん、その分を別の装備に回すこともできます。"}, {"t": 553.0, "x": "2つ目は地面から車の底までのゆとりです。"}, {"t": 556.8333333333334, "x": "二輪駆動で155ミリあり、アルトより2.5センチ高くなっています。"}, {"t": 562.4333333333333, "x": "4つのタイヤを回す形にすると、ミライースは160ミリになります。"}, {"t": 568.2333333333333, "x": "アルトは四輪駆動でも130ミリのままです。"}, {"t": 571.8333333333334, "x": "3つ目は四輪駆動にした時の値段と燃費です。"}, {"t": 575.7666666666667, "x": "ミライースのLの四輪駆動は122万3200円です。"}, {"t": 580.6333333333333, "x": "アルトのLの四輪駆動は132万8800円で、差は10万5600円です。"}, {"t": 588.1333333333333, "x": "燃費は、ミライースの四輪駆動が1リットルあたり24.4キロです。"}, {"t": 594.2333333333333, "x": "アルトのLの四輪駆動は23.8キロなので、ここもミライースが上です。"}, {"t": 600.6666666666666, "x": "ミライースの四輪駆動は、ガソリンのタンクも30リットルに増えます。"}, {"t": 605.7, "x": "雪の多い所に住んでいて、値段を抑えたいかたには心強い数字です。"}, {"t": 613.3666666666667, "x": "近所の足でも、店長は後ろを映すカメラを付けることを勧めています。"}, {"t": 618.6666666666666, "x": "ミライースのLは2万2000円で付けられます。"}, {"t": 622.4333333333333, "x": "カーナビを付けるための部品と一緒になったメーカーの注文品です。"}, {"t": 627.0, "x": "アルトのLは5万600円で付けられます。"}, {"t": 630.7, "x": "こちらは、困った時に連絡できる通信の機械やボタンと一緒になっています。"}, {"t": 636.3, "x": "カメラまで入れると、ミライースは111万8700円です。"}, {"t": 641.5, "x": "アルトは124万8500円で、差は12万9800円に広がります。"}, {"t": 648.0666666666667, "x": "どちらも車を注文する時にしか付けられないので、最初に決めておきましょう。"}, {"t": 653.9333333333333, "x": "カメラを付けなくても、後ろの壁に近づけば2台ともセンサーが音で知らせます。"}, {"t": 659.6666666666666, "x": "それでも、駐車場で後ろの様子が画面で見えると安心の度合いが違います。"}, {"t": 666.9666666666667, "x": "それでは、70代の近所の足としての店長の答えです。"}, {"t": 671.8, "x": "店長はアルトのLをお勧めします。"}, {"t": 674.6333333333333, "x": "いちばんの理由は窓の側のカーテンエアバッグです。"}, {"t": 679.0, "x": "近所の道でも、横から車が来る場面は毎日のようにあります。"}, {"t": 683.9666666666667, "x": "2つ目の理由は冬の朝に運転席が温まることです。"}, {"t": 688.6, "x": "3つ目は中の天井と長さがアルトのほうが少しずつ広いことです。"}, {"t": 693.7666666666667, "x": "町の中の燃費はほとんど同じなので、ガソリンの量でも損をしません。"}, {"t": 699.2666666666667, "x": "ぶつからないための装備は、ミライースでも十分にそろっています。"}, {"t": 703.8666666666667, "x": "だからこそ、差の10万円は横の守りと冬の温かさの代金だと考えてください。"}, {"t": 712.1666666666666, "x": "では、ミライースが向いているのはどんなかたでしょうか。"}, {"t": 716.3333333333334, "x": "1つ目はとにかく買う時の値段を抑えたいかたです。"}, {"t": 720.2, "x": "2つ目は段差の多い道や雪の積もる道をよく走るかたです。"}, {"t": 725.1666666666666, "x": "車の底が高く、四輪駆動なら値段も燃費もアルトより有利です。"}, {"t": 731.2, "x": "3つ目は信号の少ない郊外の道を長く走るかたです。"}, {"t": 735.5666666666667, "x": "郊外モードの燃費の差は1リットルあたり2.0キロありました。"}, {"t": 740.6666666666666, "x": "最後にお店では2つのことを確かめてください。"}, {"t": 744.5333333333333, "x": "1つは2台の運転席に座って、乗り降りと窓の見え方をくらべることです。"}, {"t": 750.6333333333333, "x": "もう1つはカメラまで入れた見積もりを2台並べてもらうことです。"}, {"t": 755.3666666666667, "x": "今日の数字は、11月にスズキとダイハツの公式の諸元表と装備一覧表で確かめました。"}, {"t": 762.6, "x": "値段や装備は改良で変わるので、契約の前に販売店で最新の表を見せてもらってください。"}, {"t": 769.5, "x": "いちばん安い一台を選ぶ時でも、守りの装備だけは見比べてから決めてください。"}, {"t": 775.6333333333333, "x": "店長は今日も店先に2台を並べてお待ちしています。"}], "w": 720, "h": 405, "n_cuts": 0, "noimage": true};
+const a=document.getElementById('a');
+const now=document.getElementById('now'), nl=document.getElementById('nextline');
+const pp=document.getElementById('pp'), sk=document.getElementById('sk');
+const tm=document.getElementById('tm'), bdg=document.getElementById('bdg');
+const SMOOTH=matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth';
+document.getElementById('ttl').innerHTML=D.name+
+  '<span class="meta">'+fmt(D.dur)+'　字幕'+D.subs.length+'　（音声＋字幕だけ）</span>';
+
+function fmt(s){s=Math.max(0,s|0);return (s/60|0)+':'+String(s%60).padStart(2,'0')}
+function subIdx(t){let lo=0,hi=D.subs.length-1,r=-1;
+  while(lo<=hi){const m=(lo+hi)>>1; if(D.subs[m].t<=t){r=m;lo=m+1}else hi=m-1} return r}
+
+let cur=-2;
+function paint(t){
+  const i=subIdx(t);
+  if(i!==cur){cur=i;
+    now.textContent = i<0 ? (D.subs.length?'（ここはまだ字幕がありません）'
+                                          :'（この回に字幕はありません）')
+                         : D.subs[i].x;
+    const n=D.subs[i+1]; nl.textContent = n ? '次　'+n.x : '';
+    bdg.textContent = D.subs.length ? '字幕 '+(i+1)+' / '+D.subs.length : '字幕なし';
+    mark('subs',i);
+  }
+  tm.textContent=fmt(t)+' / '+fmt(D.dur);
+  if(!sk.dragging) sk.value=Math.round(t/D.dur*1000);
+}
+function mark(pane,i){
+  const el=document.getElementById(pane);
+  if(el.dataset.on==i) return; el.dataset.on=i;
+  el.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));
+  const t=el.children[i]; if(!t) return; t.classList.add('on');
+  if(!el.hidden){const r=t.offsetTop-el.clientHeight/2; el.scrollTo({top:r,behavior:SMOOTH})}
+}
+
+D.subs.forEach(s=>{const d=document.createElement('div');d.className='row';
+  d.innerHTML='<b></b><span></span>';
+  d.querySelector('b').textContent=fmt(s.t);
+  d.querySelector('span').textContent=s.x;
+  d.onclick=()=>go(s.t); document.getElementById('subs').appendChild(d)});
+const mk=document.getElementById('mk');
+D.subs.forEach(s=>{const i=document.createElement('i');
+  i.style.left=(s.t/D.dur*100)+'%'; mk.appendChild(i)});
+
+function go(t){a.currentTime=Math.min(Math.max(0,t)+0.01,Math.max(0.05,D.dur-0.05)); paint(a.currentTime)}
+pp.onclick=()=>a.paused?a.play():a.pause();
+const SPEEDS=[1,1.25,1.5,1.75,2,3,0.75],SPN=['等速','1.25倍','1.5倍','1.75倍','2倍','3倍','0.75倍'];
+let si=0; const sp=document.getElementById('sp');
+sp.onclick=()=>{si=(si+1)%SPEEDS.length; a.playbackRate=SPEEDS[si];
+  a.preservesPitch=a.mozPreservesPitch=a.webkitPreservesPitch=true; sp.textContent=SPN[si]};
+a.onplay=()=>pp.textContent='❚❚ 停止'; a.onpause=()=>pp.textContent='▶ 再生';
+a.ontimeupdate=()=>paint(a.currentTime);
+sk.oninput=()=>{sk.dragging=1; go(sk.value/1000*D.dur)};
+sk.onchange=()=>sk.dragging=0;
+document.getElementById('pv').onclick=()=>{const i=subIdx(a.currentTime);
+  go(i>0?D.subs[i-1].t:0)};
+document.getElementById('nx').onclick=()=>{const i=subIdx(a.currentTime);
+  if(i+1<D.subs.length) go(D.subs[i+1].t)};
+addEventListener('keydown',e=>{const k=e.key;
+  if(k===' '){e.preventDefault();pp.onclick()}
+  else if(k==='ArrowRight')go(a.currentTime+5); else if(k==='ArrowLeft')go(a.currentTime-5);
+  else if(k==='ArrowDown'){e.preventDefault();document.getElementById('nx').onclick()}
+  else if(k==='ArrowUp'){e.preventDefault();document.getElementById('pv').onclick()}
+  else if(k==='s'||k==='S')sp.onclick()});
+paint(0);
+</script>
