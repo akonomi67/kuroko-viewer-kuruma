@@ -1,0 +1,133 @@
+<title>N-BOXとN-WGNどっち</title>
+<style>
+:root{--bg:#f6f4f1;--panel:#fffefc;--ink:#1c1a19;--dim:#6e6862;--line:#e2ded7;--accent:#b8422f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}}
+:root[data-theme="dark"]{--bg:#17161a;--panel:#201e23;--ink:#ece8e4;--dim:#9b948d;--line:#33303a;--accent:#e0705a}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);margin:0;-webkit-text-size-adjust:100%;
+  font:16px/1.7 -apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic UI",sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+h1{font-size:17px;margin:4px 0 14px;font-weight:600;letter-spacing:.02em}
+.meta{color:var(--dim);font-size:13px;font-weight:400;margin-left:8px}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:12px;position:relative;
+  min-height:40vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:46px 20px 26px;box-shadow:0 2px 14px rgba(0,0,0,.10)}
+#now{margin:0;text-align:center;white-space:pre-wrap;word-break:break-word;font-weight:700;
+  font-size:clamp(23px,5.4vw,42px);line-height:1.5;letter-spacing:.01em}
+#nextline{margin:16px 0 0;text-align:center;white-space:pre-wrap;word-break:break-word;
+  color:var(--dim);font-size:clamp(13px,2.8vw,17px);line-height:1.6}
+.badge{position:absolute;left:12px;top:12px;background:rgba(127,127,127,.16);color:var(--dim);
+  font-size:12px;padding:3px 9px;border-radius:20px;line-height:1.6;letter-spacing:.04em}
+.bar{display:flex;align-items:center;gap:10px;margin:12px 0 6px;flex-wrap:wrap}
+button{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;
+  padding:9px 14px;font-size:15px;cursor:pointer;font-family:inherit}
+button:active{transform:translateY(1px)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.play{background:var(--accent);color:#fff;border-color:transparent;min-width:80px;font-weight:600}
+.time{font-variant-numeric:tabular-nums;color:var(--dim);font-size:13px;margin-left:auto}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.marks{position:relative;height:7px;margin:2px 0 14px}
+.marks i{position:absolute;top:0;width:1px;height:7px;background:var(--line)}
+.tabs{display:flex;gap:6px;margin:18px 0 10px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;
+  color:var(--ink);padding:7px 12px;font-weight:600}
+.list{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+  -webkit-overflow-scrolling:touch}
+.row{display:flex;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.row:last-child{border-bottom:0}
+.row:hover{background:rgba(127,127,127,.07)}
+.row.on{background:rgba(184,66,47,.12)}
+.row b{color:var(--dim);font-variant-numeric:tabular-nums;font-weight:500;font-size:13px;
+  min-width:48px;flex:none;padding-top:2px}
+.row span{white-space:pre-wrap;flex:1;font-size:16px;line-height:1.65}
+.tip{color:var(--dim);font-size:12.5px;margin:10px 2px 0}
+@media(max-width:620px){.wrap{padding:10px}.time{font-size:12px}
+  .bar button{padding:9px 11px;font-size:14px}.stage{padding:42px 14px 22px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+<div class="wrap">
+<h1 id="ttl"></h1>
+<div class="stage"><div class="badge" id="bdg"></div>
+  <p id="now"></p><p id="nextline"></p></div>
+<div class="bar">
+  <button class="play" id="pp">▶ 再生</button>
+  <button id="pv">◀ 前の字幕</button>
+  <button id="nx">次の字幕 ▶</button>
+  <button id="sp">等速</button>
+  <span class="time" id="tm">0:00 / 0:00</span>
+</div>
+<input type="range" id="sk" min="0" max="1000" value="0">
+<div class="marks" id="mk"></div>
+<div class="tabs"><button class="on">字幕</button></div>
+<div class="list" id="subs"></div>
+<p class="tip">スペース＝再生/停止　←→＝5秒送り　↑↓＝字幕送り。字幕をタップするとそこへ飛びます。</p>
+</div>
+<audio id="a" src="audio.mp3" preload="auto"></audio>
+<script>
+const D={"name": "N-BOXとN-WGNどっち", "file": "120_N-BOXとN-WGNどっち", "dur": 824.8, "segs": [], "subs": [{"t": 0.0, "x": "こんにちは、「となりの車屋さん」の店長です。"}, {"t": 2.966666666666667, "x": "後ろの席に人を乗せるのが月に数回までなら、店長はN-WGNを勧めます。"}, {"t": 8.966666666666667, "x": "お孫さんを毎週のように乗せるかたには、N-BOXのほうが向いています。"}, {"t": 14.233333333333333, "x": "今日はこの分かれ目を2台の数字でたしかめていきます。"}, {"t": 18.466666666666665, "x": "N-BOXもN-WGNも、ホンダが作っている軽自動車です。"}, {"t": 23.033333333333335, "x": "N-BOXは屋根が高く、後ろのドアが横に滑って開く車です。"}, {"t": 28.366666666666667, "x": "N-WGNは屋根が少し低く、後ろのドアもふつうに外へ開く車です。"}, {"t": 33.93333333333333, "x": "N-BOXは10月にいちばん多く売れた軽自動車でもあります。"}, {"t": 38.766666666666666, "x": "その月の数は1万4832台でした。"}, {"t": 43.03333333333333, "x": "値段はN-BOXのいちばん手ごろな形で、176万8800円です。"}, {"t": 49.13333333333333, "x": "N-WGNはいちばん手ごろなLで、157万6300円になります。"}, {"t": 55.766666666666666, "x": "どちらもメーカー希望小売価格で、前のタイヤを回す形の値段です。"}, {"t": 61.2, "x": "差は19万2500円で、四輪駆動どうしでも同じ差になります。"}, {"t": 66.93333333333334, "x": "四輪駆動の値段はN-BOXが191万4000円で、N-WGNが172万1500円です。"}, {"t": 75.4, "x": "このほかにリサイクルの料金が別にかかり、N-BOXは1万4490円です。"}, {"t": 82.16666666666667, "x": "N-WGNは1万3970円なので、ここは520円しか違いません。"}, {"t": 90.03333333333333, "x": "まずは2台の外の大きさをくらべます。"}, {"t": 93.3, "x": "長さは3395ミリ、幅は1475ミリで、2台はぴったり同じです。"}, {"t": 100.8, "x": "前と後ろのタイヤの間の長さも、どちらも2520ミリです。"}, {"t": 106.66666666666667, "x": "2台の差がはっきり出るのは、地面から屋根のてっぺんまでです。"}, {"t": 111.43333333333334, "x": "N-BOXは1790ミリ、N-WGNは1675ミリあります。"}, {"t": 117.7, "x": "N-BOXのほうが11.5センチ高い車です。"}, {"t": 121.2, "x": "四輪駆動の形では少し背が伸びて、N-BOXは1815ミリになります。"}, {"t": 128.36666666666667, "x": "N-WGNの四輪駆動は1695ミリで、差は12センチに広がります。"}, {"t": 134.8, "x": "中の天井の高さも、N-BOXが1400ミリでN-WGNが1300ミリです。"}, {"t": 140.96666666666667, "x": "座った頭の上はN-BOXのほうがちょうど10センチ広く空きます。"}, {"t": 145.93333333333334, "x": "中の長さはN-BOXが2125ミリで、N-WGNが2055ミリです。"}, {"t": 152.4, "x": "中の横幅を測ると1350ミリで、2台とも同じです。"}, {"t": 158.06666666666666, "x": "車の底と地面のすき間は、N-BOXが145ミリでN-WGNが140ミリです。"}, {"t": 164.7, "x": "ここは5ミリの差なので、ほとんど同じと思ってかまいません。"}, {"t": 169.2, "x": "自宅の車庫の屋根や入口の高さが低いかたは、11.5センチの差を測っておきましょう。"}, {"t": 177.5, "x": "2台のいちばん大きな違いはここにあります。"}, {"t": 181.13333333333333, "x": "N-BOXの後ろのドアは、車の横を滑って開くスライドドアです。"}, {"t": 186.5, "x": "左側のドアは、ボタンひとつで開け閉めできる電動の形が全部に付いています。"}, {"t": 192.6, "x": "鍵のボタンや運転席のスイッチからでも開け閉めできる作りです。"}, {"t": 197.63333333333333, "x": "閉まる途中で手や物をはさみそうになると、それを感じ取る仕組みも付いています。"}, {"t": 203.53333333333333, "x": "ドアの取っ手に軽くふれるだけで開き始める作りもあります。"}, {"t": 207.86666666666667, "x": "右側を電動にするには、注文の時に別の組み合わせの装備を選びます。"}, {"t": 213.46666666666667, "x": "ホンダの呼び名はコンフォートパッケージです。"}, {"t": 216.83333333333334, "x": "閉める時に最後の少しを車が引き込んでくれる仕組みは、左右とも付いています。"}, {"t": 223.06666666666666, "x": "N-WGNの後ろのドアは、前のドアと同じように外へ開く形です。"}, {"t": 228.43333333333334, "x": "前も後ろも、開く途中の3つの位置で止まるようになっています。"}, {"t": 233.46666666666667, "x": "N-BOXの前のドアもこの3つの位置で止まる作りです。"}, {"t": 238.13333333333333, "x": "スライドドアは、ドアが外へふくらまずに開くのが良いところです。"}, {"t": 242.96666666666667, "x": "となりの車との間がせまい駐車場でも、後ろの席に乗り降りしやすくなります。"}, {"t": 248.7, "x": "ふつうのドアは仕組みが少ないぶん、重さも値段もおさえられます。"}, {"t": 255.5, "x": "続いて後ろの席の使いかたを見てみます。"}, {"t": 258.8333333333333, "x": "後ろの座席は2台とも、半分ずつ前や後ろへずらせる作りです。"}, {"t": 264.1666666666667, "x": "背もたれを倒して角度を変えることもできます。"}, {"t": 267.6333333333333, "x": "N-BOXの後ろの席は、座る面を上にはね上げられます。"}, {"t": 272.43333333333334, "x": "背の高い鉢植えのような物を、床に立てたまま積めるのが便利です。"}, {"t": 278.2, "x": "背もたれを前に倒して、床を低く平らにする使いかたもできます。"}, {"t": 283.6333333333333, "x": "N-WGNの後ろの席は、背もたれを前に倒して荷物の場所を広げる形です。"}, {"t": 289.43333333333334, "x": "どちらも後ろの席の左右に、チャイルドシートを留める金具が付いています。"}, {"t": 294.7, "x": "座席の数は4つで、ここに違いはありません。"}, {"t": 298.5, "x": "ふだんは夫婦2人で、後ろの席はかばんを置くだけというかたも多いでしょう。"}, {"t": 304.8666666666667, "x": "それなら後ろの席の仕掛けの差は、毎日の暮らしにはあまり響きません。"}, {"t": 311.6666666666667, "x": "次は運転席に座った時の合わせやすさです。"}, {"t": 315.53333333333336, "x": "座る位置を上げ下げできる仕組みは、どちらにも全部の形で付いています。"}, {"t": 321.26666666666665, "x": "N-BOXの装備表には、上げ下げの幅が50ミリと書かれています。"}, {"t": 326.46666666666664, "x": "ハンドルの角度を上下に変える仕組みも、2台に共通です。"}, {"t": 331.1, "x": "N-WGNには、ハンドルを手前や奥に動かす仕組みも付いています。"}, {"t": 336.06666666666666, "x": "ホンダはこれをテレスコピック＆チルトステアリングと呼んでいます。"}, {"t": 340.53333333333336, "x": "N-BOXのほうは、上下の角度を変える仕組みだけです。"}, {"t": 344.73333333333335, "x": "ハンドルが体に近づけば、肘を軽く曲げたまま握れます。"}, {"t": 349.3333333333333, "x": "背中を背もたれにつけたまま運転できるので、肩や腰が楽になります。"}, {"t": 355.1666666666667, "x": "小柄なかたや、座席を前に出すと膝がつかえるかたには大事な違いです。"}, {"t": 361.6333333333333, "x": "お店では、両方の運転席に座ってハンドルとの近さをくらべてください。"}, {"t": 368.6333333333333, "x": "ここからは走った時の違いを見ていきます。"}, {"t": 372.1, "x": "小回りの数字は、2台とも4.5メートルで同じです。"}, {"t": 376.53333333333336, "x": "せまい道でのUターンや車庫入れのしやすさは、変わらないと考えてよいでしょう。"}, {"t": 382.46666666666664, "x": "重さはN-BOXが910キロで、N-WGNが850キロです。"}, {"t": 387.93333333333334, "x": "60キロといえば、大人がもう一人乗っているくらいの重さです。"}, {"t": 393.3, "x": "四輪駆動ではN-BOXが970キロで、N-WGNが910キロになります。"}, {"t": 399.73333333333335, "x": "背の高いN-BOXは、そのぶん車の体が大きく重くなるわけです。"}, {"t": 405.3, "x": "エンジンは同じ形で、ターボの無い58馬力です。"}, {"t": 409.8333333333333, "x": "1馬力で運ぶ重さにすると、N-BOXが約15.7キロでN-WGNが約14.7キロです。"}, {"t": 417.8333333333333, "x": "同じエンジンなら、軽い車のほうが坂道や合流で少しだけ楽に進みます。"}, {"t": 424.3, "x": "ただ、町の中を走るぶんには大きな差は感じにくいはずです。"}, {"t": 429.56666666666666, "x": "どちらにもターボ付きで64馬力の形がありますが、今日は手ごろな形でくらべます。"}, {"t": 436.03333333333336, "x": "N-WGNのターボ付きは、飾りの多いカスタムという形だけで選べます。"}, {"t": 443.03333333333336, "x": "ではガソリン代に関わる数字に移ります。"}, {"t": 446.4, "x": "燃費の試験の数字では、N-BOXが1リットルあたり21.6キロです。"}, {"t": 452.46666666666664, "x": "N-WGNは23.0キロで、こちらが1.4キロ多く走ります。"}, {"t": 458.1333333333333, "x": "年に3000キロ走るかたで、ガソリンが何リットル要るか計算します。"}, {"t": 463.5, "x": "N-BOXは約138.9リットルで、N-WGNは約130.4リットルです。"}, {"t": 470.1666666666667, "x": "1年の差は約8.5リットルなので、大きな開きとまでは言えません。"}, {"t": 475.6666666666667, "x": "燃料タンクは2台とも27リットル入ります。"}, {"t": 479.4, "x": "四輪駆動のN-WGNは1リットルで20.7キロ走ります。"}, {"t": 484.56666666666666, "x": "タンクは2台とも四輪駆動では25リットルに少し減ります。"}, {"t": 489.46666666666664, "x": "軽の税金は年に1万800円で、自家用ならこの2台に差はありません。"}, {"t": 495.56666666666666, "x": "この数字は試験の値なので、冬に暖房を使う時期などは下がります。"}, {"t": 500.93333333333334, "x": "お金の差のほとんどは、買う時の19万2500円だと考えてください。"}, {"t": 508.43333333333334, "x": "今度は事故を防ぐための装備です。"}, {"t": 511.3333333333333, "x": "ホンダの安全の仕組みは、2台とも全部の形に付いています。"}, {"t": 516.1666666666666, "x": "まとめた名前を、ホンダセンシングと言います。"}, {"t": 519.8, "x": "前の車や人にぶつかりそうな時に、自分でブレーキをかける仕組みが入っています。"}, {"t": 525.7333333333333, "x": "アクセルとブレーキを踏み違えた時に、飛び出しをおさえる仕組みも前と後ろの両方にあります。"}, {"t": 532.8666666666667, "x": "駐車場で壁や柱に近づくと知らせるセンサーも、2台ともに付いています。"}, {"t": 538.6333333333333, "x": "信号待ちで前の車が動き出したのを知らせる仕組みも2台にあります。"}, {"t": 543.6666666666666, "x": "速度や止まれの標識を読み取り、メーターの中に絵で出す働きもあります。"}, {"t": 549.1, "x": "見落としやすい夜道で、もう一度教えてくれる装備です。"}, {"t": 553.4, "x": "体を守る袋は、2台とも6つずつ付いています。"}, {"t": 557.6333333333333, "x": "ハンドルと助手席の前、前の座席の横、それに窓に沿って後ろの席まで届く袋です。"}, {"t": 565.1, "x": "アクセルを急に強く踏んだ時に、加速をおさえる仕組みも2台にあります。"}, {"t": 570.6333333333333, "x": "ただし初めは働かないようにしてあり、販売店で費用を払って入れてもらいます。"}, {"t": 576.3666666666667, "x": "踏み間違いが心配なかたは、買う時にこの作業も頼んでおくと安心です。"}, {"t": 581.9666666666667, "x": "ぶつかった後に車が勝手に転がらないよう、ブレーキをかける仕組みも2台にあります。"}, {"t": 588.2, "x": "急ブレーキの時はランプを素早く光らせて、後ろの車へ知らせる仕組みもあります。"}, {"t": 594.5333333333333, "x": "坂道で発進する時に車が下がりにくい仕組みも、2台に共通です。"}, {"t": 601.6333333333333, "x": "続けて毎日の運転を楽にする装備を見ます。"}, {"t": 605.3666666666667, "x": "止めておくブレーキは、2台ともスイッチでかける電気の形です。"}, {"t": 610.3, "x": "赤信号で止まった後は、ブレーキから足を離しても車が動きません。"}, {"t": 615.7, "x": "ホンダの呼び名は、オートブレーキホールド機能です。"}, {"t": 619.4666666666667, "x": "N-BOXにもN-WGNにも、どの形にも付いている働きです。"}, {"t": 624.1333333333333, "x": "高速道路で前の車についていく仕組みは、2台に共通です。"}, {"t": 629.1, "x": "渋滞でゆっくりになっても、前の車に合わせて走ります。"}, {"t": 633.5666666666667, "x": "白い線の内側を走れるようにハンドルを手助けする働きも、両方にあります。"}, {"t": 640.0, "x": "メーターはどちらも7インチの液晶の画面です。"}, {"t": 643.5333333333333, "x": "鍵をかばんに入れたままドアを開けられる仕組みも、2台にあります。"}, {"t": 648.4666666666667, "x": "N-BOXには、車を降りて離れると自動で鍵がかかる働きも付いています。"}, {"t": 654.3, "x": "この働きの名前は、降車時オートドアロック機能です。"}, {"t": 658.7333333333333, "x": "後ろの席に置いた物の忘れを知らせる仕組みは、どちらにも付いています。"}, {"t": 664.1666666666666, "x": "病院の帰りに薬の袋を置き忘れることも、これで減らせるでしょう。"}, {"t": 669.4, "x": "鍵の働きを除けば、この章の装備に2台の差はありません。"}, {"t": 675.7, "x": "では乗り降りのことを考えます。"}, {"t": 678.4666666666667, "x": "乗り降りで握る取っ手は、2台とも前と後ろの4つの席に付いています。"}, {"t": 684.3333333333334, "x": "N-WGNには、助手席がくるりと外を向く形も選べます。"}, {"t": 689.1333333333333, "x": "Lより10万2300円高い、167万8600円で買える形です。"}, {"t": 695.9666666666667, "x": "それでもN-BOXのいちばん手ごろな形より、9万200円安い計算です。"}, {"t": 701.8333333333334, "x": "ただし回る助手席は前後に動かせず、体の具合によっては使いにくい場合もあります。"}, {"t": 708.0666666666667, "x": "N-BOXの良さは、天井が高いので頭をかがめずに乗り込めることです。"}, {"t": 713.4, "x": "足腰に不安がある家族を乗せるなら、この高さがありがたく感じるでしょう。"}, {"t": 718.9333333333333, "x": "N-BOXには、助手席側の足元を映す鏡がドアミラーの下に付いています。"}, {"t": 725.1, "x": "左の前のタイヤのあたりが見えるので、幅寄せや車庫入れの時に助かります。"}, {"t": 731.0, "x": "ホンダはこれをピタ駐ミラーと呼んでいます。"}, {"t": 734.0333333333333, "x": "この鏡は、N-WGNの装備表には載っていません。"}, {"t": 738.1, "x": "N-BOXには車いすのまま乗り込めるスロープの形もあります。"}, {"t": 742.4, "x": "車いすの人が乗ると、座席は3人ぶんになる作りです。"}, {"t": 747.1, "x": "今日はそこまでは含めず、手ごろな形どうしでくらべました。"}, {"t": 753.4333333333333, "x": "では店長の答えをまとめます。"}, {"t": 756.1666666666666, "x": "人を後ろに乗せるのがたまにだけなら、選ぶのはN-WGNのLです。"}, {"t": 761.2333333333333, "x": "理由の1つ目は、N-BOXより19万2500円安いことです。"}, {"t": 766.6333333333333, "x": "2つ目は、ぶつからないための装備と6つの袋が、N-BOXと同じだけ付くことです。"}, {"t": 773.7666666666667, "x": "3つ目は、ハンドルを手前に寄せられて運転の姿勢を合わせやすいことです。"}, {"t": 779.6333333333333, "x": "4つ目に、燃費も1リットルあたり1.4キロ良くなっています。"}, {"t": 784.7666666666667, "x": "一方で、お孫さんや足の弱い家族を毎週のように乗せるかたもいます。"}, {"t": 790.5333333333333, "x": "そういうかたには、電動のスライドドアと高い天井のN-BOXが心強いはずです。"}, {"t": 797.1333333333333, "x": "迷った時は、後ろの席を最後に使った日を思い出してみてください。"}, {"t": 802.4666666666667, "x": "数字はどれも、11月にホンダが出している表と値段のページで見たものです。"}, {"t": 808.4666666666667, "x": "改良が入ると、表の数字や装備が入れかわることもあります。"}, {"t": 813.2333333333333, "x": "買う前にお店で、その時のいちばん新しい表を必ずもらってください。"}, {"t": 818.9, "x": "今日のお話はここまでです。またお店の前でお待ちしています。"}], "w": 720, "h": 405, "n_cuts": 0, "noimage": true};
+const a=document.getElementById('a');
+const now=document.getElementById('now'), nl=document.getElementById('nextline');
+const pp=document.getElementById('pp'), sk=document.getElementById('sk');
+const tm=document.getElementById('tm'), bdg=document.getElementById('bdg');
+const SMOOTH=matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth';
+document.getElementById('ttl').innerHTML=D.name+
+  '<span class="meta">'+fmt(D.dur)+'　字幕'+D.subs.length+'　（音声＋字幕だけ）</span>';
+
+function fmt(s){s=Math.max(0,s|0);return (s/60|0)+':'+String(s%60).padStart(2,'0')}
+function subIdx(t){let lo=0,hi=D.subs.length-1,r=-1;
+  while(lo<=hi){const m=(lo+hi)>>1; if(D.subs[m].t<=t){r=m;lo=m+1}else hi=m-1} return r}
+
+let cur=-2;
+function paint(t){
+  const i=subIdx(t);
+  if(i!==cur){cur=i;
+    now.textContent = i<0 ? (D.subs.length?'（ここはまだ字幕がありません）'
+                                          :'（この回に字幕はありません）')
+                         : D.subs[i].x;
+    const n=D.subs[i+1]; nl.textContent = n ? '次　'+n.x : '';
+    bdg.textContent = D.subs.length ? '字幕 '+(i+1)+' / '+D.subs.length : '字幕なし';
+    mark('subs',i);
+  }
+  tm.textContent=fmt(t)+' / '+fmt(D.dur);
+  if(!sk.dragging) sk.value=Math.round(t/D.dur*1000);
+}
+function mark(pane,i){
+  const el=document.getElementById(pane);
+  if(el.dataset.on==i) return; el.dataset.on=i;
+  el.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));
+  const t=el.children[i]; if(!t) return; t.classList.add('on');
+  if(!el.hidden){const r=t.offsetTop-el.clientHeight/2; el.scrollTo({top:r,behavior:SMOOTH})}
+}
+
+D.subs.forEach(s=>{const d=document.createElement('div');d.className='row';
+  d.innerHTML='<b></b><span></span>';
+  d.querySelector('b').textContent=fmt(s.t);
+  d.querySelector('span').textContent=s.x;
+  d.onclick=()=>go(s.t); document.getElementById('subs').appendChild(d)});
+const mk=document.getElementById('mk');
+D.subs.forEach(s=>{const i=document.createElement('i');
+  i.style.left=(s.t/D.dur*100)+'%'; mk.appendChild(i)});
+
+function go(t){a.currentTime=Math.min(Math.max(0,t)+0.01,Math.max(0.05,D.dur-0.05)); paint(a.currentTime)}
+pp.onclick=()=>a.paused?a.play():a.pause();
+const SPEEDS=[1,1.25,1.5,1.75,2,3,0.75],SPN=['等速','1.25倍','1.5倍','1.75倍','2倍','3倍','0.75倍'];
+let si=0; const sp=document.getElementById('sp');
+sp.onclick=()=>{si=(si+1)%SPEEDS.length; a.playbackRate=SPEEDS[si];
+  a.preservesPitch=a.mozPreservesPitch=a.webkitPreservesPitch=true; sp.textContent=SPN[si]};
+a.onplay=()=>pp.textContent='❚❚ 停止'; a.onpause=()=>pp.textContent='▶ 再生';
+a.ontimeupdate=()=>paint(a.currentTime);
+sk.oninput=()=>{sk.dragging=1; go(sk.value/1000*D.dur)};
+sk.onchange=()=>sk.dragging=0;
+document.getElementById('pv').onclick=()=>{const i=subIdx(a.currentTime);
+  go(i>0?D.subs[i-1].t:0)};
+document.getElementById('nx').onclick=()=>{const i=subIdx(a.currentTime);
+  if(i+1<D.subs.length) go(D.subs[i+1].t)};
+addEventListener('keydown',e=>{const k=e.key;
+  if(k===' '){e.preventDefault();pp.onclick()}
+  else if(k==='ArrowRight')go(a.currentTime+5); else if(k==='ArrowLeft')go(a.currentTime-5);
+  else if(k==='ArrowDown'){e.preventDefault();document.getElementById('nx').onclick()}
+  else if(k==='ArrowUp'){e.preventDefault();document.getElementById('pv').onclick()}
+  else if(k==='s'||k==='S')sp.onclick()});
+paint(0);
+</script>
